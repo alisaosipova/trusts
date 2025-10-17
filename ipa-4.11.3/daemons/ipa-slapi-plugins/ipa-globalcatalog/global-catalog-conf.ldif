@@ -1,0 +1,17 @@
+# Placeholder configuration for the IPA Global Catalog plugin.
+#
+# The entry is installed so that ldapupdate templates can depend on a known
+# DN.  It does not reference a shared object yet which keeps the Directory
+# Server happy even before the binary plugin lands.
+
+dn: cn=ipa-globalcatalog,cn=plugins,cn=config
+objectClass: top
+objectClass: nsSlapdPlugin
+cn: ipa-globalcatalog
+nsslapd-pluginEnabled: off
+nsslapd-pluginPath: libipa-globalcatalog-plugin.so
+nsslapd-pluginType: object
+nsslapd-pluginId: ipa-globalcatalog
+nsslapd-pluginVersion: 1.0
+nsslapd-pluginVendor: FreeIPA
+nsslapd-pluginDescription: IPA Global Catalog listener
