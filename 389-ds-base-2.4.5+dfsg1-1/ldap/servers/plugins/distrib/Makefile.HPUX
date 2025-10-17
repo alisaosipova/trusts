@@ -1,0 +1,30 @@
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2005 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# --- END COPYRIGHT BLOCK ---
+# 
+# HPUX Makefile for Directory Server plug-in examples
+
+CC = cc
+LD = ld
+ 
+INCLUDE = -I../../include
+CFLAGS=$(INCLUDE) -D_HPUX_SOURCE -Aa +DA1.0 +z
+LDFLAGS = -b 
+ 
+OBJS = distrib.o
+ 
+all: libtest-plugin.sl
+ 
+libtest-plugin.sl: $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	-rm -f $(OBJS) libtest-plugin.sl

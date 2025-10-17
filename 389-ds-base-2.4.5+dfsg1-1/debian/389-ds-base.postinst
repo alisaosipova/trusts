@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+CONFIG_DIR=/etc/dirsrv
+OUT=/dev/null
+INSTANCES=`ls -d /etc/dirsrv/slapd-* 2>/dev/null | grep -v removed | sed 's/.*slapd-//'`
+
+if [ "$1" = configure ]; then
+    # lets give them a user/group in all cases.
+    if ! getent passwd dirsrv > $OUT; then
+	adduser --quiet --system --home /var/lib/dirsrv \
+	    --disabled-password --group \
+	    --gecos "389 Directory Server user" \
+	    --no-create-home \
+	    dirsrv > $OUT
+    fi
+
+    chown -R dirsrv:dirsrv /etc/dirsrv/ /var/log/dirsrv/ /var/lib/dirsrv/ > $OUT || true
+    chmod 750 /etc/dirsrv/ /var/log/dirsrv/ /var/lib/dirsrv/ > $OUT || true
+fi
+
+invoke_failure() {
+    # invoke-rc.d failed, likely because no instance has been configured yet
+    # but exit with an error if an instance is configured and the invoke failed
+    if [ -z $INSTANCES ]; then
+        echo "... because no instance has been configured yet."
+    else
+	exit 1
+    fi
+}
+
+
+#DEBHELPER#

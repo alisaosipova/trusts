@@ -1,0 +1,166 @@
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2016 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details.
+# --- END COPYRIGHT BLOCK ---
+
+import subprocess
+from lib389.utils import format_cmd_list, ensure_str
+
+"""
+This class will allow general usage of ldclt.
+
+It's not meant to expose all the functions. Just use ldclt for that.
+
+It's meant to expose general use cases for tests in 389.
+
+Calling this on a production DS instance is likely a fast way to MESS THINGS UP.
+
+"""
+
+
+class Ldclt(object):
+    def __init__(self, ds):
+        self.ds = ds
+        self.verbose = self.ds.verbose
+        self.log = self.ds.log
+
+    def create_users(self, subtree, min=1000, max=9999, template=None):
+        """
+        Creates users as user<min through max>. Password will be set to
+
+        password<number>
+
+        This will automatically work with the bind loadtest.
+        """
+        # Should we check max > min?
+        # Create the template file given the data.
+        if template is None:
+            template = """
+objectClass: top
+objectclass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+objectClass: posixAccount
+objectClass: shadowAccount
+sn: user[A]
+cn: user[A]
+givenName: user[A]
+description: description [A]
+userPassword: user[A]
+mail: user[A]@example.com
+uidNumber: 1[A]
+gidNumber: 2[A]
+shadowMin: 0
+shadowMax: 99999
+shadowInactive: 30
+shadowWarning: 7
+homeDirectory: /home/user[A]
+loginShell: /bin/false
+"""
+        with open('/tmp/ldclt_template_lib389.ldif', 'wb') as f:
+            f.write(template)
+        # call ldclt with the current rootdn and rootpass
+        digits = len('%s' % max)
+
+        cmd = [
+            '%s/ldclt' % self.ds.get_bin_dir(),
+            '-h',
+            self.ds.host,
+            '-p',
+            '%s' % self.ds.port,
+            '-D',
+            self.ds.binddn,
+            '-w',
+            self.ds.bindpw,
+            '-b',
+            subtree,
+            '-e',
+            'add,commoncounter',
+            '-e',
+            "object=/tmp/ldclt_template_lib389.ldif,rdn=uid:user[A=INCRNNOLOOP(%s;%s;%s)]" % (min, max, digits),
+        ]
+        result = None
+        self.log.debug("ldclt begining user create ...")
+        self.log.debug(format_cmd_list(cmd))
+        try:
+            result = subprocess.check_output(cmd)
+        # If verbose, capture / log the output.
+        except subprocess.CalledProcessError as e:
+            print(format_cmd_list(cmd))
+            print(result)
+            raise(e)
+        self.log.debug(result)
+
+    def _run_ldclt(self, cmd):
+        result = None
+        self.log.debug("ldclt loadtest ...")
+        self.log.debug(format_cmd_list(cmd))
+        try:
+            result = ensure_str(subprocess.check_output(cmd))
+        # If verbose, capture / log the output.
+        except subprocess.CalledProcessError as e:
+            print(format_cmd_list(cmd))
+            print(result)
+            raise(e)
+        self.log.debug(result)
+        # The output looks like:
+        # ldclt[44308]: Average rate: 4017.60/thr  (4017.60/sec), total:  40176
+        # ldclt[44308]: Number of samples achieved. Bye-bye...
+        # ldclt[44308]: All threads are dead - exit.
+        # ldclt[44308]: Global average rate: 40604.00/thr  (4060.40/sec), total: 406040
+        # ldclt[44308]: Global number times "no activity" reports: never
+        # ldclt[44308]: Global no error occurs during this session.
+        # So we want the "global avg rate" per second.
+        section = None
+        for line in result.splitlines():
+            if 'Global average rate' in line:
+                section = line.split('(')[1].split(')')[0].split('/')[0]
+        return section
+
+    def bind_loadtest(self, subtree, min=1000, max=9999, rounds=10):
+        # The bind users will be uid=userXXXX
+        digits = len('%s' % max)
+        cmd = [
+            '%s/ldclt' % self.ds.get_bin_dir(),
+            '-h',
+            self.ds.host,
+            '-p',
+            '%s' % self.ds.port,
+            '-N',
+            '%s' % rounds,
+            '-D',
+            'uid=user%s,%s' % ('X' * digits, subtree),
+            '-w',
+            'user%s' % ('X' * digits),
+            '-e',
+            "randombinddn,randombinddnlow=%s,randombinddnhigh=%s" % (min, max),
+            '-e',
+            'bindonly',
+        ]
+        return self._run_ldclt(cmd)
+
+    def search_loadtest(self, subtree, fpattern, min=1000, max=9999, rounds=10):
+        # digits = len('%s' % max)
+        cmd = [
+            '%s/ldclt' % self.ds.get_bin_dir(),
+            '-h',
+            self.ds.host,
+            '-p',
+            '%s' % self.ds.port,
+            '-N',
+            '%s' % rounds,
+            '-f',
+            fpattern,
+            '-e',
+            'esearch,random',
+            '-r%s' % min,
+            '-R%s' % max,
+            '-I',
+            '32',
+            '-e',
+            'randomattrlist=cn:uid:ou',
+        ]
+        return self._run_ldclt(cmd)

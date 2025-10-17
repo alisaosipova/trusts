@@ -1,0 +1,6 @@
+Tests: setup
+Depends:
+ 389-ds-base,
+Restrictions:
+ isolation-container,
+ needs-root,

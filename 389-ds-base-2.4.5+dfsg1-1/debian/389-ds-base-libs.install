@@ -1,0 +1,6 @@
+usr/lib/*/dirsrv/lib/libjemalloc.so.*
+usr/lib/*/dirsrv/libldaputil.so.*
+usr/lib/*/dirsrv/libns-dshttpd.so.*
+usr/lib/*/dirsrv/librewriters.so.*
+usr/lib/*/dirsrv/libslapd.so.*
+usr/lib/*/libsvrcore.so.*

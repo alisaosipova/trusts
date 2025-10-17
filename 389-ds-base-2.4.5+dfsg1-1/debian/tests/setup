@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# hack for lxc
+IP=`ip route get 1.1.1.1 | sed -n -e's/.*src //; s/ .*//; p; q'`
+echo "IP address is $IP"
+
+HOSTNAME=`cat /etc/hosts| grep '127.0.1.1' | awk '{print $NF; exit}'`
+echo "Hostname was: $HOSTNAME"
+
+if [ -z $HOSTNAME ]; then
+    HOSTNAME=autopkgtest
+    hostname $HOSTNAME
+    echo $HOSTNAME > /etc/hostname
+fi
+
+echo "$IP $HOSTNAME.debci $HOSTNAME" >> /etc/hosts
+
+echo "/etc/hosts now has:"
+cat /etc/hosts
+
+cat << EOF > /tmp/debci.inf
+[general]
+full_machine_name = $HOSTNAME.debci
+strict_host_checking = False
+[slapd]
+group = dirsrv
+instance_name = debci
+port = 1389
+root_dn = cn=Directory Manager
+root_password = Secret123
+user = dirsrv
+[backend-userroot]
+suffix = dc=example,dc=com
+EOF
+
+/usr/sbin/dscreate from-file /tmp/debci.inf 2>&1

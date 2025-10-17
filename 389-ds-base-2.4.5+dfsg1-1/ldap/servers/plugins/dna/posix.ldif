@@ -1,0 +1,38 @@
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2007 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# --- END COPYRIGHT BLOCK ---
+
+# add plugin configuration for posix users
+
+dn: cn=Posix,cn=Distributed Numeric Assignment Plugin,cn=plugins,cn=config
+objectclass: top
+objectclass: nsContainer
+objectclass: extensibleObject
+cn: Posix
+
+dn: cn=Accounts,cn=Posix,cn=Distributed Numeric Assignment Plugin,cn=plugins,cn=config
+objectclass: top
+objectclass: extensibleObject
+cn: Accounts
+dnaType: uidNumber
+dnaNextValue: 500
+dnaInterval: 4
+dnaMagicRegen: 499
+dnaFilter: (objectclass=posixAccount)
+
+# add plugin configuration for posix groups
+
+dn: cn=Groups,cn=Posix,cn=Distributed Numeric Assignment Plugin,cn=plugins,cn=config
+objectclass: top
+objectclass: extensibleObject
+cn: Groups
+dnaType: gidNumber
+dnaNextValue: 500
+dnaInterval: 4
+dnaMagicRegen: 499
+dnaFilter: (objectclass=posixGroup)
+

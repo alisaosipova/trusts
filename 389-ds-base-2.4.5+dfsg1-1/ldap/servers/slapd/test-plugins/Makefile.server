@@ -1,0 +1,59 @@
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2005 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# --- END COPYRIGHT BLOCK ---
+# 
+#
+# GNU Makefile for Directory Server distribution plugin
+#
+
+LDAP_SRC = ../../..
+BUILD_ROOT = ../../../..
+
+NOSTDCLEAN=true # don't let nsconfig.mk define target clean
+NOSTDSTRIP=true # don't let nsconfig.mk define target strip
+NSPR20=true	# probably should be defined somewhere else (not sure where)
+
+OBJDEST = $(OBJDIR)/lib/libtestplug
+LIBDIR = $(LIB_RELDIR)
+
+include $(BUILD_ROOT)/nsconfig.mk
+include $(LDAP_SRC)/nsldap.mk
+
+CFLAGS+=$(SLCFLAGS)
+
+INCLUDES += -I$(LDAP_SRC)/servers/slapd -I$(DB_INCLUDE)
+
+DIS_OBJS= \
+	testsaslbind.o testpreop.o testpostop.o testextendedop.o testentry.o testbind.o testgetip.o testdatainterop.o testdbinterop.o
+
+OBJS = $(addprefix $(OBJDEST)/, $(DIS_OBJS)) 
+
+# The sample distribution plugin is not part of DS.
+# So we generate the shared library outside of $(LIBDIR)
+# so that it's not retrieved by the packaging makefiles.
+#LIBDIS =	$(addprefix $(LIBDIR)/, $(DIS_DLL).$(DLL_SUFFIX))
+LIBDIS =	$(addprefix $(OBJDEST)/, $(TEST_PLUGIN_DLL).$(DLL_SUFFIX))
+
+EXTRA_LIBS_DEP += $(LIBSLAPD_DEP) $(LDAPSDK_DEP) $(NSPR_DEP) $(DB_LIB_DEP)
+EXTRA_LIBS += $(DYN_NSHTTPD) $(ADMINUTIL_LINK) $(LDAPLINK) $(NSPRLINK) $(ICULINK) $(DB_LIB)
+
+clientSDK: 
+
+all:	$(OBJDEST) $(LIBDIR) $(LIBDIS)
+
+$(LIBDIS): $(OBJS) $(LIBDIS_DLL_OBJ)
+	$(LINK_DLL) $(EXTRA_LIBS) 
+
+veryclean: clean
+
+clean:
+	$(RM) $(OBJS)
+	$(RM) $(LIBDIS)
+
+$(OBJDEST):
+	$(MKDIR) $(OBJDEST)

@@ -1,0 +1,4 @@
+fix-saslpath.diff
+use-packaged-rust-registry.diff
+allow-newer-crates.diff
+base64-0.21.diff

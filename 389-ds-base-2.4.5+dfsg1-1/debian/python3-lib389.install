@@ -1,0 +1,10 @@
+usr/lib/python3/dist-packages/lib389-*
+usr/lib/python3/dist-packages/lib389/
+usr/sbin/dsconf
+usr/sbin/dscreate
+usr/sbin/dsctl
+usr/sbin/dsidm
+usr/share/man/man8/dsconf.8
+usr/share/man/man8/dscreate.8
+usr/share/man/man8/dsctl.8
+usr/share/man/man8/dsidm.8

@@ -1,0 +1,3 @@
+extend-diff-ignore = dirsrvtests/tests/suites/ds_logs/ds_logs_test.py|dirsrvtests/tests/suites/mapping_tree/referral_during_tot_init_test.py
+extend-diff-ignore = src/lib389/lib389/utils.py
+extend-diff-ignore = src/Cargo.lock

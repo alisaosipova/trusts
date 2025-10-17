@@ -1,0 +1,37 @@
+#
+# BEGIN COPYRIGHT BLOCK
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2007 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# END COPYRIGHT BLOCK
+#
+[General]
+Name=@capbrand@ Directory Suite
+Components=slapd
+
+[slapd]
+Name= @capbrand@ Directory Server
+InstanceNamePrefix= Directory Server
+NickName= slapd
+Version= @PACKAGE_VERSION@
+BaseVersion= @CONSOLE_VERSION@
+Compatible= 1.0
+BuildNumber= @NQBUILD_NUM@
+Description= @capbrand@ Directory Server
+ProductName=Directory Server
+Vendor= @vendor@
+# the rest of these are obsolete, but left here for
+# compatability with the old setuputil
+Expires= 0
+Security= domestic
+IsDirLite=false
+PreInstall= ns-config
+PostInstall= bin/slapd/admin/bin/ns-update
+PreUninstall= bin/slapd/admin/bin/uninstall
+PostUninstall=
+Checked=True
+Mandatory=False
+IsLdap=True

@@ -1,0 +1,84 @@
+--- a/src/librslapd/Cargo.toml
++++ b/src/librslapd/Cargo.toml
+@@ -15,8 +15,8 @@ crate-type = ["staticlib", "lib"]
+ [dependencies]
+ slapd = { path = "../slapd" }
+ libc = "0.2"
+-concread =  "^0.2.20"
++concread =  "0.*"
+ 
+ [build-dependencies]
+-cbindgen = "0.9"
++cbindgen = "0.*"
+ 
+--- a/src/librnsslapd/Cargo.toml
++++ b/src/librnsslapd/Cargo.toml
+@@ -21,5 +21,5 @@ slapd = { path = "../slapd" }
+ libc = "0.2"
+ 
+ [build-dependencies]
+-cbindgen = "0.9"
++cbindgen = "0.*"
+ 
+--- a/src/slapd/Cargo.toml
++++ b/src/slapd/Cargo.toml
+@@ -7,4 +7,4 @@ edition = "2018"
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-fernet = "0.1"
++fernet = "0.*"
+--- a/src/slapi_r_plugin/Cargo.toml
++++ b/src/slapi_r_plugin/Cargo.toml
+@@ -17,6 +17,6 @@ crate-type = ["staticlib", "lib"]
+ 
+ [dependencies]
+ libc = "0.2"
+-paste = "0.1"
++paste = "1.*"
+ # lazy_static = "1.4"
+ uuid = { version = "0.8", features = [ "v4" ] }
+--- a/src/plugins/entryuuid/Cargo.toml
++++ b/src/plugins/entryuuid/Cargo.toml
+@@ -13,7 +13,7 @@ crate-type = ["staticlib", "lib"]
+ 
+ [dependencies]
+ libc = "0.2"
+-paste = "0.1"
++paste = "1.*"
+ slapi_r_plugin = { path="../../slapi_r_plugin" }
+ uuid = { version = "0.8", features = [ "v4" ] }
+ 
+--- a/src/plugins/entryuuid_syntax/Cargo.toml
++++ b/src/plugins/entryuuid_syntax/Cargo.toml
+@@ -13,7 +13,7 @@ crate-type = ["staticlib", "lib"]
+ 
+ [dependencies]
+ libc = "0.2"
+-paste = "0.1"
++paste = "1.*"
+ slapi_r_plugin = { path="../../slapi_r_plugin" }
+ uuid = { version = "0.8", features = [ "v4" ] }
+ 
+--- a/src/plugins/pwdchan/Cargo.toml
++++ b/src/plugins/pwdchan/Cargo.toml
+@@ -13,7 +13,7 @@ crate-type = ["staticlib", "lib"]
+ 
+ [dependencies]
+ libc = "0.2"
+-paste = "0.1"
++paste = "1.*"
+ slapi_r_plugin = { path="../../slapi_r_plugin" }
+ uuid = { version = "0.8", features = [ "v4" ] }
+ openssl = { version = "0.10" }
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -70,7 +70,7 @@ RUST_LDFLAGS = -ldl -lpthread -lgcc_s -l
+ endif
+ RUST_DEFINES = -DRUST_ENABLE
+ if RUST_ENABLE_OFFLINE
+-RUST_OFFLINE = --locked --offline
++RUST_OFFLINE = --offline
+ else
+ RUST_OFFLINE =
+ endif

@@ -1,0 +1,6 @@
+# Defaults for dirsrv
+#
+# This is a POSIX shell fragment
+
+# Enable bindnow hardening
+LD_BIND_NOW=1

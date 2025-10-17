@@ -1,0 +1,93 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+pie
+
+
+ifneq (,$(filter $(DEB_HOST_ARCH), armel m68k mips mipsel powerpc powerpcspe sh4))
+  export DEB_LDFLAGS_MAINT_APPEND=-latomic
+endif
+ifneq (,$(filter $(DEB_HOST_ARCH), armhf armel i386))
+  export DEB_CFLAGS_MAINT_APPEND=-D_LARGEFILE64_SOURCE
+endif
+
+REALFILE = \
+	bin/ds-logpipe.py \
+	bin/logconv.pl \
+	share/man/man1/ds-logpipe.py.1 \
+	share/man/man1/logconv.pl.1 \
+
+%:
+	dh $@ --with python3
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f aclocal.m4 config.* ltmain.sh m4/libtool.m4 m4/lt*.m4
+	rm -f ldap/servers/snmp/ldap-agent.conf
+	rm -rf src/lib389/build src/lib389/lib389.egg-info
+	find src/lib389/ -name '__pycache__' -exec rm -rf '{}' ';'
+	rm -f src/lib389/man/*.8
+	rm -f ldap/admin/src/*.inf rust-nsslapd-private.h src/Cargo.lock
+	rm -f wrappers/dirsrv-snmp.service wrappers/dirsrv.target wrappers/dirsrv@.service wrappers/dirsrv@.service.d/custom.conf wrappers/ds_selinux_restorecon.sh wrappers/ds_systemd_ask_password_acl
+	rm -f debian/vendor/*-*
+	rm -f config.sub config.guess
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		--with-openldap \
+		--with-systemd \
+		--with-systemdsystemunitdir=/usr/lib/systemd/system \
+		--with-systemdsystemconfdir=/etc/systemd/system \
+		--with-systemdgroupname=dirsrv.target \
+		--with-tmpfiles-d=/etc/tmpfiles.d \
+		--enable-autobind \
+		--enable-cmocka \
+		--enable-icu \
+		--enable-perl \
+		--enable-rust \
+		--enable-rust-offline
+
+	(cd debian/vendor && for i in `ls /usr/share/cargo/registry`; do \
+	  ln -fs /usr/share/cargo/registry/$$i .; done)
+
+override_dh_auto_build:
+	(make src/lib389/setup.py && cd src/lib389 && python3 setup.py build)
+	dh_auto_build
+
+override_dh_auto_install:
+	(cd src/lib389 && python3 setup.py install --install-layout=deb --root ../../debian/tmp)
+
+	dh_auto_install --max-parallel=1
+
+override_dh_install:
+	# lets do the renaming here afterall, instead of in 389-ds-base.install
+	for file in $(REALFILE); do mv -f $(CURDIR)/debian/tmp/usr/$$file \
+		$(CURDIR)/debian/tmp/usr/`echo $$file | \
+		sed -s 's/\.pl//;s/\.py//'`; \
+		done
+	# purge .la files
+	find $(CURDIR)/debian/tmp -name "*.la" -type f -exec rm -f "{}" \;
+
+	mkdir -p $(CURDIR)/debian/tmp/etc/systemd/system/dirsrv.target.wants
+
+	# fix the manpage section, argparse-manpage hardcodes it as 1
+	sed -i  "1s/\"1\"/\"8\"/" debian/tmp/usr/share/man/man8/dsconf.8
+	sed -i  "1s/\"1\"/\"8\"/" debian/tmp/usr/share/man/man8/dscreate.8
+	sed -i  "1s/\"1\"/\"8\"/" debian/tmp/usr/share/man/man8/dsctl.8
+	sed -i  "1s/\"1\"/\"8\"/" debian/tmp/usr/share/man/man8/dsidm.8
+
+	# link to jemalloc
+	mkdir -p $(CURDIR)/debian/tmp/usr/lib/$(DEB_BUILD_MULTIARCH)/dirsrv/lib/
+	ln -s /usr/lib/$(DEB_BUILD_MULTIARCH)/libjemalloc.so.2 \
+		$(CURDIR)/debian/tmp/usr/lib/$(DEB_BUILD_MULTIARCH)/dirsrv/lib/
+
+	dh_install
+
+override_dh_missing:
+	dh_missing --fail-missing
+
+override_dh_installsystemd:
+	dh_installsystemd -p389-ds-base --no-enable dirsrv-snmp.service
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l"debian/389-ds-base/usr/lib/$(DEB_HOST_MULTIARCH)/dirsrv" -a

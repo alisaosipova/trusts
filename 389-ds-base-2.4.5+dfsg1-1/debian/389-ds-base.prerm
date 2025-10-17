@@ -1,0 +1,14 @@
+#!/bin/sh -e
+set -e
+
+#DEBHELPER#
+
+if [ "$1" = "purge" ]; then
+    # remove all installed instances
+    for FILE in `ls -d /etc/dirsrv/slapd-* 2>/dev/null | sed -n '/\.removed$/!$'`
+    do
+        if [ -d "$FILE" ] ; then
+            dsctl $FILE remove --do-it
+        fi
+    done
+fi

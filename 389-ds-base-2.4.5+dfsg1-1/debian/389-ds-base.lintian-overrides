@@ -1,0 +1,5 @@
+# these are bogus warnings, no libs shipped in a public libdir
+unused-shlib-entry-in-control-file
+
+# plugins
+custom-library-search-path

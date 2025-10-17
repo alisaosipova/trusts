@@ -1,0 +1,53 @@
+# BEGIN COPYRIGHT BLOCK
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2005 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# END COPYRIGHT BLOCK
+#
+# gnu makefile for LDAP Server tools.
+#
+
+BUILD_ROOT = ../../../../..
+LDAP_SRC = ../../../..
+
+NOSTDCLEAN=true # don't let nsconfig.mk define target clean
+NOSTDSTRIP=true # don't let nsconfig.mk define target strip
+
+OBJDEST = $(OBJDIR)/lib/replication-plugin
+BINDIR = $(OBJDIR)/bin
+
+include $(BUILD_ROOT)/nsdefs.mk
+include $(BUILD_ROOT)/nsconfig.mk
+include $(LDAP_SRC)/nsldap.mk
+
+LDFLAGS	+= $(EXLDFLAGS)
+
+DEPLIBS=
+
+EXTRA_LIBS_DEP = 
+
+EXTRA_LIBS =
+
+DNP_SIM = $(addsuffix $(EXE_SUFFIX), \
+	$(addprefix $(BINDIR)/, dnp_sim))
+
+
+all: $(OBJDEST) $(BINDIR) $(DNP_SIM)
+
+$(DNP_SIM):	$(OBJDEST)/dnp_sim3.o $(EXTRA_LIBS_DEP)
+	$(LINK_EXE) $(OBJDEST)/dnp_sim3.o \
+		$(EXTRA_LIBS) $<
+
+
+$(OBJDEST):
+	$(MKDIR) $(OBJDEST)
+
+$(BINDIR):
+	$(MKDIR) $(BINDIR)
+
+clean:
+	-$(RM) $(ALL_OBJS)
+	-$(RM) $(BINS)

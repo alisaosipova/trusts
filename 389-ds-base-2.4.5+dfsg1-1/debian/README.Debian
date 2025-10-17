@@ -1,0 +1,12 @@
+To complete the 389 Directory Server installation just run /usr/sbin/setup-ds.
+
+If you experience problems accessing the Directory Server, check with
+"netstat -tapen |grep 389" and verify that the server is not listening only
+to ipv6 (check for ^tcp6). In such case you will need to tweak the cn=config
+DIT with something like the following:
+
+dn: cn=config
+changetype: modify
+add: nsslapd-listenhost
+nsslapd-listenhost: <youripv4>
+

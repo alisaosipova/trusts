@@ -1,0 +1,360 @@
+#!/bin/sh
+#
+# @package_name@    This starts and stops @package_name@
+#
+# chkconfig:   - 59 73
+# description: @capbrand@ Directory Server
+# processname: @sbindir@/ns-slapd
+# configdir:   @sysconfdir@/@package_name@/
+# piddir:      @localstatedir@/run/@package_name@
+# datadir:     @localstatedir@/lib/@package_name@/slapd-<instance name>
+#
+
+# Source function library.
+if [ -f /etc/rc.d/init.d/functions ] ; then
+. /etc/rc.d/init.d/functions
+fi
+# Source networking configuration.
+if [ -f /etc/sysconfig/network ] ; then
+. /etc/sysconfig/network
+fi
+
+# Check that networking is up.
+if [ "${NETWORKING}" = "no" ]
+then
+    echo "Networking is down"
+    if [ "$1" = "status" ]; then
+        # exit code 4 means unknown status for status action
+        exit 4
+    else
+        # exit code 1 means unspecified error for non-status actions
+        exit 1
+    fi
+fi
+
+echo_n()
+{
+    printf '%s' "$*"
+}
+
+# failure and success are not defined on some platforms
+which failure > /dev/null 2>&1 || {
+failure()
+{
+    echo_n " FAILED"
+}
+}
+
+which success > /dev/null 2>&1 || {
+success()
+{
+    echo_n " SUCCESS"
+}
+}
+
+libpath_add() {
+    [ -z "$1" ] && return
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$1
+}
+
+# On Solaris /var/run is in tmpfs and gets wiped out upon reboot
+# we have to recreate the /var/run/@package_name@ directory
+# We also have to make sure that the directory is writable
+# by the directory server process
+# the argument to this function is the server instance directory,
+# which must have a dse.ldif file in it
+fix_pid_dir_ownership()
+{
+    if [ ! -d $piddir ] ; then
+	mkdir -p $piddir
+	owner=`grep \^nsslapd-localuser $1/dse.ldif | awk '{print $2}'`
+	if [ -n "$owner" ] ; then
+	    chown $owner $piddir
+	    chmod 700 $piddir
+	fi
+    fi
+}
+
+baseexec="ns-slapd"
+exec="@sbindir@/$baseexec"
+prog="@package_name@"
+# Lockfile
+if [ -d "@localstatedir@/lock/subsys" ] ; then
+    lockfile="@localstatedir@/lock/subsys/@package_name@"
+else
+    lockfile="@localstatedir@/lock/@package_name@/lock"
+fi
+# PID directory
+piddir="@localstatedir@/run/@package_name@"
+
+# Instance basedir
+instbase="@instconfigdir@"
+
+# Check that ns-slapd exists
+if [ ! -f $exec ] ; then
+    if [ "$1" = "status" ]; then
+        # exit code 4 means unknown status for status action
+        exit 4
+    else
+        # exit code 5 means program is not installed for non-status actions
+        exit 5
+    fi
+fi
+
+
+umask 077
+
+[ -f @initconfigdir@/@package_name@ ] && . @initconfigdir@/@package_name@
+
+INSTANCES=""
+
+# Ignore instances that have been removed
+for FILE in `/bin/ls -d $instbase/slapd-* 2>/dev/null | sed -n '/\.removed$/!p'`; do
+    if [ -d "$FILE" ] ; then
+        inst=`echo "$FILE" | sed -e "s|$instbase/slapd-||"`
+        INSTANCES="$INSTANCES $inst"
+    fi
+done
+
+if [ -z "$INSTANCES" ]; then
+    echo "  *** Error: no $prog instances configured"
+    if [ "$1" = "status" ]; then
+        # exit code 4 means unknown status for status action
+        exit 4
+    else
+        # exit code 6 means program is not configured for non-status actions
+        exit 6
+    fi
+fi
+
+if [ -n "$2" ]; then
+   for I in $INSTANCES; do
+      if [ "$2" = "$I" ]; then
+         INSTANCES="$2"
+      fi
+   done
+   if [ "$2" != "$INSTANCES" ]; then
+      echo_n "$2 is an invalid @package_name@ instance"
+      failure; echo
+      if [ "$1" = "status" ]; then
+          # exit code 4 means unknown status for status action
+          exit 4
+      else
+          # exit code 2 means invalid argument for non-status actions
+          exit 2
+      fi
+   fi
+fi
+
+start() {
+    libpath_add "@libdir@/@package_name@"
+    libpath_add "@nss_libdir@"
+    libpath_add "@pcre_libdir@"
+
+    export LD_LIBRARY_PATH
+    echo  "Starting $prog: "
+    # Start every slapd instance that isn't already running
+    errors=0
+    successes=0
+    for instance in $INSTANCES; do
+        echo_n "    $instance..."
+        # the server creates pidfile and writes the pid to it when it is fully
+        # started and available to serve clients
+        pidfile=$piddir/slapd-$instance.pid
+        # the server creates startpidfile and writes the pid to just after
+        # the process begins i.e. it received the startup request and didn't
+        # die a horrible death (e.g. shared lib problem, oom, etc.)
+        startpidfile=$piddir/slapd-$instance.startpid
+        server_running=0
+        if [ -f $pidfile ]; then
+            pid=`cat $pidfile`
+            instlockfile="@localstatedir@/lock/@package_name@/slapd-$instance/server/$pid"
+            name=`ps -p $pid | tail -1 | awk '{ print $4 }'`
+            if kill -s 0 $pid && [ $name = "ns-slapd" ]; then
+                echo_n " already running"
+                success; echo
+                successes=`expr $successes + 1`
+                server_running=1
+            else
+                echo " not running, but pid file exists"
+                echo_n "    $instance... attempting to start anyway"
+                # Clean up the instance lockfile since we know the pid.  The
+                # pidfiles will get cleaned up below.
+                rm -f $instlockfile
+            fi
+        fi
+        server_started=0
+        if [ $server_running -eq 0 ] ; then
+            rm -f $pidfile
+            rm -f $startpidfile
+            fix_pid_dir_ownership $instbase/slapd-$instance
+            # start the directory server in a subshell so that the instance specific
+            # init config environment will not apply to any other instance
+            (
+                umask 002 # reset umask to allow logs and other files modes to be explicitly set
+                [ -f @initconfigdir@/@package_name@-$instance ] && . @initconfigdir@/@package_name@-$instance
+                $exec -D $instbase/slapd-$instance -i $pidfile -w $startpidfile
+            )
+            if [ $? -eq 0 ]; then
+                server_started=1 # well, perhaps not running, but started ok
+            else
+                failure; echo
+                errors=`expr $errors + 1`
+            fi
+        fi
+        # ok, if we started the server successfully, let's see if it is really
+        # running and ready to serve requests
+        if [ $server_started -eq 1 ] ; then
+            loop_counter=1
+            # wait for 10 seconds for the start pid file to appear
+            max_count=10
+            while test $loop_counter -le $max_count; do
+                loop_counter=`expr $loop_counter + 1`
+                if test ! -f $startpidfile ; then
+                    sleep 1
+                else
+                    pid=`cat $startpidfile`
+                fi
+            done
+            if test ! -f $startpidfile ; then
+                failure; echo
+                errors=`expr $errors + 1`
+                server_started=0
+            fi
+        fi
+        # ok, server wrote the startpid file - let's see if it comes up
+        # ready to service requests
+        if [ $server_started -eq 1 ] ; then
+            loop_counter=1
+            # wait for 10 minutes (600 times 1 seconds)
+            max_count=600
+            while test $loop_counter -le $max_count ; do
+                loop_counter=`expr $loop_counter + 1`
+                if test ! -f $pidfile ; then
+                    if kill -s 0 $pid > /dev/null 2>&1 ; then
+                        sleep 1
+                    else
+                        break
+                    fi
+                else
+                    pid=`cat $pidfile`
+                    break
+                fi
+            done
+            if kill -s 0 $pid > /dev/null 2>&1 && test -f $pidfile ; then
+                success; echo
+                successes=`expr $successes + 1`
+            else
+                failure; echo
+                errors=`expr $errors + 1`
+            fi
+        fi
+        rm -f $startpidfile
+    done
+    if [ $successes -ge 1 ]; then
+        touch $lockfile
+        [ -x /sbin/restorecon ] && /sbin/restorecon $lockfile
+    fi
+    if [ $errors -ge 1 ]; then
+        echo "  *** Error: $errors instance(s) failed to start"
+        exit 1
+    fi
+}
+
+stop() {
+    echo "Shutting down $prog: "
+    errors=0
+    for instance in $INSTANCES; do
+        echo_n "    $instance..."
+        pidfile=$piddir/slapd-$instance.pid
+        if [ -f $pidfile ]; then
+            pid=`cat $pidfile`
+            server_stopped=0
+            if kill -s 0 $pid > /dev/null 2>&1 ; then
+                kill $pid
+                if [ $? -eq 0 ]; then
+                    server_stopped=1
+                else
+                    failure; echo
+                    errors=`expr $errors + 1`
+                fi
+            else
+                echo_n " server not running"
+                failure; echo
+                errors=`expr $errors + 1`
+            fi
+            if [ $server_stopped -eq 1 ] ; then
+                loop_counter=1
+                # wait for 10 minutes (600 times 1 second)
+                max_count=600
+                while test $loop_counter -le $max_count; do
+                    loop_counter=`expr $loop_counter + 1`
+                    if kill -s 0 $pid > /dev/null 2>&1 ; then
+                        sleep 1
+                    else
+                        if test -f $pidfile ; then
+                            rm -f $pidfile
+                        fi
+                        break
+                    fi
+                done
+                if test -f $pidfile ; then
+                    failure; echo
+                    errors=`expr $errors + 1`
+                else
+                    success; echo
+                    rm -f $pidfile
+                fi
+            fi
+        else
+            echo_n " server already stopped"
+            failure; echo
+            errors=`expr $errors + 1`
+        fi
+    done
+    if [ $errors -ge 1 ]; then
+        echo_n "  *** Error: $errors instance(s) unsuccessfully stopped"
+        failure; echo
+    else
+        rm -f $lockfile
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+
+status() {
+     ret=0
+     for instance in $INSTANCES; do
+         if [ -f $piddir/slapd-$instance.pid ]; then
+             pid=`cat $piddir/slapd-$instance.pid`
+             if kill -s 0 $pid > /dev/null 2>&1 ; then
+                 echo "$prog $instance (pid $pid) is running..."
+             else
+                echo "$prog $instance dead but pid file exists"
+                ret=1
+             fi
+         else
+             echo "$prog $instance is stopped"
+             ret=3
+         fi
+     done
+     exit $ret
+}
+
+
+case "$1" in
+    start|stop|restart|reload|status)
+        $1
+        ;;
+    condrestart)
+        [ ! -f $lockfile ] || restart
+        ;;
+    *)
+        echo Unknown command $1
+        echo "Usage: $0 {start|stop|status|restart|condrestart} [instance-name]"
+        exit 2
+esac

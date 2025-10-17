@@ -1,0 +1,65 @@
+Description: update for base64 0.21
+Author: Peter Michael Green <plugwash@debian.org>
+
+Index: 389-ds-base-2.3.1+dfsg1.new/src/plugins/pwdchan/src/lib.rs
+===================================================================
+--- 389-ds-base-2.3.1+dfsg1.new.orig/src/plugins/pwdchan/src/lib.rs
++++ 389-ds-base-2.3.1+dfsg1.new/src/plugins/pwdchan/src/lib.rs
+@@ -42,6 +42,12 @@ macro_rules! ab64_to_b64 {
+     }};
+ }
+ 
++use base64::engine::GeneralPurpose;
++use base64::engine::GeneralPurposeConfig;
++use base64::Engine;
++use base64::alphabet;
++static BASE64CONFIG: GeneralPurposeConfig = GeneralPurposeConfig::new().with_decode_allow_trailing_bits(true);
++static BASE64ENGINE: GeneralPurpose = GeneralPurpose::new(&alphabet::STANDARD,BASE64CONFIG);
+ impl PwdChanCrypto {
+     #[inline(always)]
+     fn pbkdf2_decompose(encrypted: &str) -> Result<(usize, Vec<u8>, Vec<u8>), PluginError> {
+@@ -62,7 +68,7 @@ impl PwdChanCrypto {
+             .ok_or(PluginError::MissingValue)
+             .and_then(|ab64| {
+                 let s = ab64_to_b64!(ab64);
+-                base64::decode_config(&s, base64::STANDARD.decode_allow_trailing_bits(true))
++                BASE64ENGINE.decode(&s)
+                     .map_err(|e| {
+                         log_error!(ErrorLevel::Error, "Invalid Base 64 {} -> {:?}", s, e);
+                         PluginError::InvalidBase64
+@@ -74,7 +80,7 @@ impl PwdChanCrypto {
+             .ok_or(PluginError::MissingValue)
+             .and_then(|ab64| {
+                 let s = ab64_to_b64!(ab64);
+-                base64::decode_config(&s, base64::STANDARD.decode_allow_trailing_bits(true))
++                BASE64ENGINE.decode(&s)
+                     .map_err(|e| {
+                         log_error!(ErrorLevel::Error, "Invalid Base 64 {} -> {:?}", s, e);
+                         PluginError::InvalidBase64
+@@ -152,11 +158,11 @@ impl PwdChanCrypto {
+             PluginError::Format
+         })?;
+         // the base64 salt
+-        base64::encode_config_buf(&salt, base64::STANDARD, &mut output);
++        BASE64ENGINE.encode_string(&salt, &mut output);
+         // Push the delim
+         output.push_str("$");
+         // Finally the base64 hash
+-        base64::encode_config_buf(&hash_input, base64::STANDARD, &mut output);
++        BASE64ENGINE.encode_string(&hash_input, &mut output);
+         // Return it
+         Ok(output)
+     }
+Index: 389-ds-base-2.3.1+dfsg1.new/src/plugins/pwdchan/Cargo.toml
+===================================================================
+--- 389-ds-base-2.3.1+dfsg1.new.orig/src/plugins/pwdchan/Cargo.toml
++++ 389-ds-base-2.3.1+dfsg1.new/src/plugins/pwdchan/Cargo.toml
+@@ -17,7 +17,7 @@ paste = "1.*"
+ slapi_r_plugin = { path="../../slapi_r_plugin" }
+ uuid = { version = "0.8", features = [ "v4" ] }
+ openssl = { version = "0.10" }
+-base64 = "0.13"
++base64 = "0.21"
+ 
+ [build-dependencies]
+ cc = { version = "1.0", features = ["parallel"] }

@@ -1,0 +1,8 @@
+--- a/.cargo/config.in
++++ b/.cargo/config.in
+@@ -3,4 +3,4 @@ registry = "https://github.com/rust-lang
+ @rust_vendor_sources@
+ 
+ [source.vendored-sources]
+-directory = "./vendor"
++directory = "./debian/vendor"

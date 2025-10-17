@@ -1,0 +1,9 @@
+#git=https://github.com/389ds/389-ds-base
+version=4
+
+opts="\
+    dversionmangle=s/\+dfsg\d*$//, \
+    oversionmangle=s/$/+dfsg1/, \
+    filenamemangle=s#@ANY_VERSION@$#$1.tar.bz2#, \
+    downloadurlmangle=s#/tag/#/download/#;s#@ANY_VERSION@$#$1/$1.tar.bz2#" \
+https://github.com/389ds/@PACKAGE@/tags .*/releases/tag/@PACKAGE@-@ANY_VERSION@

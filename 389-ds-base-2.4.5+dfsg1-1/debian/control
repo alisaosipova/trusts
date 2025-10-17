@@ -1,0 +1,196 @@
+Source: 389-ds-base
+Section: net
+Priority: optional
+Maintainer: Debian FreeIPA Team <pkg-freeipa-devel@alioth-lists.debian.net>
+Uploaders:
+ Timo Aaltonen <tjaalton@debian.org>,
+Build-Depends:
+ libcmocka-dev,
+ cargo,
+ debhelper-compat (= 13),
+ dh-cargo,
+ dh-python,
+ doxygen,
+ libbz2-dev,
+ libcrack2-dev,
+ libdb-dev,
+ libevent-dev,
+ libicu-dev,
+ libjson-c-dev,
+ libkrb5-dev,
+ libldap-dev,
+ liblmdb-dev,
+ libltdl-dev,
+ libnspr4-dev,
+ libnss3-dev,
+ libpam0g-dev,
+ libpci-dev,
+ libpcre2-dev,
+ libperl-dev,
+ librust-base64-0.21-dev,
+ librust-cbindgen-dev,
+ librust-cc-dev,
+ librust-crossbeam-dev,
+ librust-fernet-dev,
+ librust-jobserver-dev,
+ librust-lru-dev,
+ librust-openssl-dev,
+ librust-parking-lot-dev,
+ librust-paste-dev,
+ librust-rand-dev,
+ librust-smallvec-dev,
+ librust-tokio-dev,
+ librust-clap-3-dev,
+ libsasl2-dev,
+ libsnmp-dev,
+ libssl-dev,
+ libsystemd-dev,
+ pkg-config,
+ python3-all-dev,
+ python3-argcomplete,
+ python3-argparse-manpage,
+ python3-cryptography,
+ python3-dateutil,
+ python3-ldap,
+ python3-packaging,
+ python3-selinux,
+ python3-sepolicy,
+ python3-setuptools,
+ rsync,
+ rustc,
+ zlib1g-dev,
+Standards-Version: 4.6.0
+Vcs-Git: https://salsa.debian.org/freeipa-team/389-ds-base.git
+Vcs-Browser: https://salsa.debian.org/freeipa-team/389-ds-base
+Homepage: https://directory.fedoraproject.org
+
+Package: 389-ds
+Architecture: all
+Depends:
+ 389-ds-base,
+ cockpit-389-ds,
+ ${misc:Depends},
+Description: 389 Directory Server suite - metapackage
+ Based on the Lightweight Directory Access Protocol (LDAP), the 389
+ Directory Server is designed to manage large directories of users and
+ resources robustly and scalably.
+ .
+ This is a metapackage depending on the LDAPv3 server and a Cockpit UI plugin
+ for administration.
+
+Package: 389-ds-base-libs
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends},
+ libjemalloc2,
+Breaks: 389-ds-base (<< 1.3.6.7-5),
+ 389-ds-base-dev (<< 1.3.6.7-4),
+ libsvrcore0,
+Replaces: 389-ds-base (<< 1.3.6.7-5),
+ 389-ds-base-dev (<< 1.3.6.7-4),
+ libsvrcore0,
+Description: 389 Directory Server suite - libraries
+ Based on the Lightweight Directory Access Protocol (LDAP), the 389
+ Directory Server is designed to manage large directories of users and
+ resources robustly and scalably.
+ .
+ This package contains core libraries for the 389 Directory Server.
+
+Package: 389-ds-base-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends:
+ 389-ds-base-libs (= ${binary:Version}),
+ libldap-dev,
+ libnspr4-dev,
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: 389 Directory Server suite - development files
+ Based on the Lightweight Directory Access Protocol (LDAP), the 389
+ Directory Server is designed to manage large directories of users and
+ resources robustly and scalably.
+ .
+ This package contains development headers for the core libraries
+ of the 389 Directory Server, useful for developing plugins without
+ having to install the server itself.
+
+Package: 389-ds-base
+Architecture: any
+Pre-Depends: debconf (>= 0.5) | debconf-2.0
+Depends:
+ 389-ds-base-libs (= ${binary:Version}),
+ adduser,
+ acl,
+ ldap-utils,
+ libmozilla-ldap-perl,
+ libnetaddr-ip-perl,
+ libsocket-getaddrinfo-perl,
+ libsasl2-modules-gssapi-mit,
+ perl,
+ python3-lib389,
+ python3-selinux,
+ python3-semanage,
+ python3-sepolicy,
+ systemd,
+ ${misc:Depends},
+ ${shlibs:Depends},
+ ${python3:Depends},
+Replaces: 389-ds-base-legacy-tools
+Description: 389 Directory Server suite - server
+ Based on the Lightweight Directory Access Protocol (LDAP), the 389
+ Directory Server is designed to manage large directories of users and
+ resources robustly and scalably.
+ .
+ Its key features include:
+  * four-way multi-master replication;
+  * great scalability;
+  * extensive documentation;
+  * Active Directory user and group synchronization;
+  * secure authentication and transport;
+  * support for LDAPv3;
+  * graphical management console;
+  * on-line, zero downtime update of schema, configuration, and
+    in-tree Access Control Information.
+
+Package: python3-lib389
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends},
+ libnss3-tools,
+ openssl,
+ python3-argcomplete,
+ python3-cryptography,
+ python3-dateutil,
+ python3-ldap,
+ python3-packaging,
+ python3-pyasn1,
+ python3-pyasn1-modules,
+ python3-pytest,
+Conflicts: python-lib389 (<< 1.3.7.8),
+ 389-ds-base (<< 1.4.0.18-1~),
+Replaces: python-lib389 (<< 1.3.7.8),
+ 389-ds-base (<< 1.4.0.18-1~),
+Description: Python3 module for accessing and configuring the 389 Directory Server
+ This Python3 module contains tools and libraries for accessing, testing,
+ and configuring the 389 Directory Server.
+
+Package: cockpit-389-ds
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends},
+ cockpit,
+ libjs-bootstrap,
+ libjs-c3,
+ libjs-d3,
+ libjs-jquery-datatables,
+ libjs-jquery-datatables-extensions,
+ libjs-jquery-jstree,
+ libjs-moment,
+ libnss3-tools,
+ python3,
+ python3-lib389,
+Description: Cockpit user interface for 389 Directory Server
+ This package includes a Cockpit UI plugin for configuring and administering
+ the 389 Directory Server.

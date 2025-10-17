@@ -1,0 +1,33 @@
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2001 Sun Microsystems, Inc. Used by permission.
+# Copyright (C) 2005 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# --- END COPYRIGHT BLOCK ---
+# 
+# SOLARIS Makefile for Directory Server plug-in examples
+#
+
+CC = cc
+LD = ld 
+
+INCLUDE_FLAGS = -I../../include
+CFLAGS = $(INCLUDE_FLAGS) -D_REENTRANT -KPIC -xarch=v9
+LDFLAGS = -G -xarch=v9
+
+OBJS = distrib.o
+
+all: libtest-plugin.so
+
+
+libtest-plugin.so: $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	-rm -f $(OBJS) libtest-plugin.so
+

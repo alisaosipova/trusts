@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+if [ "$1" = "purge" ]; then
+    if getent group dirsrv > /dev/null; then
+        deluser --system dirsrv || true
+    fi
+    rm -f /etc/systemd/system/dirsrv.target.wants/dirsrv@*.service
+    rm -rf /etc/dirsrv
+    rm -rf /var/lib/dirsrv
+    rm -rf /var/log/dirsrv
+fi
+
+#DEBHELPER#

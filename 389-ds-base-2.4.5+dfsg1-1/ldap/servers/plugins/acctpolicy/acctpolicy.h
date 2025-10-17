@@ -1,0 +1,106 @@
+/******************************************************************************
+Copyright (C) 2009 Hewlett-Packard Development Company, L.P.
+Copyright (C) 2023 Red Hat, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Contributors:
+Hewlett-Packard Development Company, L.P.
+******************************************************************************/
+
+#include <limits.h> /* ULONG_MAX */
+#include "slapi-private.h"
+#include "nspr.h"
+
+#define CFG_LASTLOGIN_STATE_ATTR "stateAttrName"
+#define CFG_ALT_LASTLOGIN_STATE_ATTR "altStateAttrName"
+#define CFG_CHECK_ALL_STATE_ATTRS "checkAllStateAttrs"
+#define CFG_SPEC_ATTR "specAttrName"
+#define CFG_INACT_LIMIT_ATTR "limitAttrName"
+#define CFG_RECORD_LOGIN "alwaysRecordLogin"
+#define CFG_RECORD_LOGIN_ATTR "alwaysRecordLoginAttr"
+#define LASTLOGIN_HISTORY_ATTR "lastLoginHistory"
+#define LASTLOGIN_HISTORY_SIZE_ATTR "lastLoginHistorySize"
+
+#define DEFAULT_LASTLOGIN_STATE_ATTR "lastLoginTime"
+#define DEFAULT_ALT_LASTLOGIN_STATE_ATTR "createTimestamp"
+#define DEFAULT_SPEC_ATTR "acctPolicySubentry"
+#define DEFAULT_INACT_LIMIT_ATTR "accountInactivityLimit"
+#define DEFAULT_RECORD_LOGIN 1
+#define DEFAULT_LASTLOGIN_HISTORY_SIZE 5
+
+#define PLUGIN_VENDOR "Hewlett-Packard Company"
+#define PLUGIN_VERSION "1.0"
+#define PLUGIN_CONFIG_DN "cn=config,cn=Account Policy Plugin,cn=plugins,cn=config"
+
+#define PLUGIN_NAME "acct-policy"
+#define PLUGIN_DESC "Account Policy Plugin"
+#define PRE_PLUGIN_NAME "acct-policy-preop"
+#define PRE_PLUGIN_DESC "Account Policy Pre-Op Plugin"
+#define POST_PLUGIN_NAME "acct-policy-postop"
+#define POST_PLUGIN_DESC "Account Policy Post-Op Plugin"
+
+#define CALLBACK_OK 0
+#define CALLBACK_ERR -1
+#define CALLBACK_HANDLED 1
+
+typedef struct acct_plugin_cfg
+{
+    char *state_attr_name;
+    char *alt_state_attr_name;
+    char *spec_attr_name;
+    char *limit_attr_name;
+    int always_record_login;
+    char *always_record_login_attr;
+    char *login_history_attr;
+    int login_history_size;
+    unsigned long inactivitylimit;
+    PRBool check_all_state_attrs;
+} acctPluginCfg;
+
+typedef struct accountpolicy
+{
+    unsigned long inactivitylimit;
+} acctPolicy;
+
+/* acct_util.c */
+int get_acctpolicy(Slapi_PBlock *pb, Slapi_Entry *target_entry, void *plugin_id, acctPolicy **policy);
+void free_acctpolicy(acctPolicy **policy);
+int has_attr(Slapi_Entry *target_entry, char *attr_name, char **val);
+char *get_attr_string_val(Slapi_Entry *e, char *attr_name);
+void *get_identity(void);
+void set_identity(void *);
+time_t gentimeToEpochtime(char *gentimestr);
+char *epochtimeToGentime(time_t epochtime);
+int update_is_allowed_attr(const char *attr);
+
+/* acct_config.c */
+int acct_policy_load_config_startup(Slapi_PBlock *pb, void *plugin_id);
+acctPluginCfg *get_config(void);
+void free_config(void);
+
+/* acct_init.c */
+void acct_policy_set_plugin_sdn(Slapi_DN *pluginDN);
+Slapi_DN *acct_policy_get_plugin_sdn(void);
+void acct_policy_set_config_area(Slapi_DN *sdn);
+Slapi_DN *acct_policy_get_config_area(void);
+void config_rd_lock(void);
+void config_wr_lock(void);
+void config_unlock(void);
+
+/* acc_plugins.c */
+int acct_add_pre_op(Slapi_PBlock *pb);
+int acct_mod_pre_op(Slapi_PBlock *pb);
+int acct_del_pre_op(Slapi_PBlock *pb);
+int acct_post_op(Slapi_PBlock *pb);

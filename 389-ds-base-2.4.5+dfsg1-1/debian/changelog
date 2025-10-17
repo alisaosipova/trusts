@@ -1,0 +1,1113 @@
+389-ds-base (2.4.5+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Migrate to libldap-dev, and drop obsolete B/R/P.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 15 Apr 2024 18:48:40 +0300
+
+389-ds-base (2.4.4+dfsg1-3) unstable; urgency=medium
+
+  * rules: Fix build on 32bit. Thanks, Chris Peterson! (Closes:
+    #1063434)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 10 Feb 2024 11:04:23 +0200
+
+389-ds-base (2.4.4+dfsg1-2) unstable; urgency=medium
+
+  [ Chris Hofstaedtler ]
+  * Install aliased files into /usr (DEP17 M2) (Closes: #1060335)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 10 Jan 2024 16:11:28 +0200
+
+389-ds-base (2.4.4+dfsg1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * rules: Generate lib389/setup.py.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 08 Jan 2024 18:04:08 +0200
+
+389-ds-base (2.3.4+dfsg1-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add librust-clap-3-dev on B-D. (Closes: #1052626)
+
+ -- Bo YU <tsu.yubo@gmail.com>  Thu, 28 Dec 2023 15:26:49 +0800
+
+389-ds-base (2.3.4+dfsg1-1) unstable; urgency=medium
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * patches: Drop upstreamed or obsolete patches.
+  * control: Add dependency on python3-cryptography.
+
+  [ Peter Michael Green ]
+  * Improve clean target.
+  * Use ln -fs instead of ln -s to allow resuming build after fixing errors.
+  * Fix build with base64 0.21. (Closes: #1037345)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 19 Jun 2023 19:13:30 +0300
+
+389-ds-base (2.3.1+dfsg1-1) unstable; urgency=medium
+
+  * Repackage the source, filter vendored crates and allow building with
+    packaged crates.
+  * d/vendor: Add concread 0.2.21 and uuid 0.8.
+  * allow-newer-crates.diff, control: Add a bunch of rust crates to
+    build-deps, and patch toml files to allow newer crates.
+  * concread: Mark tcache as non-default, fix checksums and ease a dep.
+  * Update copyright for vendored bits.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 24 Jan 2023 13:21:19 +0200
+
+389-ds-base (2.3.1-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #1028177)
+    - CVE-2022-1949 (Closes: #1016446)
+    - CVE-2022-2850 (Closes: #1018054)
+  * watch: Updated to use releases instead of tags.
+  * control: Add liblmdb-dev to build-depends.
+  * control: Add libjson-c-dev to build-depends.
+  * control: Build-depend on libpcre2-dev. (Closes: #1000017)
+  * Build with rust enabled.
+  * rules: Don't use a separate builddir for now.
+  * 5610-fix-linking.diff: Fix linking libslapd.so.
+  * dont-run-rpm.diff: Use dpkg-query to check for cockpit/firewalld.
+    (Closes: #1010136)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 20 Jan 2023 23:15:49 +0200
+
+389-ds-base (2.0.15-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 13 Apr 2022 14:11:20 +0300
+
+389-ds-base (2.0.14-1) unstable; urgency=medium
+
+  * New upstream release.
+  * install: Updated.
+  * control: Bump policy to 4.6.0.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 10 Feb 2022 20:00:45 +0200
+
+389-ds-base (2.0.11-2) unstable; urgency=medium
+
+  * Revert a commit that makes dscreate to fail.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 15 Dec 2021 23:23:15 +0200
+
+389-ds-base (2.0.11-1) unstable; urgency=medium
+
+  * New upstream release.
+  * missing-sources: Removed, all the minified javascript files were
+    removed upstream some time ago.
+  * install: Updated.
+  * control: Bump debhelper to 13.
+  * Override some lintian errors.
+  * watch: Update the url.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 15 Dec 2021 21:03:20 +0200
+
+389-ds-base (1.4.4.17-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2021-3652 (Closes: #991405)
+  * tests: Add isolation-container to restrictions.
+  * Add a dependency to libjemalloc2, and add a symlink to it so the
+    preload works. (Closes: #992696)
+  * CVE-2017-15135.patch: Dropped, fixed by upstream issue #4817.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 18 Oct 2021 18:36:30 +0300
+
+389-ds-base (1.4.4.16-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-s390x-failure.diff: Dropped, upstream.
+  * watch: Updated to use github.
+  * copyright: Fix 'globbing-patterns-out-of-order'.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 16 Aug 2021 09:54:52 +0300
+
+389-ds-base (1.4.4.11-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-s390x-failure.diff: Fix a crash on big-endian architectures like
+    s390x.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 28 Jan 2021 13:03:32 +0200
+
+389-ds-base (1.4.4.10-1) unstable; urgency=medium
+
+  * New upstream release.
+  * CVE-2017-15135.patch: Refreshed.
+  * source: Update diff-ignore.
+  * install: Drop libsds which got removed.
+  * control: Add libnss3-tools to cockpit-389-ds Depends. (Closes:
+    #965004)
+  * control: Drop python3-six from depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 21 Jan 2021 22:16:28 +0200
+
+389-ds-base (1.4.4.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-prlog-include.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 18 Dec 2020 15:29:20 +0200
+
+389-ds-base (1.4.4.8-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-systemctl-path.diff, drop-old-man.diff: Dropped, obsolete.
+  * fix-prlog-include.diff: Fix build by dropping nspr4/ prefix.
+  * install, rules: Clean up perl cruft that got removed upstream.
+  * install: Add openldap_to_ds.
+  * watch: Follow 1.4.4.x.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 Nov 2020 15:57:11 +0200
+
+389-ds-base (1.4.4.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * watch: Update upstream git repo url.
+  * control: Add python3-dateutil to build-depends.
+  * copyright: Drop duplicate globbing patterns.
+  * lintian: Drop obsolete overrides.
+  * postinst: Drop obsolete rule to upgrade the instances.
+  * prerm: Use dsctl instead of remove-ds.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 22 Sep 2020 09:23:30 +0300
+
+389-ds-base (1.4.4.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-db-home-dir.diff: Dropped, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 02 Jun 2020 11:33:44 +0300
+
+389-ds-base (1.4.3.6-2) unstable; urgency=medium
+
+  * fix-db-home-dir.diff: Set db_home_dir same as db_dir to fix an issue
+    starting a newly created instance.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 21 Apr 2020 20:19:06 +0300
+
+389-ds-base (1.4.3.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * install: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 20 Apr 2020 15:01:35 +0300
+
+389-ds-base (1.4.3.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Add debian/gitlab-ci.yml.
+    - allow blhc to fail
+  * control: Bump policy to 4.5.0.
+  * control: Use https url for upstream.
+  * control: Use canonical URL in Vcs-Browser.
+  * copyright: Use spaces rather than tabs to start continuation lines.
+  * Add lintian-overrides for the source, cockpit index.js has long lines.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 18 Mar 2020 08:47:32 +0200
+
+389-ds-base (1.4.3.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * prerm: Fix slapd install path. (Closes: #945583)
+  * install: Updated.
+  * control: Use debhelper-compat.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 12 Feb 2020 19:39:22 +0200
+
+389-ds-base (1.4.2.4-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2019-14824 deref plugin displays restricted attributes
+      (Closes: #944150)
+  * fix-obsolete-target.diff: Dropped, obsolete
+    drop-old-man.diff: Refreshed
+  * control: Add python3-packaging to build-depends and python3-lib389 depends.
+  * dev,libs.install: Nunc-stans got dropped.
+  * source/local-options: Add some files to diff-ignore.
+  * rules: Refresh list of files to purge.
+  * rules: Update dh_auto_clean override.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 27 Nov 2019 00:00:59 +0200
+
+389-ds-base (1.4.1.6-4) unstable; urgency=medium
+
+  * tests: Redirect stderr to stdout.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 17 Sep 2019 01:37:39 +0300
+
+389-ds-base (1.4.1.6-3) unstable; urgency=medium
+
+  * control: Add openssl to python3-lib389 depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 13 Sep 2019 07:32:27 +0300
+
+389-ds-base (1.4.1.6-2) unstable; urgency=medium
+
+  * Restore perl build partly, setup-ds is still needed for upgrades
+    until Ubuntu 20.04 is released (for versions << 1.4.0.9).
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 Sep 2019 14:50:36 +0300
+
+389-ds-base (1.4.1.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Drop direct depends on python from 389-ds-base. (Closes:
+    #936102)
+  * Drop -legacy-tools and other obsolete scripts.
+  * use-bash-instead-of-sh.diff, rename-online-scripts.diff, perl-use-
+    move-instead-of-rename.diff: Dropped, obsolete.
+  * rules: Fix dsconf/dscreate/dsctl/dsidm manpage section.
+  * tests/setup: Migrate to dscreate.
+  * control: Add libnss3-tools to python3-lib389 depends. (Closes: #920025)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 11 Sep 2019 17:01:03 +0300
+
+389-ds-base (1.4.1.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * watch: Use https.
+  * control: Bump policy to 4.4.0.
+  * Bump debhelper to 12.
+  * patches: fix-dsctl-remove.diff, fix-nss-path.diff, icu_pkg-config.patch
+    removed, upstream. Others refreshed.
+  * rules: Pass --enable-perl, we still need the perl tools.
+  * *.install: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 10 Jul 2019 10:05:31 +0300
+
+389-ds-base (1.4.0.22-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * control: Drop 389-ds-base from -legacy-tools Depends. (Closes:
+    #924265)
+  * fix-dsctl-remove.diff: Don't hardcode sysconfig. (Closes: #925221)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 06 Apr 2019 00:32:06 +0300
+
+389-ds-base (1.4.0.21-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Run offline upgrade only when upgrading from versions below 1.4.0.9,
+    ns-slapd itself handles upgrades in newer versions.
+  * rules: Actually install the minified javascript files. (Closes:
+    #913820)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 12 Feb 2019 16:28:15 +0200
+
+389-ds-base (1.4.0.20-3) unstable; urgency=medium
+
+  * control: 389-ds-base should depend on the legacy tools for now.
+    (Closes: #919420)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 16 Jan 2019 11:30:51 +0200
+
+389-ds-base (1.4.0.20-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 14 Jan 2019 20:03:58 +0200
+
+389-ds-base (1.4.0.20-1) experimental; urgency=medium
+
+  * New upstream release. (Closes: #913821)
+  * fix-nss-path.diff: Fix includes.
+  * Build ds* manpages, add missing build-depends.
+  * Move deprecated tools in a new subpackage.
+  * control: Add python3-lib389 to 389-ds-base depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sun, 13 Jan 2019 21:13:22 +0200
+
+389-ds-base (1.4.0.19-3) unstable; urgency=medium
+
+  [ Jelmer Vernooĳ ]
+  * Use secure copyright file specification URI.
+  * Trim trailing whitespace.
+  * Use secure URI in Vcs control header.
+
+  [ Hugh McMaster ]
+  * control: Mark 389-ds-base-libs{,-dev} M-A: same, cockpit-389-ds M-A:
+    foreign and arch:all. (Closes: #916118)
+  * Use pkg-config to detect icu. (Closes: #916115)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Jan 2019 12:43:23 +0200
+
+389-ds-base (1.4.0.19-2) unstable; urgency=medium
+
+  * rules: Add -latomic to LDFLAGS on archs failing to build. (Closes:
+    #910982)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 06 Dec 2018 01:06:37 +0200
+
+389-ds-base (1.4.0.19-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Make C/R backports-compatible. (Closes: #910796)
+  * use-packaged-js.diff: Dropped, packaged versions don't work.
+    (Closes: #913820)
+  * Follow upstream, and drop python3-dirsrvtests.
+  * cockpit-389-ds.install: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 03 Dec 2018 15:56:40 +0200
+
+389-ds-base (1.4.0.18-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2018-14624 (Closes: #907778)
+    - CVE-2018-14638 (Closes: #908859)
+  * control: Build on any arch again.
+  * perl-use-move-instead-of-rename.diff: Use copy instead of move,
+    except when restoring files in case of an error.
+  * Move the new utils (dsconf, dscreate, dsctl, dsidm) to python3-
+    lib389.
+  * control: Add python3-argcomplete to python3-lib389 depends. (Closes:
+    #910761)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 11 Oct 2018 00:56:02 +0300
+
+389-ds-base (1.4.0.16-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: 389-ds-base-dev provides libsvrcore-dev. (Closes: #907140)
+  * perl-use-move-instead-of-rename.diff: Fix upgrade on systems where
+    /var is on a separate partition: (Closes: #905184)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 27 Sep 2018 22:39:34 +0300
+
+389-ds-base (1.4.0.15-2) unstable; urgency=medium
+
+  * control: Build cockpit-389-ds only on 64bit and i386.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 23 Aug 2018 08:54:06 +0300
+
+389-ds-base (1.4.0.15-1) unstable; urgency=medium
+
+  * New upstream release
+    - CVE-2018-10935 (Closes: #906985)
+  * control: Add libcrack2-dev to build-depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 23 Aug 2018 00:46:45 +0300
+
+389-ds-base (1.4.0.13-1) experimental; urgency=medium
+
+  * New upstream release.
+    - CVE-2018-10850 (Closes: #903501)
+  * control: Update maintainer address.
+  * control: Upstream dropped support for non-64bit architectures, so
+    build only on supported 64bit archs (amd64, arm64, mips64el,
+    ppc64el, s390x).
+  * control: svrcore got merged here, drop it from build-depends.
+  * ftbs_lsoftotkn3.diff: Dropped, obsolete.
+  * control: Add rsync to build-depends.
+  * libs, dev, control: Add libsvrcore files, replace old package.
+  * base: Add new scripts, add python3-selinux, -semanage, -sepolicy to
+    depends.
+  * Add a package for cockpit-389-ds.
+  * rules: Clean up cruft left after build.
+  * control: Drop dh_systemd from build-depends, bump debhelper to 11.
+  * Add varions libjs packages to cockpit-389-ds Depends, add the rest
+    to d/missing-sources.
+  * copyright: Updated. (Closes: #904760)
+  * control: Modify 389-ds to depend on cockpit-389-ds and drop the old
+    GUI packages which are deprecated upstream.
+  * dont-build-new-manpages.diff: Debian doesn't have argparse-manpage,
+    so in order to not FTBFS don't build new manpages.
+  * base.install: Add man5/*.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 31 Jul 2018 23:46:17 +0300
+
+389-ds-base (1.3.8.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * fix-saslpath.diff: Updated to support ppc64el and s390x. (LP:
+    #1764744)
+  * CVE-2017-15135.patch: Refreshed
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 01 Jun 2018 11:21:19 +0300
+
+389-ds-base (1.3.7.10-1) unstable; urgency=medium
+
+  * New upstream release.
+    - fix CVE-2018-1054 (Closes: #892124)
+  * control: Update maintainer address, freeipa-team handles this from
+    now on. Drop kklimonda from uploaders.
+  * control: Update VCS urls.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 13 Mar 2018 11:32:29 +0200
+
+389-ds-base (1.3.7.9-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2017-15134 (Closes: #888452)
+  * patches: Fix CVE-2017-15135. (Closes: #888451)
+  * tests: Add some debug output.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 05 Feb 2018 16:25:09 +0200
+
+389-ds-base (1.3.7.8-4) unstable; urgency=medium
+
+  * tests: Drop python3-lib389 from depends, it's not used currently
+    anyway.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 21 Dec 2017 15:42:04 +0200
+
+389-ds-base (1.3.7.8-3) unstable; urgency=medium
+
+  * tests/control: Depend on python3-lib389.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 20 Dec 2017 23:54:43 +0200
+
+389-ds-base (1.3.7.8-2) unstable; urgency=medium
+
+  * Fix autopkgtest to be robust in the face of changed iproute2 output.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 20 Dec 2017 15:57:26 +0200
+
+389-ds-base (1.3.7.8-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Package python3-lib389 and python3-dirsrvtests.
+  * control: Add python3 depends to 389-ds-base, since it ships a few
+    python scripts.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 12 Dec 2017 17:32:27 +0200
+
+389-ds-base (1.3.7.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * patches: ftbfs-fix.diff, reproducible-build.diff dropped (upstream)
+    others refreshed.
+  * *.install: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 04 Oct 2017 10:33:45 +0300
+
+389-ds-base (1.3.6.7-5) unstable; urgency=medium
+
+  * Move all libs from base to -libs, add B/R. (Closes: #874764)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 21 Sep 2017 16:44:13 +0300
+
+389-ds-base (1.3.6.7-4) unstable; urgency=medium
+
+  * control, install: Fix library/dev-link installs, add Breaks/Replaces
+    to fit, and drop obsolete B/R.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 30 Aug 2017 00:19:41 +0300
+
+389-ds-base (1.3.6.7-3) unstable; urgency=medium
+
+  * ftbfs-fix.diff: Fix build. (Closes: #873120)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 28 Aug 2017 15:09:02 +0300
+
+389-ds-base (1.3.6.7-2) unstable; urgency=medium
+
+  * control: Bump policy to 4.1.0, no changes.
+  * rules: Override dh_missing.
+  * control: Add libltdl-dev to build-depends. (Closes: #872979)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 24 Aug 2017 12:15:03 +0300
+
+389-ds-base (1.3.6.7-1) unstable; urgency=medium
+
+  * New upstream release
+    - fix CVE-2017-7551 (Closes: #870752)
+  * fix-tests.diff: Dropped, fixed upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 22 Aug 2017 16:30:11 +0300
+
+389-ds-base (1.3.6.5-1) experimental; urgency=medium
+
+  * New upstream release.
+    - fix-bsd.patch, support-kfreebsd.patch, fix-48986-cve-2017-2591.diff:
+      Dropped, upstream.
+  * *.install: Updated.
+  * control: Add doxygen, libcmocka-dev, libevent-dev to build-deps.
+  * rules: Enable cmocka tests.
+  * fix-tests.diff: Fix building the tests.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 10 May 2017 09:38:30 +0300
+
+389-ds-base (1.3.5.17-2) unstable; urgency=medium
+
+  * fix-upstream-49245.diff: Pull commits from upstream 1.3.5.x, which
+    remove rest of the asm code. (Closes: #862194)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 10 May 2017 09:25:03 +0300
+
+389-ds-base (1.3.5.17-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+    - CVE-2017-2668 (Closes: #860125)
+  * watch: Updated.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 09 May 2017 11:06:14 +0300
+
+389-ds-base (1.3.5.15-2) unstable; urgency=medium
+
+  * fix-48986-cve-2017-2591.diff: Fix upstream ticket 48986,
+    CVE-2017-2591. (Closes: #851769)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 27 Jan 2017 00:01:53 +0200
+
+389-ds-base (1.3.5.15-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2016-5405 (Closes: #842121)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 16 Nov 2016 11:01:00 +0200
+
+389-ds-base (1.3.5.14-1) unstable; urgency=medium
+
+  * New upstream release.
+  * postrm: Remove /etc/dirsrv, /var/lib/dirsrv and /var/log/dirsrv on
+    purge.
+  * control: Bump build-dep on libsvrcore-dev to ensure it has support
+    for systemd password agent.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 28 Oct 2016 01:42:27 +0300
+
+389-ds-base (1.3.5.13-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Bump policy to 3.9.8, no changes.
+  * patches/default_user: Dropped, upstream.
+  * support-non-nss-libldap.diff: Dropped, upstream.
+  * fix-obsolete-target.diff: Updated.
+  * patches: Refreshed.
+  * control: Add libsystemd-dev to build-deps.
+  * control: Add acl to -base depends.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 12 Oct 2016 11:11:20 +0300
+
+389-ds-base (1.3.4.14-2) unstable; urgency=medium
+
+  * tests: Add simple autopkgtests.
+  * postinst: Start instances after offline update.
+  * control, rules: Drop -dbg packages.
+  * control: Drop conflicts on slapd. (Closes: #822532)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 03 Oct 2016 17:53:26 +0300
+
+389-ds-base (1.3.4.14-1) unstable; urgency=medium
+
+  * New upstream release.
+  * support-non-nss-libldap.diff: Refreshed.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 29 Aug 2016 10:17:41 +0300
+
+389-ds-base (1.3.4.9-1) unstable; urgency=medium
+
+  * New upstream release.
+  * support-non-nss-libldap.diff: Support libldap built against gnutls.
+    (LP: #1564179)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 18 Apr 2016 18:08:14 +0300
+
+389-ds-base (1.3.4.8-4) unstable; urgency=medium
+
+  * use-perl-move.diff: Dropped, 'rename' is more reliable.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 30 Mar 2016 08:38:24 +0300
+
+389-ds-base (1.3.4.8-3) unstable; urgency=medium
+
+  * use-perl-move.diff: Fix 60upgradeschemafiles.pl to use File::Copy.
+    (Closes: #818578)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 18 Mar 2016 11:15:23 +0200
+
+389-ds-base (1.3.4.8-2) unstable; urgency=medium
+
+  * postinst: Silence ls and adduser.
+  * Drop the init file, we depend on systemd anyway.
+  * rules: Don't enable dirsrv-snmp.service by default.
+  * postrm: Clean up /var/lib/dirsrv/scripts-* on purge.
+  * user-perl-move.diff: Use move instead of rename during upgrade.
+    (Closes: #775550)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 17 Mar 2016 08:13:38 +0200
+
+389-ds-base (1.3.4.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 22 Feb 2016 07:58:40 +0200
+
+389-ds-base (1.3.4.5-2) unstable; urgency=medium
+
+  * fix-systemctl-path.diff: Use correct path to /bin/systemctl.
+    (Closes: #779653)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 09 Dec 2015 08:31:20 +0200
+
+389-ds-base (1.3.4.5-1) unstable; urgency=medium
+
+  * New upstream release.
+  * patches: Refreshed.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 09 Dec 2015 08:14:56 +0200
+
+389-ds-base (1.3.3.13-1) unstable; urgency=medium
+
+  * New upstream release.
+  * control: Add systemd to 389-ds-base Depends. (Closes: #794301)
+  * postrm: Clean target.wants in postrm.
+  * reproducible-build.diff: Make builds reproducible. Thanks, Chris
+    Lamb! (Closes: #799010)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 20 Oct 2015 14:25:05 +0300
+
+389-ds-base (1.3.3.12-1) unstable; urgency=medium
+
+  * New upstream release
+    - fix CVE-2015-3230 (Closes: #789202)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 24 Jun 2015 11:47:50 +0300
+
+389-ds-base (1.3.3.10-1) unstable; urgency=medium
+
+  * New upstream release
+    - fix CVE-2015-1854 (Closes: #783923)
+  * postinst: Stop actual instances instead of 'dirsrv' on upgrade, and
+    use service(8) instead of invoke-rc.d.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 07 May 2015 07:58:35 +0300
+
+389-ds-base (1.3.3.9-1) experimental; urgency=medium
+
+  * New upstream bugfix release.
+    - Drop cve-2014-8*.diff, upstream.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 02 Apr 2015 14:47:20 +0300
+
+389-ds-base (1.3.3.5-4) unstable; urgency=medium
+
+  * Security fixes (Closes: #779909)
+    - cve-2014-8105.diff: Fix for CVE-2014-8105
+    - cve-2014-8112.diff: Fix for CVE-2014-8112
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 09 Mar 2015 10:53:03 +0200
+
+389-ds-base (1.3.3.5-3) unstable; urgency=medium
+
+  * use-bash-instead-of-sh.diff: Drop admin_scripts.diff and patch the
+    scripts to use bash instead of trying to fix bashisms. (Closes:
+    #772195)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 16 Jan 2015 15:40:23 +0200
+
+389-ds-base (1.3.3.5-2) unstable; urgency=medium
+
+  * fix-saslpath.diff: Fix SASL library path.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 25 Oct 2014 01:48:34 +0300
+
+389-ds-base (1.3.3.5-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * control: Bump policy, no changes.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 20 Oct 2014 09:57:14 +0300
+
+389-ds-base (1.3.3.3-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Dropped upstreamed patches, refresh others.
+  * control, rules, 389-ds-base.install: Add support for systemd.
+  * fix-obsolete-target.diff: Drop syslog.target from the service files.
+  * 389-ds-base.links: Mask the initscript so that it's not used with systemd.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 06 Oct 2014 17:13:01 +0300
+
+389-ds-base (1.3.2.23-2) unstable; urgency=medium
+
+  * Team upload.
+  * Add fix-bsd.patch and support-kfreebsd.patch to fix the build failure
+    on kFreeBSD.
+
+ -- Benjamin Drung <benjamin.drung@profitbricks.com>  Wed, 03 Sep 2014 15:32:22 +0200
+
+389-ds-base (1.3.2.23-1) unstable; urgency=medium
+
+  * New bugfix release.
+  * watch: Update the url.
+  * control: Update Vcs-Browser url to use cgit.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 01 Sep 2014 13:32:59 +0300
+
+389-ds-base (1.3.2.21-1) unstable; urgency=medium
+
+  * New upstream release.
+    - CVE-2014-3562 (Closes: #757437)
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Fri, 08 Aug 2014 10:48:55 +0300
+
+389-ds-base (1.3.2.19-1) unstable; urgency=medium
+
+  * New upstream release.
+  * admin_scripts.diff: Updated to fix more bashisms.
+  * watch: Update the url.
+  * Install failedbinds.py and logregex.py scripts.
+  * init: Use status from init-functions.
+  * control: Update my email.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 08 Jul 2014 15:50:11 +0300
+
+389-ds-base (1.3.2.9-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Apply fix for CVE-2014-0132, see like named patch (Closes: 741600)
+  * Fix m4-macro for libsrvcore and add missing B-D on libpci-dev
+    (Closes: #745821)
+
+ -- Tobias Frost <tobi@coldtobi.de>  Fri, 25 Apr 2014 15:11:16 +0200
+
+389-ds-base (1.3.2.9-1) unstable; urgency=low
+
+  * New upstream release.
+    - fixes CVE-2013-0336 (Closes: #704077)
+    - fixes CVE-2013-1897 (Closes: #704421)
+    - fixes CVE-2013-2219 (Closes: #718325)
+    - fixes CVE-2013-4283 (Closes: #721222)
+    - fixes CVE-2013-4485 (Closes: #730115)
+  * Drop fix-CVE-2013-0312.diff, upstream.
+  * rules: Add new scripts to rename.
+  * fix-sasl-path.diff: Use a triplet path to find libsasl2. (LP:
+    #1088822)
+  * admin_scripts.diff: Add patch from upstream #47511 to fix bashisms.
+  * control: Add ldap-utils to -base depends.
+  * rules, rename-online-scripts.diff: Some scripts with .pl suffix are
+    meant for an online server, so instead of overwriting the offline
+    scripts use -online suffix.
+  * rules: Enable parallel build, but limit the jobs to 1 for
+    dh_auto_install.
+  * control: Bump policy to 3.9.5, no changes.
+  * rules: Add get-orig-source target.
+  * lintian-overrides: Drop obsolete entries, add comments for the rest.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 03 Feb 2014 11:08:50 +0200
+
+389-ds-base (1.3.0.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * control: Bump the policy to 3.9.4, no changes.
+  * fix-CVE-2013-0312.diff: Patch to fix handling LDAPv3 control data.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 11 Mar 2013 14:23:20 +0200
+
+389-ds-base (1.2.11.17-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+  * watch: Add a comment about the upstream git tree.
+  * fix-cve-2012-4450.diff: Remove, upstream.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Sat, 01 Dec 2012 14:22:13 +0200
+
+389-ds-base (1.2.11.15-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add fix-cve-2012-4450.diff. (Closes: #688942)
+  * dirsrv.init: Fix stop() to remove the pidfile only when the process
+    is finished. (Closes: #689389)
+  * copyright: Update the source url.
+  * control: Drop quilt from build-depends, since using 3.0 (quilt)
+  * lintian-overrides: Add an override for hardening-no-fortify-
+    functions, since it's a false positive in this case.
+  * control: Drop dpkg-dev from build-depends, no need to specify it
+    directly.
+  * copyright: Add myself as a copyright holder for debian/*.
+  * 389-ds-base.prerm: Add 'set -e'.
+  * rules: drop DEB_HOST_MULTIARCH, dh9 handles it.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 03 Oct 2012 19:33:52 +0300
+
+389-ds-base (1.2.11.7-5) unstable; urgency=low
+
+  * control: Drop debconf-utils and po-debconf from build-depends.
+  * control: Add libnetaddr-ip-perl and libsocket-getaddrinfo-perl to
+    389-ds-base Depends for ipv6 support. (Closes: #682847)
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 30 Jul 2012 13:12:23 +0200
+
+389-ds-base (1.2.11.7-4) unstable; urgency=low
+
+  * debian/po: Remove, leftover from the template purge. (Closes: #681543)
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Thu, 19 Jul 2012 23:12:01 +0300
+
+389-ds-base (1.2.11.7-3) unstable; urgency=low
+
+  * 389-ds-base.config: Removed, the debconf template is no more.
+    (Closes: #680351)
+  * control: Remove duplicate 'the' from the 389-ds description.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 11 Jul 2012 11:59:36 +0300
+
+389-ds-base (1.2.11.7-2) unstable; urgency=low
+
+  * control: Stop hardcoding libs to binary depends. (Closes: #679790)
+  * control: Add libnspr4-dev and libldap2-dev to 389-ds-base-dev
+    Depends. (Closes: #679742)
+  * l10n review (Closes: #679870) :
+    - Drop the debconf template, and rewrap README.Debian.
+    - control: Update the descriptions
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 03 Jul 2012 17:58:20 +0300
+
+389-ds-base (1.2.11.7-1) unstable; urgency=low
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+  * watch: Fix the url.
+  * patches/remove_license_prompt: Dropped, included upstream.
+  * patches/default_user: Refreshed.
+  * control: Change the VCS header to point to the git repository.
+  * control: Rename last remnants of Fedora to 389.
+  * changelog, control: Be consistent with the naming; renamed the source
+    to just '389-ds-base', which matches upstream tarball naming.
+  * control: Wrap Depends.
+  * compat, control: Bump compat to 9, and debhelper build-dep to (>= 9).
+  * rules: Switch to dh.
+  * Move dirsrv.lintian to dirsrv.lintian-overrides, adjust dirsrv.install.
+  * *.dirs: Clean up.
+  * control: Build-depend on dh-autoreconf, drop duplicate bdeps.
+  * Fold dirsrv-tools into the main package.
+  * Build against libldap2-dev (>= 2.4.28).
+  * Rename binary package to 389-ds-base.
+  * -dev.install: Install the pkgconfig file.
+  * rules: Enable PIE hardening.
+  * Add a default file, currently sets LD_BIND_NOW=1.
+  * control: 'dbgen' uses old perl libs, add libperl4-corelibs-perl
+    dependency to 389-ds-base.
+  * rules: Add --fail-missing for dh_install, remove files not needed
+    and make sure to install the rest.
+  * rules, control: Fix the installation name of ds-logpipe.py, add
+    python dependency to 389-ds-base..
+  * libns-dshttpd is internal to the server, ship it in 389-ds-base.
+  * Rename libdirsrv{-dev,0} -> 389-ds-base-{dev,libs}, includes only
+    libslapd and headers for external plugin development.
+  * control: Breaks/Replaces old libdirsrv-dev/libdirsrv0/dirsrv.
+  * Drop hyphen_used_as_minus, applied upstream.
+  * copyright: Use DEP5 format.
+  * Cherry-pick upstream commit ee320163c6 to get rid of unnecessary
+    and non-free MIB's from the tree, and build a dfsg compliant tarball.
+  * lintian-overrides: Update, create one for -libs.
+  * Fix the initscript to create the lockdir, and refactor code into separate
+    functions.
+  * Drop obsolete entries from copyright, and make it lintian clean.
+  * debian/po: Refer to the correct file after rename.
+  * control: Bump Standards-Version to 3.9.3, no changes.
+  * postinst: Drop unused 'lastversion'.
+  * patches: Add DEP3 compliant headers.
+  * rules, postinst: Add an error handler function for dh_installinit, so
+    that clean installs don't fail due to missing configuration.
+  * postinst: Run the update tool.
+  * dirsrv.init:
+    - Make the start and stop functions much simpler and LSB compliant
+    - Fix starting multiple instances
+    - Use '-b' for start-stop-daemon, since ns-slapd doesn't detach properly
+  * control: Add 389-ds metapackage.
+  * control: Change libdb4.8-dev build-depends to libdb-dev, since this version
+    supports db5.x.
+  * 389-ds-base.prerm: Add prerm script for removing installed instances on
+    purge.
+
+  [ Krzysztof Klimonda ]
+  * dirsrv.init:
+    - return 0 code if there are no instances configured and tweak message
+      so it doesn't indicate a failure.
+
+ -- Krzysztof Klimonda <kklimonda@syntaxhighlighted.com>  Tue, 27 Mar 2012 14:26:16 +0200
+
+389-directory-server (1.2.6.1-5) unstable; urgency=low
+
+  * Removed db_stop from dirsrv.postinst
+  * Fix short description in libdirsrv0-dbg
+
+ -- Michele Baldessari <michele@acksyn.org>  Wed, 20 Oct 2010 20:24:20 +0200
+
+389-directory-server (1.2.6.1-4) unstable; urgency=low
+
+  * Make libicu dep dependent on dpkg-vendor
+
+ -- Michele Baldessari <michele@acksyn.org>  Mon, 18 Oct 2010 21:21:52 +0200
+
+389-directory-server (1.2.6.1-3) unstable; urgency=low
+
+  * Remove dirsrv user and group in postrm
+  * Clean up postrm and postinst
+
+ -- Michele Baldessari <michele@acksyn.org>  Sun, 17 Oct 2010 21:54:08 +0200
+
+389-directory-server (1.2.6.1-2) unstable; urgency=low
+
+  * Fix QUILT_STAMPFN
+
+ -- Michele Baldessari <michele@acksyn.org>  Sun, 17 Oct 2010 15:03:34 +0200
+
+389-directory-server (1.2.6.1-1) unstable; urgency=low
+
+  * New upstream
+
+ -- Michele Baldessari <michele@acksyn.org>  Sat, 16 Oct 2010 23:08:09 +0200
+
+389-directory-server (1.2.6-2) unstable; urgency=low
+
+  * Update my email address
+
+ -- Michele Baldessari <michele@acksyn.org>  Sat, 16 Oct 2010 22:34:19 +0200
+
+389-directory-server (1.2.6-1) unstable; urgency=low
+
+  * New upstream
+  * s/Fedora/389/g to clean up the branding
+  * Remove automatic configuration (breaks too often with every update)
+  * Remove dirsrv.config translation, no questions are asked anymore
+  * Fix old changelog versions with proper ~ on rc versions
+  * Update policy to 3.9.1
+  * Improve README.Debian
+  * Depend on libicu44
+  * Remove /var/run/dirsrv from the postinst scripts (managed by init script)
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sat, 04 Sep 2010 11:58:21 +0200
+
+389-directory-server (1.2.6~rc7-1) unstable; urgency=low
+
+  * New upstream
+
+ -- Michele Baldessari <michele@pupazzo.org>  Fri, 03 Sep 2010 20:06:08 +0200
+
+389-directory-server (1.2.6~a3-1) unstable; urgency=low
+
+  * New upstream
+  * Rename man page remove-ds.pl in remove-ds
+  * Removed Debian.source
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 23 May 2010 22:12:13 +0200
+
+389-directory-server (1.2.6~a2-1) unstable; urgency=low
+
+  * New upstream
+  * Removed speling_fixes patch, applied upstream
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 23 May 2010 13:36:25 +0200
+
+389-directory-server (1.2.5-1) unstable; urgency=low
+
+  * New upstream
+  * Add libpcre3-dev Build-dep
+  * ldap-agent moved ti /usr/sbin
+  * Fix spelling errors in code and manpages
+  * Fix some lintian warnings
+  * Bump policy to 3.8.3
+  * Ignore lintian warning pkg-has-shlibs-control-file-but-no-actual-shared-libs
+    as the shlibs file is for dirsrv plugins
+  * Upgraded deps to libicu42 and libdb4.8
+  * Do create /var/lib/dirsrv as dirsrv user's home
+  * Added libsasl2-modules-gssapi-mit as a dependency for dirsrv (needed by
+    mandatory LDAP SASL mechs)
+  * Install all files of etc/dirsrv/config
+  * Add some missing start scripts in usr/sbin
+  * Fixed a bug in the dirsrv.init script
+  * Switch to dpkg-source 3.0 (quilt) format
+  * Bump policy to 3.8.4
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 23 May 2010 12:31:24 +0200
+
+389-directory-server (1.2.1-0) unstable; urgency=low
+
+  * Rename of source package (note, since this is still staging work no
+    replace or upgrade is in place)
+  * Update watch file
+  * New Upstream
+
+ -- Michele Baldessari <michele@pupazzo.org>  Fri, 12 Jun 2009 22:08:42 +0200
+
+fedora-directory-server (1.2.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Add missing libkrb5-dev dependency
+  * Fix section of -dbg packages
+  * Fix all "dpatch-missing-description" lintian warnings
+
+ -- Michele Baldessari <michele@pupazzo.org>  Wed, 22 Apr 2009 23:36:22 +0200
+
+fedora-directory-server (1.1.3-1) unstable; urgency=low
+
+  * New upstream
+  * Added watch file
+  * Make setup-ds use dirsrv:dirsrv user/group as defaults
+  * Added VCS-* fields
+  * --enable-autobind
+  * Add ldap/servers/plugins/replication/winsync-plugin.h to libdirsrv-dev
+
+ -- Michele Baldessari <michele@pupazzo.org>  Mon, 24 Nov 2008 22:42:26 +0100
+
+fedora-directory-server (1.1.2-2) unstable; urgency=low
+
+  * Fixed build+configure twice issue
+  * Added Conflicts: slapd (thanks Alessandro)
+
+ -- Michele Baldessari <michele@pupazzo.org>  Tue, 23 Sep 2008 21:12:44 +0200
+
+fedora-directory-server (1.1.2-1) unstable; urgency=low
+
+  * New upstream
+  * Removed /usr/sbin PATH from postinst script
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sat, 20 Sep 2008 20:10:52 +0000
+
+fedora-directory-server (1.1.1-0) unstable; urgency=low
+
+  * New upstream
+  * Don't apply patch for 439829, fixed upstream
+  * Bump to policy 3.8.0
+  * Added README.source
+
+ -- Michele Baldessari <michele@pupazzo.org>  Fri, 22 Aug 2008 00:09:40 +0200
+
+fedora-directory-server (1.1.0-4) unstable; urgency=low
+
+  * dirsrv should depend on libmozilla-ldap-perl (thanks Mathias Kaufmann
+    <steiger@mmforces.de>)
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 20 Jul 2008 18:41:58 +0200
+
+fedora-directory-server (1.1.0-3) unstable; urgency=low
+
+  * Fix up some descriptions
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 25 May 2008 21:36:32 +0200
+
+fedora-directory-server (1.1.0-2) unstable; urgency=low
+
+  * Silenced init warning messages when chowning pid directory
+
+ -- Michele Baldessari <michele@pupazzo.org>  Wed, 21 May 2008 23:08:32 +0200
+
+fedora-directory-server (1.1.0-1) unstable; urgency=low
+
+  * Removed template lintian warning
+  * Cleaned up manpages
+
+ -- Michele Baldessari <michele@pupazzo.org>  Sun, 18 May 2008 13:39:58 +0200
+
+fedora-directory-server (1.1.0-0) unstable; urgency=low
+
+  * Initial release (Closes: #497098).
+  * Fixed postinst after renaming setup-ds.pl to setup-ds
+  * Applied patch from https://bugzilla.redhat.com/show_bug.cgi?id=439829 to
+    fix segfault against late NSS versions
+  * Switched to parseable copyright format
+  * Source package is lintian clean now
+  * Added initial manpage patch
+  * Switched to dh_install
+
+ -- Michele Baldessari <michele@pupazzo.org>  Thu, 27 Mar 2008 23:56:17 +0200

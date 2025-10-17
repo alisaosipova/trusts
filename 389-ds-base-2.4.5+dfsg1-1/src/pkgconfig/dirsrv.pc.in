@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+ldaplib=@ldaplib@
+
+Name: dirsrv
+Description: 389 Directory Server
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir}/@serverdir@ -lslapd
+Cflags: @ldaplib_defs@ -I${includedir}/@serverincdir@

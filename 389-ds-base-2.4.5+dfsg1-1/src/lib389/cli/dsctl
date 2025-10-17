@@ -1,0 +1,175 @@
+#!/usr/bin/python3
+
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2020 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details.
+# --- END COPYRIGHT BLOCK ---
+#
+# PYTHON_ARGCOMPLETE_OK
+
+import json
+import argparse, argcomplete
+import sys
+import signal
+import os
+from lib389.utils import get_instance_list, instance_choices
+from lib389 import DirSrv
+from lib389.cli_ctl import instance as cli_instance
+from lib389.cli_ctl import dbtasks as cli_dbtasks
+from lib389.cli_ctl import tls as cli_tls
+from lib389.cli_ctl import health as cli_health
+from lib389.cli_ctl import nsstate as cli_nsstate
+from lib389.cli_ctl import dbgen as cli_dbgen
+from lib389.cli_ctl import dsrc as cli_dsrc
+from lib389.cli_ctl import cockpit as cli_cockpit
+from lib389.cli_ctl import dblib as cli_dblib
+from lib389.cli_ctl.instance import instance_remove_all
+from lib389.cli_base import (
+    disconnect_instance,
+    setup_script_logger,
+    format_error_to_dict)
+from lib389._constants import DSRC_CONTAINER
+
+parser = argparse.ArgumentParser(allow_abbrev=False)
+parser.add_argument('-v', '--verbose',
+        help="Display verbose operation tracing during command execution",
+        action='store_true', default=False
+    )
+parser.add_argument('instance', nargs='?', default=False,
+        help="The name of the instance to act upon",
+    ).completer = instance_choices
+parser.add_argument('-j', '--json',
+        help="Return result in JSON object",
+        default=False, action='store_true'
+    )
+parser.add_argument('-l', '--list',
+        help="List available Directory Server instances",
+        default=False, action='store_true'
+    )
+parser.add_argument('--remove-all', default=False, action='store_true',
+        help=argparse.SUPPRESS
+    )
+
+subparsers = parser.add_subparsers(help="action")
+# We can only use the instance tools like start/stop etc in a non-container
+# environment. If we are in a container, we only allow the tasks.
+if not os.path.exists(DSRC_CONTAINER):
+    cli_instance.create_parser(subparsers)
+cli_dbtasks.create_parser(subparsers)
+cli_tls.create_parser(subparsers)
+cli_health.create_parser(subparsers)
+cli_nsstate.create_parser(subparsers)
+cli_dbgen.create_parser(subparsers)
+cli_dsrc.create_parser(subparsers)
+cli_cockpit.create_parser(subparsers)
+cli_dblib.create_parser(subparsers)
+
+argcomplete.autocomplete(parser)
+
+
+# handle a control-c gracefully
+def signal_handler(signal, frame):
+    print('\n\nExiting...')
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    log = setup_script_logger('dsctl', args.verbose)
+
+    log.debug("The 389 Directory Server Administration Tool")
+    # Leave this comment here: UofA let me take this code with me provided
+    # I gave attribution. -- wibrown
+    log.debug("Inspired by works of: ITS, The University of Adelaide")
+
+    log.debug("Called with: %s", args)
+
+    if args.list:
+        insts = get_instance_list()
+        if args.json:
+            print(json.dumps({"type": "result", "insts": insts}, indent=4))
+        else:
+            for inst in insts:
+                print(inst)
+        sys.exit(0)
+    elif args.remove_all is not False:
+        instance_remove_all(log, args)
+        sys.exit(0)
+    elif not args.instance:
+        errmsg = "error: the following arguments are required: instance"
+        if args.json:
+            sys.stderr.write("{'desc': '%s'}\n" % errmsg)
+        else:
+            log.error(errmsg)
+            parser.print_help()
+        sys.exit(1)
+
+    # Assert we have a resources to work on.
+    if not hasattr(args, 'func'):
+        errmsg = "No action provided, here is some --help."
+        if args.json:
+            sys.stderr.write("{'desc': '%s'}\n" % errmsg)
+        else:
+            log.error(errmsg)
+            parser.print_help()
+        sys.exit(1)
+
+    # Connect
+    inst = DirSrv(verbose=args.verbose)
+
+    result = True
+
+    # Allocate the instance based on name
+    insts = []
+    if args.verbose:
+        insts = inst.list(serverid=args.instance)
+    else:
+        signal.signal(signal.SIGINT, signal_handler)
+        try:
+            insts = inst.list(serverid=args.instance)
+        except (PermissionError, IOError) as e:
+            log.error("Unable to access instance information. Are you running as the correct user? (usually dirsrv or root)")
+            msg = format_error_to_dict(e)
+            if args.json:
+                sys.stderr.write(f"{json.dumps(msg, indent=4)}\n")
+            else:
+                log.error("Error: %s" % " - ".join(msg.values()))
+            sys.exit(1)
+        except Exception as e:
+            msg = format_error_to_dict(e)
+            if args.json:
+                sys.stderr.write(f"{json.dumps(msg, indent=4)}\n")
+            else:
+                log.error("Error: %s" % " - ".join(msg.values()))
+            sys.exit(1)
+    if len(insts) != 1:
+        errmsg = "No such instance '%s'" % args.instance
+        if args.json:
+            sys.stderr.write('{"desc": "%s"}\n' % errmsg)
+        else:
+            log.error(errmsg)
+            log.error("Unable to access instance information. Are you running as the correct user? (usually dirsrv or root)")
+        sys.exit(1)
+
+    inst.local_simple_allocate(insts[0]['server-id'])
+    log.debug('Instance allocated')
+
+    try:
+        result = args.func(inst, log, args)
+    except Exception as e:
+        log.debug(e, exc_info=True)
+        msg = format_error_to_dict(e)
+        if args.json:
+            sys.stderr.write(f"{json.dumps(msg, indent=4)}\n")
+        else:
+            log.error("Error: %s" % " - ".join(str(val) for val in msg.values()))
+        result = False
+    disconnect_instance(inst)
+
+    # Done!
+    if result is False:
+        sys.exit(1)

@@ -1,0 +1,57 @@
+--- a/ldap/servers/slapd/ldaputil.c
++++ b/ldap/servers/slapd/ldaputil.c
+@@ -827,10 +827,14 @@ ldaputil_get_saslpath()
+         if (PR_SUCCESS != PR_Access(saslpath, PR_ACCESS_EXISTS)) {
+ #ifdef CPU_arm
+             /* the 64-bit ARMv8 architecture. */
+-            saslpath = "/usr/lib/aarch64-linux-gnu";
++            saslpath = "/usr/lib/aarch64-linux-gnu/sasl2";
++#elif defined(CPU_powerpc64le)
++            saslpath = "/usr/lib/powerpc64le-linux-gnu/sasl2";
++#elif defined(CPU_s390x)
++            saslpath = "/usr/lib/s390x-linux-gnu/sasl2";
+ #else
+             /* Try x86_64 gnu triplet */
+-            saslpath = "/usr/lib/x86_64-linux-gnu";
++            saslpath = "/usr/lib/x86_64-linux-gnu/sasl2";
+ #endif
+         }
+ #else
+@@ -838,14 +842,14 @@ ldaputil_get_saslpath()
+         if (PR_SUCCESS != PR_Access(saslpath, PR_ACCESS_EXISTS)) {
+ #ifdef CPU_arm
+             /* the latest 32 bit ARM architecture using the hard-float version of EABI. */
+-            saslpath = "/usr/lib/arm-linux-gnueabihf";
++            saslpath = "/usr/lib/arm-linux-gnueabihf/sasl2";
+             if (PR_SUCCESS != PR_Access(saslpath, PR_ACCESS_EXISTS)) {
+                 /* the 32 bit ARM architecture of EABI. */
+-                saslpath = "/usr/lib/arm-linux-gnueabi";
++                saslpath = "/usr/lib/arm-linux-gnueabi/sasl2";
+             }
+ #else
+             /* Try i386 gnu triplet */
+-            saslpath = "/usr/lib/i386-linux-gnu";
++            saslpath = "/usr/lib/i386-linux-gnu/sasl2";
+ #endif
+         }
+ #endif
+--- a/configure.ac
++++ b/configure.ac
+@@ -655,7 +655,8 @@ case $host in
+       arm-*-linux*)
+         AC_DEFINE([CPU_arm], [], [cpu type arm])
+         ;;
+-      ppc64le-*-linux*)
++      powerpc64le-*-linux*)
++        AC_DEFINE([CPU_powerpc64le], [], [cpu type powerpc64le])
+         ;;
+       ppc64-*-linux*)
+         ;;
+@@ -664,6 +665,7 @@ case $host in
+       s390-*-linux*)
+         ;;
+       s390x-*-linux*)
++        AC_DEFINE([CPU_s390x], [], [cpu type s390x])
+         ;;
+     esac
+     # some programs use the native thread library directly

@@ -1,0 +1,111 @@
+#!/usr/bin/python3
+
+# --- BEGIN COPYRIGHT BLOCK ---
+# Copyright (C) 2020 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details.
+# --- END COPYRIGHT BLOCK ---
+#
+# PYTHON_ARGCOMPLETE_OK
+
+import argparse, argcomplete
+import sys
+import signal
+import json
+from textwrap import dedent
+from lib389 import DirSrv
+from lib389.cli_ctl import instance as cli_instance
+from lib389.cli_base import setup_script_logger
+from lib389.cli_base import format_error_to_dict
+
+
+epilog = """
+            Example of install by a non root user:
+                PATH=$HOME/bin:$PATH # Should be in .profile
+                dscreate ds-root $HOME/mydsroot $HOME/bin
+                hash -d dscreate # bash command to insure new dscreate wrapper will be used
+                dscreate interactive
+                # Note: Make sure to use non priviledged port number (i.e > 1000)
+         """
+
+parser = argparse.ArgumentParser(epilog=dedent(epilog), formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument('-v', '--verbose',
+                    help="Display verbose operation tracing during command execution",
+                    action='store_true', default=False, dest='verbose')
+parser.add_argument('-j', '--json',
+                    help="Return the result as a json message",
+                    action='store_true', default=False, dest='json')
+subparsers = parser.add_subparsers(help="action")
+
+fromfile_parser = subparsers.add_parser('from-file', help="Create an instance of Directory Server from an inf answer file")
+fromfile_parser.add_argument('file', help="Inf file to use with prepared answers. You can generate an example of this with 'dscreate create-template'")
+fromfile_parser.add_argument('-n', '--dryrun', help="Validate system and configurations only. Do not alter the system.",
+                             action='store_true', default=False)
+fromfile_parser.set_defaults(func=cli_instance.instance_create)
+
+interactive_parser = subparsers.add_parser('interactive', help="Start interactive installer for Directory Server installation")
+interactive_parser.set_defaults(func=cli_instance.instance_create_interactive)
+
+template_parser = subparsers.add_parser('create-template', help="Display an example inf answer file, or provide a file name to write it to disk.")
+template_parser.add_argument('--advanced', action='store_true', default=False,
+    help="Add advanced options to the template - changing the advanced options may make your instance install fail")
+template_parser.add_argument('template_file', nargs="?", default=None, help="Write example template to this file")
+template_parser.set_defaults(func=cli_instance.instance_example)
+
+subtree_parser = subparsers.add_parser('ds-root', help="Prepare a root directory in which non root user can create, run and administer instances.")
+subtree_parser.add_argument('root_dir', default=None, help="A directory that will be used as virtual root.")
+subtree_parser.add_argument('bin_dir', nargs="?", default=None, help="A directory in which administration wrappers are installed. (Should be in PATH)")
+subtree_parser.set_defaults(func=cli_instance.prepare_ds_root)
+argcomplete.autocomplete(parser)
+
+# handle a control-c gracefully
+def signal_handler(signal, frame):
+    print('\n\nExiting interactive installation...')
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
+    log = setup_script_logger("dscreate", args.verbose)
+
+    log.debug("The 389 Directory Server Creation Tool")
+    # Leave this comment here: UofA let me take this code with me provided
+    # I gave attribution. -- wibrown
+    log.debug("Inspired by works of: ITS, The University of Adelaide")
+
+    log.debug("Called with: %s", args)
+
+    # Assert we have a resources to work on.
+    if not hasattr(args, 'func'):
+        errmsg = "No action provided, here is some --help."
+        if args.json:
+            sys.stderr.write('{"desc": "%s"}\n' % errmsg)
+        else:
+            log.error(errmsg)
+            parser.print_help()
+        sys.exit(1)
+
+    if not args.verbose:
+        signal.signal(signal.SIGINT, signal_handler)
+
+    inst = DirSrv(verbose=args.verbose)
+
+    result = False
+
+    try:
+        result = args.func(inst, log, args)
+    except Exception as e:
+        log.debug(e, exc_info=True)
+        msg = format_error_to_dict(e)
+        if args and args.json:
+            sys.stderr.write(f"{json.dumps(msg, indent=4)}\n")
+        else:
+            log.error("Error: %s" % " - ".join(str(val) for val in msg.values()))
+        result = False
+
+    # Done!
+    if result is False:
+        sys.exit(1)

@@ -1,0 +1,219 @@
+#
+# BEGIN COPYRIGHT BLOCK
+# Copyright (C) 2012 Red Hat, Inc.
+# All rights reserved.
+#
+# License: GPL (version 3 or any later version).
+# See LICENSE for details. 
+# END COPYRIGHT BLOCK
+#
+#
+# Schema for Managed Entries Plugin
+#
+dn: cn=schema
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2115 NAME 'dnaType'
+  DESC 'DNA attribute type to maintain'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2116 NAME 'dnaPrefix'
+  DESC 'DNA string prefix for dna value'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2117 NAME 'dnaNextValue'
+  DESC 'DNA next available value for assignment'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2118 NAME 'dnaInterval'
+  DESC 'DNA interval between values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2119 NAME 'dnaMagicRegen'
+  DESC 'DNA value that will trigger regeneration of attribute value'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2120 NAME 'dnaFilter'
+  DESC 'DNA filter for finding entries'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2121 NAME 'dnaScope'
+  DESC 'DNA base DN for finding entries'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2122 NAME 'dnaMaxValue'
+  DESC 'DNA maximum value to assign'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2123 NAME 'dnaSharedCfgDN'
+  DESC 'DNA shared configuration entry DN'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2124 NAME 'dnaRemainingValues'
+  DESC 'DNA remaining values left to assign'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2125 NAME 'dnaThreshold'
+  DESC 'DNA threshold for getting next range of values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2126 NAME 'dnaHostname'
+  DESC 'DNA hostname of replica to get new range of values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2127 NAME 'dnaPortNum'
+  DESC 'DNA port number of replica to get new range of values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2128 NAME 'dnaSecurePortNum'
+  DESC 'DNA secure port number of replica to get new range of values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2129 NAME 'dnaNextRange'
+  DESC 'DNA range of values to get from replica'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2130 NAME 'dnaRangeRequestTimeout'
+  DESC 'DNA timeout for querying replica for next range of values'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2157 NAME 'dnaRemoteBindCred'
+  DESC 'Remote bind credentials'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2158 NAME 'dnaRemoteBindDN'
+  DESC 'Remote bind DN'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2159 NAME 'dnaRemoteConnProtocol'
+  DESC 'Connection protocol: LDAP, TLS, or SSL'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2160 NAME 'dnaRemoteBindMethod'
+  DESC 'Remote bind method: SIMPLE, SSL, SASL/DIGEST-MD5, or SASL/GSSAPI'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+attributeTypes: ( 2.16.840.1.113730.3.1.2312 NAME 'dnaExcludeScope'
+  DESC 'DN of a subtree excluded from DNA plugin scope'
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.12
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+objectClasses: ( 2.16.840.1.113730.3.2.324 NAME 'dnaPluginConfig'
+  DESC 'DNA plugin configuration'
+  SUP top
+  AUXILIARY
+  MAY ( dnaType $
+        dnaPrefix $
+        dnaNextValue $
+        dnaMaxValue $
+        dnaInterval $
+        dnaMagicRegen $
+        dnaFilter $
+        dnaScope $
+        dnaExcludeScope $
+        dnaSharedCfgDN $
+        dnaThreshold $
+        dnaNextRange $
+        dnaRangeRequestTimeout $        
+        dnaRemoteBindDN $
+        dnaRemoteBindCred $
+        cn
+ )
+  X-ORIGIN '389 Directory Server' )
+#
+################################################################################
+#
+objectClasses: ( 2.16.840.1.113730.3.2.325 NAME 'dnaSharedConfig'
+  DESC 'DNA Shared Configuration'
+  SUP top
+  AUXILIARY
+  MAY ( dnaHostname $
+        dnaPortNum $
+        dnaSecurePortNum $
+        dnaRemoteBindMethod $
+        dnaRemoteConnProtocol $
+        dnaRemainingValues
+ )
+  X-ORIGIN '389 Directory Server' )
