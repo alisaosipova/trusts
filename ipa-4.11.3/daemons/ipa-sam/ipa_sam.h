@@ -20,11 +20,13 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <talloc.h>
 #include <libcli/auth/netlogon_creds.h>
 #include <librpc/rpc/dcerpc.h>
 #include <libcli/util/werror.h>
 #include <gen_ndr/netlogon.h>
+#include <util/data_blob.h>
 
 /* The following definitions come from passdb/pdb_ipa.c  */
 
@@ -52,6 +54,9 @@ struct ipasam_netlogon_domain_info {
         const char *dns_hostname;
         uint32_t workstation_flags;
         uint32_t supported_enc_types;
+        struct netr_SamInfo6 *validation_info;
+        DATA_BLOB pac_blob;
+        bool pac_was_validated;
 };
 
 NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,

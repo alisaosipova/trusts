@@ -254,6 +254,23 @@ class TestTrust(BaseTestTrust):
 
         tasks.kdestroy_all(self.master)
 
+    def test_secure_channel_verify(self):
+        nltest_path = None
+        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
+            if self.master.transport.file_exists(candidate):
+                nltest_path = candidate
+                break
+        if nltest_path is None:
+            pytest.skip('nltest command not available on %s' % self.master.hostname)
+
+        tasks.kinit_admin(self.master)
+        verify_cmd = [nltest_path, '--sc-verify', self.ad_domain]
+        result = self.master.run_command(verify_cmd, raiseonerr=False)
+        if result.returncode != 0:
+            pytest.fail('nltest secure channel verification failed: %s' %
+                        result.stderr_text)
+        assert 'NERR_Success' in result.stdout_text or result.returncode == 0
+
     def test_netlogon_secure_channel_rotation(self):
         """Validate secure channel verification and password rotation from AD."""
 
