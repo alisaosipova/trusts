@@ -2556,22 +2556,28 @@ static bool fill_pdb_trusted_domain(TALLOC_CTX *mem_ctx,
 		return false;
 	}
 
-	res = get_uint32_t_from_ldap_msg(ipasam_state, entry,
-					 LDAP_ATTRIBUTE_TRUST_ATTRIBUTES,
-					 &td->trust_attributes);
-	if (!res) {
-		TALLOC_FREE(td);
-		return false;
-	}
-	if (td->trust_attributes == 0) {
-		/* attribute wasn't present, this is a subdomain within the
-		 * parent forest */
-		td->trust_attributes = LSA_TRUST_ATTRIBUTE_WITHIN_FOREST;
-	}
+        res = get_uint32_t_from_ldap_msg(ipasam_state, entry,
+                                         LDAP_ATTRIBUTE_TRUST_ATTRIBUTES,
+                                         &td->trust_attributes);
+        if (!res) {
+                TALLOC_FREE(td);
+                return false;
+        }
+        if (td->trust_attributes == 0) {
+                /* attribute wasn't present, this is a subdomain within the
+                 * parent forest */
+                td->trust_attributes = LSA_TRUST_ATTRIBUTE_WITHIN_FOREST;
+        }
 
-	res = get_uint32_t_from_ldap_msg(ipasam_state, entry,
-					 LDAP_ATTRIBUTE_TRUST_TYPE,
-					 &td->trust_type);
+        if (td->trust_direction == 0 &&
+            (td->trust_attributes & LSA_TRUST_ATTRIBUTE_WITHIN_FOREST)) {
+                td->trust_direction = LSA_TRUST_DIRECTION_INBOUND |
+                                      LSA_TRUST_DIRECTION_OUTBOUND;
+        }
+
+        res = get_uint32_t_from_ldap_msg(ipasam_state, entry,
+                                         LDAP_ATTRIBUTE_TRUST_TYPE,
+                                         &td->trust_type);
 	if (!res) {
 		TALLOC_FREE(td);
 		return false;

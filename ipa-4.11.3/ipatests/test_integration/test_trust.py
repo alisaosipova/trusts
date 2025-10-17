@@ -185,6 +185,42 @@ class TestTrust(BaseTestTrust):
         self.check_trustdomains(
             self.ad_domain, [self.ad_domain, self.ad_subdomain])
 
+    def test_netlogon_rpc_trust_enumeration(self):
+        nltest_path = None
+        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
+            if self.master.transport.file_exists(candidate):
+                nltest_path = candidate
+                break
+        if nltest_path is None:
+            pytest.skip('nltest command not available on %s' % self.master.hostname)
+
+        tasks.kinit_admin(self.master)
+        dsgetdc_cmd = [
+            nltest_path,
+            '--kerberos',
+            '--server', self.master.hostname,
+            '--dsgetdc', self.master.domain.realm,
+        ]
+        dsgetdc = self.master.run_command(dsgetdc_cmd)
+        dsgetdc_output = dsgetdc.stdout_text.upper()
+        assert (f'DOM NAME: {self.master.domain.realm.upper()}'
+                in dsgetdc_output)
+        assert (f'DC: \\{self.master.hostname.upper()}'
+                in dsgetdc_output)
+
+        trust_flags = '0x23'
+        enum_cmd = [
+            'rpcclient',
+            self.master.hostname,
+            '-k',
+            '-c', f'dsr_enumtrustdom {self.master.hostname} {trust_flags}',
+        ]
+        enum_result = self.master.run_command(enum_cmd)
+        trust_output = enum_result.stdout_text.lower()
+        assert self.ad_domain.lower() in trust_output
+
+        tasks.kdestroy_all(self.master)
+
     def test_range_properties_in_nonposix_trust(self):
         self.check_range_properties(self.ad_domain, 'ipa-ad-trust', 200000)
 

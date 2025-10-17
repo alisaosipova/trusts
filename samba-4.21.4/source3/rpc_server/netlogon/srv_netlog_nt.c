@@ -52,6 +52,7 @@
 #include "lib/util/util_str_escape.h"
 #include "source3/lib/substitute.h"
 #include "librpc/rpc/server/netlogon/schannel_util.h"
+#include "lib/util/uuid.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_RPC_SRV
@@ -2307,11 +2308,379 @@ NTSTATUS _netr_DatabaseRedo(struct pipes_struct *p,
 /****************************************************************
 ****************************************************************/
 
-WERROR _netr_DsRGetDCName(struct pipes_struct *p,
-			  struct netr_DsRGetDCName *r)
+static bool netlogon_domain_matches(const char *requested,
+                                   const char *dns_domain,
+                                   const char *netbios_name)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        if (requested == NULL || requested[0] == '\0') {
+                return true;
+        }
+
+        if (dns_domain != NULL && strcasecmp_m(requested, dns_domain) == 0) {
+                return true;
+        }
+
+        if (netbios_name != NULL && strcasecmp_m(requested, netbios_name) == 0) {
+                return true;
+        }
+
+        return false;
+}
+
+static uint32_t netlogon_calculate_trust_flags(const struct pdb_trusted_domain *td)
+{
+        uint32_t flags = 0;
+
+        if (td == NULL) {
+                return 0;
+        }
+
+        if (td->trust_direction & LSA_TRUST_DIRECTION_INBOUND) {
+                flags |= NETR_TRUST_FLAG_INBOUND;
+        }
+        if (td->trust_direction & LSA_TRUST_DIRECTION_OUTBOUND) {
+                flags |= NETR_TRUST_FLAG_OUTBOUND;
+        }
+        if ((td->trust_direction == 0) &&
+            (td->trust_attributes & LSA_TRUST_ATTRIBUTE_WITHIN_FOREST)) {
+                flags |= NETR_TRUST_FLAG_INBOUND | NETR_TRUST_FLAG_OUTBOUND;
+        }
+
+        if (td->trust_attributes & LSA_TRUST_ATTRIBUTE_WITHIN_FOREST) {
+                flags |= NETR_TRUST_FLAG_IN_FOREST;
+        }
+        if (td->trust_attributes & LSA_TRUST_ATTRIBUTE_FOREST_TRANSITIVE) {
+                flags |= NETR_TRUST_FLAG_TREEROOT;
+        }
+
+        if (td->trust_type != LSA_TRUST_TYPE_DOWNLEVEL) {
+                flags |= NETR_TRUST_FLAG_NATIVE;
+        }
+        if (td->trust_type == LSA_TRUST_TYPE_MIT) {
+                flags |= NETR_TRUST_FLAG_MIT_KRB5;
+        }
+
+        if (td->supported_enc_type != NULL) {
+                uint32_t enc = *td->supported_enc_type;
+                if (enc & (KERB_ENCTYPE_AES128_CTS_HMAC_SHA1_96 |
+                           KERB_ENCTYPE_AES256_CTS_HMAC_SHA1_96 |
+                           KERB_ENCTYPE_AES256_CTS_HMAC_SHA1_96_SK)) {
+                        flags |= NETR_TRUST_FLAG_AES;
+                }
+        }
+
+        return flags;
+}
+
+static WERROR netlogon_append_trust(struct netr_DomainTrustList *trusts,
+                                    const struct pdb_trusted_domain *td,
+                                    uint32_t request_flags)
+{
+        struct netr_DomainTrust *entry;
+        uint32_t flags;
+        size_t idx;
+
+        if (trusts == NULL || td == NULL) {
+                return WERR_OK;
+        }
+
+        flags = netlogon_calculate_trust_flags(td);
+        if ((flags & request_flags) == 0) {
+                return WERR_OK;
+        }
+
+        idx = trusts->count;
+        trusts->array = talloc_realloc(trusts, trusts->array,
+                                       struct netr_DomainTrust, idx + 1);
+        if (trusts->array == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        entry = &trusts->array[idx];
+        ZERO_STRUCTP(entry);
+
+        entry->netbios_name = talloc_strdup(trusts->array, td->netbios_name);
+        if (td->trust_type != LSA_TRUST_TYPE_DOWNLEVEL) {
+                entry->dns_name = talloc_strdup(trusts->array, td->domain_name);
+                if (td->domain_name != NULL && entry->dns_name == NULL) {
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        } else {
+                entry->dns_name = NULL;
+        }
+
+        entry->trust_flags = flags;
+        entry->parent_index = 0;
+        entry->trust_type = td->trust_type;
+        entry->trust_attributes = td->trust_attributes;
+        entry->sid = dom_sid_dup(trusts->array, &td->security_identifier);
+        if (entry->sid == NULL && !is_null_sid(&td->security_identifier)) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        entry->guid = GUID_zero();
+
+        trusts->count = idx + 1;
+
+        return WERR_OK;
+}
+
+static WERROR netlogon_append_local_domain(struct netr_DomainTrustList *trusts)
+{
+        struct pdb_domain_info *dom_info;
+        struct netr_DomainTrust *entry;
+        size_t idx;
+
+        if (trusts == NULL) {
+                return WERR_OK;
+        }
+
+        dom_info = pdb_get_domain_info(trusts);
+        if (dom_info == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        idx = trusts->count;
+        trusts->array = talloc_realloc(trusts, trusts->array,
+                                       struct netr_DomainTrust, idx + 1);
+        if (trusts->array == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        entry = &trusts->array[idx];
+        ZERO_STRUCTP(entry);
+
+        entry->netbios_name = talloc_strdup(trusts->array, dom_info->name);
+        if (dom_info->name != NULL && entry->netbios_name == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        entry->dns_name = talloc_strdup(trusts->array, dom_info->dns_domain);
+        if (dom_info->dns_domain != NULL && entry->dns_name == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        entry->trust_flags = NETR_TRUST_FLAG_NATIVE |
+                              NETR_TRUST_FLAG_TREEROOT |
+                              NETR_TRUST_FLAG_IN_FOREST |
+                              NETR_TRUST_FLAG_PRIMARY |
+                              NETR_TRUST_FLAG_INBOUND |
+                              NETR_TRUST_FLAG_OUTBOUND;
+        entry->parent_index = 0;
+        entry->trust_type = LSA_TRUST_TYPE_UPLEVEL;
+        entry->trust_attributes = 0;
+        entry->sid = dom_sid_dup(trusts->array, &dom_info->sid);
+        if (entry->sid == NULL && !is_null_sid(&dom_info->sid)) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        entry->guid = dom_info->guid;
+
+        trusts->count = idx + 1;
+
+        return WERR_OK;
+}
+
+static WERROR netlogon_collect_trusts(struct pipes_struct *p,
+                                     const char *server_name,
+                                     uint32_t trust_flags,
+                                     struct netr_DomainTrustList *trusts)
+{
+        struct auth_session_info *session_info;
+        enum security_user_level security_level;
+        struct pdb_trusted_domain **domains = NULL;
+        uint32_t num_domains = 0;
+        TALLOC_CTX *tmp_ctx = NULL;
+        NTSTATUS status;
+        uint32_t i;
+        WERROR werr;
+
+        (void)server_name;
+
+        if (trusts == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        trusts->count = 0;
+        trusts->array = NULL;
+
+        if (trust_flags & 0xFFFFFE00) {
+                return WERR_INVALID_FLAGS;
+        }
+
+        if (!(trust_flags & (NETR_TRUST_FLAG_INBOUND | NETR_TRUST_FLAG_OUTBOUND))) {
+                return WERR_INVALID_FLAGS;
+        }
+
+        session_info = dcesrv_call_session_info(p->dce_call);
+        if (session_info == NULL) {
+                        return WERR_ACCESS_DENIED;
+        }
+
+        security_level = security_session_user_level(session_info, NULL);
+        if (security_level < SECURITY_USER) {
+                return WERR_ACCESS_DENIED;
+        }
+
+        tmp_ctx = talloc_new(p->mem_ctx);
+        if (tmp_ctx == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        become_root();
+        status = pdb_enum_trusted_domains(tmp_ctx, &num_domains, &domains);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                talloc_free(tmp_ctx);
+                return ntstatus_to_werror(status);
+        }
+
+        for (i = 0; i < num_domains; i++) {
+                werr = netlogon_append_trust(trusts, domains[i], trust_flags);
+                if (!W_ERROR_IS_OK(werr)) {
+                        talloc_free(tmp_ctx);
+                        return werr;
+                }
+        }
+
+        if (trust_flags & NETR_TRUST_FLAG_IN_FOREST) {
+                werr = netlogon_append_local_domain(trusts);
+                if (!W_ERROR_IS_OK(werr)) {
+                        talloc_free(tmp_ctx);
+                        return werr;
+                }
+        }
+
+        talloc_free(tmp_ctx);
+        return WERR_OK;
+}
+
+static WERROR netlogon_fill_dc_info(struct pipes_struct *p,
+                                   const char *domain_name,
+                                   const struct GUID *domain_guid,
+                                   uint32_t flags,
+                                   struct netr_DsRGetDCNameInfo **info_out)
+{
+        struct auth_session_info *session_info;
+        enum security_user_level security_level;
+        struct pdb_domain_info *dom_info;
+        struct netr_DsRGetDCNameInfo *info;
+        const char *dns_domain;
+        const char *netbios_domain = lp_workgroup();
+
+        (void)flags;
+
+        if (info_out == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        session_info = dcesrv_call_session_info(p->dce_call);
+        if (session_info == NULL) {
+                return WERR_ACCESS_DENIED;
+        }
+
+        security_level = security_session_user_level(session_info, NULL);
+        if (security_level < SECURITY_USER) {
+                return WERR_ACCESS_DENIED;
+        }
+
+        dom_info = pdb_get_domain_info(p->mem_ctx);
+        if (dom_info == NULL) {
+                return WERR_NO_SUCH_DOMAIN;
+        }
+
+        dns_domain = dom_info->dns_domain;
+
+        if (!netlogon_domain_matches(domain_name, dns_domain, netbios_domain)) {
+                return WERR_NO_SUCH_DOMAIN;
+        }
+
+        if (domain_guid != NULL && !GUID_equal(domain_guid, &dom_info->guid)) {
+                return WERR_NO_SUCH_DOMAIN;
+        }
+
+        info = talloc_zero(p->mem_ctx, struct netr_DsRGetDCNameInfo);
+        if (info == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        if (dns_domain != NULL && dns_domain[0] != '\0') {
+                info->dc_unc = talloc_asprintf(info, "\\\\%s.%s",
+                                               lp_netbios_name(), dns_domain);
+        } else {
+                info->dc_unc = talloc_asprintf(info, "\\\\%s",
+                                               lp_netbios_name());
+        }
+        if (info->dc_unc == NULL) {
+                TALLOC_FREE(info);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        info->dc_address = talloc_asprintf(info, "\\\\%s",
+                                           lp_netbios_name());
+        if (info->dc_address == NULL) {
+                TALLOC_FREE(info);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        info->dc_address_type = DS_ADDRESS_TYPE_NETBIOS;
+        info->domain_guid = dom_info->guid;
+
+        if (dns_domain != NULL) {
+                info->domain_name = talloc_strdup(info, dns_domain);
+                if (info->domain_name == NULL) {
+                        TALLOC_FREE(info);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        if (dom_info->dns_forest != NULL) {
+                info->forest_name = talloc_strdup(info, dom_info->dns_forest);
+                if (info->forest_name == NULL) {
+                        TALLOC_FREE(info);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        } else if (dns_domain != NULL) {
+                info->forest_name = talloc_strdup(info, dns_domain);
+                if (info->forest_name == NULL) {
+                        TALLOC_FREE(info);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        info->dc_flags = NBT_SERVER_PDC |
+                         NBT_SERVER_GC |
+                         NBT_SERVER_DS |
+                         NBT_SERVER_LDAP |
+                         NBT_SERVER_KDC |
+                         NBT_SERVER_TIMESERV |
+                         NBT_SERVER_GOOD_TIMESERV |
+                         NBT_SERVER_WRITABLE |
+                         NBT_SERVER_CLOSEST |
+                         NBT_SERVER_HAS_DNS_NAME |
+                         NBT_SERVER_IS_DEFAULT_NC |
+                         NBT_SERVER_FOREST_ROOT;
+
+        info->dc_site_name = talloc_strdup(info, "");
+        if (info->dc_site_name == NULL) {
+                TALLOC_FREE(info);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        info->client_site_name = talloc_strdup(info, "");
+        if (info->client_site_name == NULL) {
+                TALLOC_FREE(info);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        *info_out = info;
+        return WERR_OK;
+}
+
+WERROR _netr_DsRGetDCName(struct pipes_struct *p,
+                          struct netr_DsRGetDCName *r)
+{
+        return netlogon_fill_dc_info(p,
+                                     r->in.domain_name,
+                                     r->in.domain_guid,
+                                     r->in.flags,
+                                     r->out.info);
 }
 
 /****************************************************************
@@ -2412,10 +2781,13 @@ WERROR _netr_NETRLOGONCOMPUTECLIENTDIGEST(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_DsRGetDCNameEx(struct pipes_struct *p,
-			    struct netr_DsRGetDCNameEx *r)
+                            struct netr_DsRGetDCNameEx *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        return netlogon_fill_dc_info(p,
+                                     r->in.domain_name,
+                                     r->in.domain_guid,
+                                     r->in.flags,
+                                     r->out.info);
 }
 
 /****************************************************************
@@ -2472,10 +2844,13 @@ WERROR _netr_DsRAddressToSitenamesW(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_DsRGetDCNameEx2(struct pipes_struct *p,
-			     struct netr_DsRGetDCNameEx2 *r)
+                             struct netr_DsRGetDCNameEx2 *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        return netlogon_fill_dc_info(p,
+                                     r->in.domain_name,
+                                     r->in.domain_guid,
+                                     r->in.flags,
+                                     r->out.info);
 }
 
 /****************************************************************
@@ -2492,10 +2867,19 @@ WERROR _netr_NETRLOGONGETTIMESERVICEPARENTDOMAIN(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_NetrEnumerateTrustedDomainsEx(struct pipes_struct *p,
-					   struct netr_NetrEnumerateTrustedDomainsEx *r)
+                                           struct netr_NetrEnumerateTrustedDomainsEx *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        uint32_t trust_flags = NETR_TRUST_FLAG_INBOUND |
+                               NETR_TRUST_FLAG_OUTBOUND |
+                               NETR_TRUST_FLAG_IN_FOREST |
+                               NETR_TRUST_FLAG_TREEROOT |
+                               NETR_TRUST_FLAG_PRIMARY |
+                               NETR_TRUST_FLAG_NATIVE;
+
+        return netlogon_collect_trusts(p,
+                                       r->in.server_name,
+                                       trust_flags,
+                                       r->out.dom_trust_list);
 }
 
 /****************************************************************
@@ -2522,10 +2906,12 @@ WERROR _netr_DsrGetDcSiteCoverageW(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_DsrEnumerateDomainTrusts(struct pipes_struct *p,
-				      struct netr_DsrEnumerateDomainTrusts *r)
+                                      struct netr_DsrEnumerateDomainTrusts *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        return netlogon_collect_trusts(p,
+                                       r->in.server_name,
+                                       r->in.trust_flags,
+                                       r->out.trusts);
 }
 
 /****************************************************************
