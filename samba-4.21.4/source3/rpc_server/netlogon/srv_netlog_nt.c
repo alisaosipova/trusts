@@ -2482,6 +2482,9 @@ static WERROR netlogon_append_local_domain(struct netr_DomainTrustList *trusts)
 }
 
 #ifdef HAVE_DLFCN_H
+struct ipasam_netlogon_domain_info_entry;
+struct ipasam_netlogon_domain_info;
+
 typedef WERROR (*ipasam_enum_trusts_fn)(TALLOC_CTX *mem_ctx,
                                         uint32_t trust_flags,
                                         struct netr_DomainTrustList *trusts);
@@ -2493,9 +2496,11 @@ typedef WERROR (*ipasam_site_coverage_fn)(TALLOC_CTX *mem_ctx,
                                           struct DcSitesCtr **ctr);
 typedef NTSTATUS (*ipasam_logon_get_domain_info_fn)(TALLOC_CTX *mem_ctx,
                                                    struct netlogon_creds_CredentialState *creds,
-                                                   struct netr_LogonGetDomainInfo *r,
                                                    enum dcerpc_AuthType auth_type,
-                                                   enum dcerpc_AuthLevel auth_level);
+                                                   enum dcerpc_AuthLevel auth_level,
+                                                   uint32_t level,
+                                                   const union netr_WorkstationInfo *query,
+                                                   struct ipasam_netlogon_domain_info **info_out);
 typedef NTSTATUS (*ipasam_server_password_get_fn)(TALLOC_CTX *mem_ctx,
                                                  struct netlogon_creds_CredentialState *creds,
                                                  enum dcerpc_AuthType auth_type,
@@ -2742,17 +2747,217 @@ static WERROR netlogon_get_site_coverage_ipasam(struct pipes_struct *p,
 #endif
 }
 
+struct ipasam_netlogon_domain_info_entry {
+        const char *netbios_name;
+        const char *dns_domain_name;
+        const char *dns_forest_name;
+        struct GUID domain_guid;
+        struct dom_sid domain_sid;
+        uint32_t trust_flags;
+        uint32_t parent_index;
+        uint32_t trust_type;
+        uint32_t trust_attributes;
+};
+
+struct ipasam_netlogon_domain_info {
+        struct ipasam_netlogon_domain_info_entry primary_domain;
+        uint32_t trusted_domain_count;
+        struct ipasam_netlogon_domain_info_entry *trusted_domains;
+        const char *dns_hostname;
+        uint32_t workstation_flags;
+        uint32_t supported_enc_types;
+};
+
+static NTSTATUS netlogon_ipasam_set_string_large(TALLOC_CTX *mem_ctx,
+                                                 struct lsa_StringLarge *dst,
+                                                 const char *src)
+{
+        if (dst == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (src == NULL) {
+                dst->string = NULL;
+                return NT_STATUS_OK;
+        }
+
+        dst->string = talloc_strdup(mem_ctx, src);
+        if (dst->string == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS netlogon_ipasam_init_trust_extension(TALLOC_CTX *mem_ctx,
+                                                     struct netr_trust_extension_container *dst,
+                                                     const struct ipasam_netlogon_domain_info_entry *src)
+{
+        if (dst == NULL || src == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (src->trust_flags == 0 &&
+            src->trust_type == 0 &&
+            src->trust_attributes == 0 &&
+            src->parent_index == 0) {
+                dst->length = 0;
+                dst->size = 0;
+                dst->info = NULL;
+                return NT_STATUS_OK;
+        }
+
+        dst->info = talloc_zero(mem_ctx, struct netr_trust_extension);
+        if (dst->info == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        dst->length = 16;
+        dst->size = 16;
+        dst->info->info.flags = src->trust_flags;
+        dst->info->info.parent_index = src->parent_index;
+        dst->info->info.trust_type = src->trust_type;
+        dst->info->info.trust_attributes = src->trust_attributes;
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS netlogon_ipasam_copy_domain_entry(TALLOC_CTX *mem_ctx,
+                                                  struct netr_OneDomainInfo *dst,
+                                                  const struct ipasam_netlogon_domain_info_entry *src)
+{
+        NTSTATUS status;
+
+        if (dst == NULL || src == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCT(*dst);
+
+        status = netlogon_ipasam_set_string_large(mem_ctx,
+                                                  &dst->domainname,
+                                                  src->netbios_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        status = netlogon_ipasam_set_string_large(mem_ctx,
+                                                  &dst->dns_domainname,
+                                                  src->dns_domain_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        status = netlogon_ipasam_set_string_large(mem_ctx,
+                                                  &dst->dns_forestname,
+                                                  src->dns_forest_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        dst->domain_guid = src->domain_guid;
+
+        if (!is_null_sid(&src->domain_sid)) {
+                dst->domain_sid = talloc_zero(mem_ctx, struct dom_sid2);
+                if (dst->domain_sid == NULL) {
+                        return NT_STATUS_NO_MEMORY;
+                }
+                sid_copy(&dst->domain_sid->sid, &src->domain_sid);
+        }
+
+        status = netlogon_ipasam_init_trust_extension(mem_ctx,
+                                                      &dst->trust_extension,
+                                                      src);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS netlogon_ipasam_translate_domain_info(TALLOC_CTX *mem_ctx,
+                                                      const struct ipasam_netlogon_domain_info *src,
+                                                      struct netr_DomainInformation **dst_out)
+{
+        struct netr_DomainInformation *domain_info;
+        NTSTATUS status;
+        uint32_t i;
+
+        if (dst_out == NULL || src == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *dst_out = NULL;
+
+        domain_info = talloc_zero(mem_ctx, struct netr_DomainInformation);
+        if (domain_info == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        status = netlogon_ipasam_copy_domain_entry(domain_info,
+                                                   &domain_info->primary_domain,
+                                                   &src->primary_domain);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(domain_info);
+                return status;
+        }
+
+        domain_info->trusted_domain_count = src->trusted_domain_count;
+        if (src->trusted_domain_count > 0) {
+                domain_info->trusted_domains = talloc_zero_array(domain_info,
+                        struct netr_OneDomainInfo,
+                        src->trusted_domain_count);
+                if (domain_info->trusted_domains == NULL) {
+                        TALLOC_FREE(domain_info);
+                        return NT_STATUS_NO_MEMORY;
+                }
+
+                for (i = 0; i < src->trusted_domain_count; i++) {
+                        status = netlogon_ipasam_copy_domain_entry(domain_info->trusted_domains,
+                                                                  &domain_info->trusted_domains[i],
+                                                                  &src->trusted_domains[i]);
+                        if (!NT_STATUS_IS_OK(status)) {
+                                TALLOC_FREE(domain_info);
+                                return status;
+                        }
+                }
+        }
+
+        domain_info->workstation_flags = src->workstation_flags;
+        domain_info->supported_enc_types = src->supported_enc_types;
+
+        status = netlogon_ipasam_set_string_large(domain_info,
+                                                  &domain_info->dns_hostname,
+                                                  src->dns_hostname);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(domain_info);
+                return status;
+        }
+
+        *dst_out = domain_info;
+
+        return NT_STATUS_OK;
+}
+
 static NTSTATUS netlogon_logon_get_domain_info_ipasam(struct pipes_struct *p,
                                                     struct netlogon_creds_CredentialState *creds,
                                                     enum dcerpc_AuthType auth_type,
                                                     enum dcerpc_AuthLevel auth_level,
-                                                    struct netr_LogonGetDomainInfo *r)
+                                                    uint32_t level,
+                                                    const union netr_WorkstationInfo *query,
+                                                    struct ipasam_netlogon_domain_info **info_out)
 {
 #ifndef HAVE_DLFCN_H
         return NT_STATUS_NOT_IMPLEMENTED;
 #else
         static ipasam_logon_get_domain_info_fn ipa_fn = NULL;
         static bool ipa_checked = false;
+
+        if (info_out == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *info_out = NULL;
 
         if (!ipa_checked) {
                 ipa_checked = true;
@@ -2767,7 +2972,8 @@ static NTSTATUS netlogon_logon_get_domain_info_ipasam(struct pipes_struct *p,
                 return NT_STATUS_NOT_IMPLEMENTED;
         }
 
-        return ipa_fn(p->mem_ctx, creds, r, auth_type, auth_level);
+        return ipa_fn(p->mem_ctx, creds, auth_type, auth_level,
+                      level, query, info_out);
 #endif
 }
 
@@ -3087,6 +3293,27 @@ NTSTATUS _netr_LogonGetDomainInfo(struct pipes_struct *p,
         NTSTATUS status;
         enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
         enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+        struct ipasam_netlogon_domain_info *ipa_info = NULL;
+        struct netr_DomainInformation *domain_info = NULL;
+        struct netr_LsaPolicyInformation *lsa_policy_info = NULL;
+
+        if (r->out.info == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        switch (r->in.level) {
+        case 1:
+                if (r->in.query == NULL ||
+                    r->in.query->workstation_info == NULL) {
+                        return NT_STATUS_INVALID_PARAMETER;
+                }
+                break;
+        case 2:
+                break;
+        default:
+                p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
+                return NT_STATUS_INVALID_LEVEL;
+        }
 
         become_root();
         status = dcesrv_netr_creds_server_step_check(p->dce_call,
@@ -3107,10 +3334,39 @@ NTSTATUS _netr_LogonGetDomainInfo(struct pipes_struct *p,
                                                                creds,
                                                                auth_type,
                                                                auth_level,
-                                                               r);
+                                                               r->in.level,
+                                                               r->in.query,
+                                                               &ipa_info);
+                if (NT_STATUS_IS_OK(status)) {
+                        switch (r->in.level) {
+                        case 1:
+                                status = netlogon_ipasam_translate_domain_info(p->mem_ctx,
+                                                                              ipa_info,
+                                                                              &domain_info);
+                                if (!NT_STATUS_IS_OK(status)) {
+                                        TALLOC_FREE(ipa_info);
+                                        return status;
+                                }
+                                r->out.info->domain_info = domain_info;
+                                break;
+                        case 2:
+                                lsa_policy_info = talloc_zero(p->mem_ctx,
+                                        struct netr_LsaPolicyInformation);
+                                if (lsa_policy_info == NULL) {
+                                        TALLOC_FREE(ipa_info);
+                                        return NT_STATUS_NO_MEMORY;
+                                }
+                                r->out.info->lsa_policy_info = lsa_policy_info;
+                                break;
+                        }
+                        TALLOC_FREE(ipa_info);
+                        return NT_STATUS_OK;
+                }
                 if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_IMPLEMENTED)) {
+                        TALLOC_FREE(ipa_info);
                         return status;
                 }
+                TALLOC_FREE(ipa_info);
         }
 
         p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
