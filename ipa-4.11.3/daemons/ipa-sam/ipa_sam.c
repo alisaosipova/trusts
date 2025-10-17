@@ -27,7 +27,19 @@
 #include <util/data_blob.h>
 #include <util/time.h>
 #include <util/debug.h>
+#if defined(__has_include)
+#if __has_include(<samba/werror.h>)
+#include <samba/werror.h>
+#elif __has_include(<lib/util/werror.h>)
+#include <lib/util/werror.h>
+#elif __has_include(<libcli/util/werror.h>)
 #include <libcli/util/werror.h>
+#else
+#error "Unable to locate Samba werror.h header"
+#endif
+#else
+#include <libcli/util/werror.h>
+#endif
 #include <libcli/security/security.h>
 #include <libcli/security/dom_sid.h>
 #include <lib/crypto/md4.h>
