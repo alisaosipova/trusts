@@ -175,6 +175,12 @@ class TestTrust(BaseTestTrust):
 
     # Tests for non-posix AD trust
 
+    def _get_nltest_path(self):
+        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
+            if self.master.transport.file_exists(candidate):
+                return candidate
+        pytest.skip('nltest command not available on %s' % self.master.hostname)
+
     def test_establish_nonposix_trust(self):
         tasks.configure_dns_for_trust(self.master, self.ad)
         tasks.establish_trust_with_ad(
@@ -186,13 +192,7 @@ class TestTrust(BaseTestTrust):
             self.ad_domain, [self.ad_domain, self.ad_subdomain])
 
     def test_netlogon_rpc_trust_enumeration(self):
-        nltest_path = None
-        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
-            if self.master.transport.file_exists(candidate):
-                nltest_path = candidate
-                break
-        if nltest_path is None:
-            pytest.skip('nltest command not available on %s' % self.master.hostname)
+        nltest_path = self._get_nltest_path()
 
         tasks.kinit_admin(self.master)
         dsgetdc_cmd = [
@@ -229,6 +229,24 @@ class TestTrust(BaseTestTrust):
         trusted_result = self.master.run_command(trusted_cmd)
         assert trusted_result.returncode == 0
         assert self.ad_domain.upper() in trusted_result.stdout_text.upper()
+
+        tasks.kdestroy_all(self.master)
+
+    def test_netlogon_secure_channel_management(self):
+        nltest_path = self._get_nltest_path()
+
+        tasks.kinit_admin(self.master)
+
+        verify_cmd = [nltest_path, '--sc-verify=%s' % self.ad.netbios]
+        verify_result = self.master.run_command(verify_cmd)
+        assert '0x0' in verify_result.stdout_text
+
+        change_cmd = [nltest_path, '--sc-change-pwd=%s' % self.ad.netbios]
+        change_result = self.master.run_command(change_cmd)
+        assert '0x0' in change_result.stdout_text
+
+        verify_result = self.master.run_command(verify_cmd)
+        assert '0x0' in verify_result.stdout_text
 
         tasks.kdestroy_all(self.master)
 

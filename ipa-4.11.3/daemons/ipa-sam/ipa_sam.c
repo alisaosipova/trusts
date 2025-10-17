@@ -3522,6 +3522,118 @@ WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
         return WERR_OK;
 }
 
+NTSTATUS ipasam_netlogon_get_trust_secrets(TALLOC_CTX *mem_ctx,
+                                           const char *domain,
+                                           DATA_BLOB *incoming_secret,
+                                           NTTIME *incoming_last_set,
+                                           DATA_BLOB *outgoing_secret,
+                                           NTTIME *outgoing_last_set)
+{
+        struct ipasam_private *state;
+        struct pdb_trusted_domain *td = NULL;
+        NTSTATUS status;
+        TALLOC_CTX *tmp_ctx;
+
+        if (domain == NULL || ipasam_global_methods == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        state = talloc_get_type(ipasam_global_methods->private_data,
+                                struct ipasam_private);
+        if (state == NULL) {
+                return NT_STATUS_NOT_SUPPORTED;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        status = ipasam_global_methods->get_trusted_domain(ipasam_global_methods,
+                                                           tmp_ctx,
+                                                           domain, &td);
+        if (!NT_STATUS_IS_OK(status)) {
+                talloc_free(tmp_ctx);
+                return status;
+        }
+
+        if (td->trust_auth_incoming.data == NULL ||
+            td->trust_auth_incoming.length == 0) {
+                talloc_free(tmp_ctx);
+                return NT_STATUS_NOT_FOUND;
+        }
+
+        if (incoming_secret != NULL) {
+                *incoming_secret = data_blob_dup_talloc(mem_ctx,
+                                                        &td->trust_auth_incoming);
+                if ((incoming_secret->length != 0) &&
+                    incoming_secret->data == NULL) {
+                        talloc_free(tmp_ctx);
+                        return NT_STATUS_NO_MEMORY;
+                }
+        }
+
+        if (incoming_last_set != NULL) {
+                status = get_trust_pwd(tmp_ctx, &td->trust_auth_incoming,
+                                        NULL, incoming_last_set);
+                if (!NT_STATUS_IS_OK(status)) {
+                        talloc_free(tmp_ctx);
+                        return status;
+                }
+        }
+
+        if (outgoing_secret != NULL || outgoing_last_set != NULL) {
+                if (td->trust_auth_outgoing.data != NULL &&
+                    td->trust_auth_outgoing.length != 0) {
+                        if (outgoing_secret != NULL) {
+                                *outgoing_secret = data_blob_dup_talloc(mem_ctx,
+                                                                         &td->trust_auth_outgoing);
+                                if ((outgoing_secret->length != 0) &&
+                                    outgoing_secret->data == NULL) {
+                                        talloc_free(tmp_ctx);
+                                        return NT_STATUS_NO_MEMORY;
+                                }
+                        }
+                        if (outgoing_last_set != NULL) {
+                                status = get_trust_pwd(tmp_ctx,
+                                                        &td->trust_auth_outgoing,
+                                                        NULL, outgoing_last_set);
+                                if (!NT_STATUS_IS_OK(status)) {
+                                        talloc_free(tmp_ctx);
+                                        return status;
+                                }
+                        }
+                } else {
+                        if (outgoing_secret != NULL) {
+                                *outgoing_secret = data_blob_null;
+                        }
+                        if (outgoing_last_set != NULL) {
+                                *outgoing_last_set = 0;
+                        }
+                }
+        }
+
+        talloc_free(tmp_ctx);
+        return NT_STATUS_OK;
+}
+
+uint32_t ipasam_netlogon_supported_enctypes(void)
+{
+        struct ipasam_private *state;
+
+        if (ipasam_global_methods == NULL) {
+                return 0;
+        }
+
+        state = talloc_get_type(ipasam_global_methods->private_data,
+                                struct ipasam_private);
+        if (state == NULL) {
+                return 0;
+        }
+
+        return state->supported_enctypes;
+}
+
 static NTSTATUS ipasam_enum_trusteddoms(struct pdb_methods *methods,
                                          TALLOC_CTX *mem_ctx,
                                          uint32_t *num_domains,

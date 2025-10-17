@@ -2485,6 +2485,13 @@ static WERROR netlogon_append_local_domain(struct netr_DomainTrustList *trusts)
 typedef WERROR (*ipasam_enum_trusts_fn)(TALLOC_CTX *mem_ctx,
                                         uint32_t trust_flags,
                                         struct netr_DomainTrustList *trusts);
+typedef NTSTATUS (*ipasam_get_trust_secrets_fn)(TALLOC_CTX *mem_ctx,
+                                                const char *domain,
+                                                DATA_BLOB *incoming_secret,
+                                                NTTIME *incoming_last_set,
+                                                DATA_BLOB *outgoing_secret,
+                                                NTTIME *outgoing_last_set);
+typedef uint32_t (*ipasam_supported_enctypes_fn)(void);
 #endif
 
 static bool netlogon_backend_is_ipasam(void)
@@ -2522,6 +2529,67 @@ static WERROR netlogon_collect_trusts_ipasam(struct pipes_struct *p,
         }
 
         return ipa_enum_trusts(p->mem_ctx, trust_flags, trusts);
+#endif
+}
+
+static NTSTATUS netlogon_ipasam_get_trust_secret(struct pipes_struct *p,
+                                                 const char *domain,
+                                                 DATA_BLOB *secret_blob,
+                                                 NTTIME *last_set)
+{
+#ifndef HAVE_DLFCN_H
+        return NT_STATUS_NOT_SUPPORTED;
+#else
+        static ipasam_get_trust_secrets_fn ipa_get_trust = NULL;
+        static bool ipa_get_trust_checked = false;
+
+        if (!netlogon_backend_is_ipasam()) {
+                return NT_STATUS_NOT_SUPPORTED;
+        }
+
+        if (!ipa_get_trust_checked) {
+                ipa_get_trust_checked = true;
+                ipa_get_trust = (ipasam_get_trust_secrets_fn)dlsym(RTLD_DEFAULT,
+                                "ipasam_netlogon_get_trust_secrets");
+                if (ipa_get_trust == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_get_trust_secrets not available\n");
+                }
+        }
+
+        if (ipa_get_trust == NULL) {
+                return NT_STATUS_NOT_SUPPORTED;
+        }
+
+        return ipa_get_trust(p->mem_ctx, domain, secret_blob, last_set, NULL, NULL);
+#endif
+}
+
+static uint32_t netlogon_ipasam_supported_enctypes(void)
+{
+#ifndef HAVE_DLFCN_H
+        return 0;
+#else
+        static ipasam_supported_enctypes_fn ipa_supported = NULL;
+        static bool ipa_supported_checked = false;
+
+        if (!netlogon_backend_is_ipasam()) {
+                return 0;
+        }
+
+        if (!ipa_supported_checked) {
+                ipa_supported_checked = true;
+                ipa_supported = (ipasam_supported_enctypes_fn)dlsym(RTLD_DEFAULT,
+                                "ipasam_netlogon_supported_enctypes");
+                if (ipa_supported == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_supported_enctypes not available\n");
+                }
+        }
+
+        if (ipa_supported == NULL) {
+                return 0;
+        }
+
+        return ipa_supported();
 #endif
 }
 
@@ -2851,20 +2919,252 @@ WERROR _netr_DsRGetSiteName(struct pipes_struct *p,
 ****************************************************************/
 
 NTSTATUS _netr_LogonGetDomainInfo(struct pipes_struct *p,
-				  struct netr_LogonGetDomainInfo *r)
+                                  struct netr_LogonGetDomainInfo *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_IMPLEMENTED;
+        struct netlogon_creds_CredentialState *creds;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+        struct netr_WorkstationInformation *workstation;
+        struct pdb_domain_info *dom_info;
+        struct netr_DomainInformation *domain_info;
+        struct netr_DomainTrustList trusts = { 0 };
+        WERROR werr;
+        NTSTATUS status;
+        uint32_t supported_enctypes = 0;
+        uint32_t i;
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (r->out.info == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (r->in.level != 1 || r->in.query == NULL ||
+            r->in.query->workstation_info == NULL) {
+                return NT_STATUS_INVALID_LEVEL;
+        }
+
+        workstation = r->in.query->workstation_info;
+
+        dom_info = pdb_get_domain_info(p->mem_ctx);
+        if (dom_info == NULL) {
+                return NT_STATUS_INTERNAL_DB_CORRUPTION;
+        }
+
+        domain_info = talloc_zero(p->mem_ctx, struct netr_DomainInformation);
+        if (domain_info == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        init_lsa_StringLarge(&domain_info->primary_domain.domainname,
+                             dom_info->name);
+        init_lsa_StringLarge(&domain_info->primary_domain.dns_domainname,
+                             dom_info->dns_domain);
+        init_lsa_StringLarge(&domain_info->primary_domain.dns_forestname,
+                             dom_info->dns_forest);
+        domain_info->primary_domain.domain_guid = dom_info->guid;
+        domain_info->primary_domain.domain_sid =
+                dom_sid_dup(domain_info, &dom_info->sid);
+        if (domain_info->primary_domain.domain_sid == NULL &&
+            !is_null_sid(&dom_info->sid)) {
+                TALLOC_FREE(domain_info);
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        supported_enctypes = netlogon_ipasam_supported_enctypes();
+        domain_info->supported_enc_types = supported_enctypes;
+
+        domain_info->workstation_flags =
+                workstation->workstation_flags &
+                (NETR_WS_FLAG_HANDLES_SPN_UPDATE |
+                 NETR_WS_FLAG_HANDLES_INBOUND_TRUSTS);
+
+        init_lsa_StringLarge(&domain_info->dns_hostname, NULL);
+
+        werr = netlogon_collect_trusts(p,
+                                       r->in.server_name,
+                                       NETR_TRUST_FLAG_INBOUND |
+                                       NETR_TRUST_FLAG_OUTBOUND,
+                                       &trusts);
+        if (W_ERROR_IS_OK(werr) && trusts.count > 0) {
+                domain_info->trusted_domain_count = trusts.count;
+                domain_info->trusted_domains =
+                        talloc_zero_array(domain_info,
+                                          struct netr_OneDomainInfo,
+                                          trusts.count);
+                if (domain_info->trusted_domains == NULL) {
+                        TALLOC_FREE(domain_info);
+                        TALLOC_FREE(trusts.array);
+                        return NT_STATUS_NO_MEMORY;
+                }
+
+                for (i = 0; i < trusts.count; i++) {
+                        struct netr_DomainTrust *src = &trusts.array[i];
+                        struct netr_OneDomainInfo *dst =
+                                &domain_info->trusted_domains[i];
+
+                        init_lsa_StringLarge(&dst->domainname,
+                                             src->netbios_name);
+                        init_lsa_StringLarge(&dst->dns_domainname,
+                                             src->dns_name);
+                        init_lsa_StringLarge(&dst->dns_forestname,
+                                             src->dns_name);
+
+                        dst->domain_guid = src->guid;
+
+                        if (src->sid != NULL) {
+                                dst->domain_sid = dom_sid_dup(domain_info->trusted_domains,
+                                                              src->sid);
+                                if (dst->domain_sid == NULL) {
+                                        TALLOC_FREE(domain_info);
+                                        TALLOC_FREE(trusts.array);
+                                        return NT_STATUS_NO_MEMORY;
+                                }
+                        }
+
+                        if (src->trust_flags != 0 ||
+                            src->trust_type != 0 ||
+                            src->trust_attributes != 0 ||
+                            src->parent_index != 0) {
+                                dst->trust_extension.info =
+                                        talloc_zero(dst,
+                                                    struct netr_trust_extension);
+                                if (dst->trust_extension.info == NULL) {
+                                        TALLOC_FREE(domain_info);
+                                        TALLOC_FREE(trusts.array);
+                                        return NT_STATUS_NO_MEMORY;
+                                }
+                                dst->trust_extension.info->info =
+                                        talloc(dst->trust_extension.info,
+                                               struct netr_trust_extension_info);
+                                if (dst->trust_extension.info->info == NULL) {
+                                        TALLOC_FREE(domain_info);
+                                        TALLOC_FREE(trusts.array);
+                                        return NT_STATUS_NO_MEMORY;
+                                }
+
+                                dst->trust_extension.info->info->flags =
+                                        src->trust_flags;
+                                dst->trust_extension.info->info->parent_index =
+                                        src->parent_index;
+                                dst->trust_extension.info->info->trust_type =
+                                        src->trust_type;
+                                dst->trust_extension.info->info->trust_attributes =
+                                        src->trust_attributes;
+                        }
+                }
+        }
+        TALLOC_FREE(trusts.array);
+
+        r->out.info->domain_info = domain_info;
+
+        return NT_STATUS_OK;
 }
 
 /****************************************************************
 ****************************************************************/
 
 NTSTATUS _netr_ServerPasswordGet(struct pipes_struct *p,
-				 struct netr_ServerPasswordGet *r)
+                                 struct netr_ServerPasswordGet *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_SUPPORTED;
+        struct netlogon_creds_CredentialState *creds;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+        NTSTATUS status;
+        char *account_name;
+        size_t account_name_last;
+        DATA_BLOB trust_secret = data_blob_null;
+        struct samr_Password previous_pw;
+        struct pdb_trusted_domain *td = NULL;
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (r->in.account_name == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        account_name = talloc_strdup(p->mem_ctx, r->in.account_name);
+        if (account_name == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        account_name_last = strlen(account_name);
+        if (account_name_last == 0) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+        account_name_last--;
+        if (account_name[account_name_last] == '.') {
+                account_name[account_name_last] = '\0';
+        }
+        if (account_name_last > 0 && account_name[account_name_last] == '$') {
+                account_name[account_name_last] = '\0';
+        }
+
+        if ((creds->secure_channel_type != SEC_CHAN_DOMAIN) &&
+            (creds->secure_channel_type != SEC_CHAN_DNS_DOMAIN)) {
+                ZERO_STRUCTP(r->out.password);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = netlogon_ipasam_get_trust_secret(p, account_name,
+                                                  &trust_secret, NULL);
+        if (NT_STATUS_IS_OK(status)) {
+                status = get_password_from_trustAuth(p->mem_ctx,
+                                                     &trust_secret,
+                                                     creds,
+                                                     r->out.password,
+                                                     &previous_pw,
+                                                     auth_type,
+                                                     auth_level);
+                data_blob_free(&trust_secret);
+                return status;
+        }
+        if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_SUPPORTED)) {
+                data_blob_free(&trust_secret);
+                return status;
+        }
+
+        status = pdb_get_trusted_domain(p->mem_ctx, account_name, &td);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (td->trust_auth_incoming.data == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = get_password_from_trustAuth(p->mem_ctx,
+                                             &td->trust_auth_incoming,
+                                             creds,
+                                             r->out.password,
+                                             &previous_pw,
+                                             auth_type,
+                                             auth_level);
+        return status;
 }
 
 /****************************************************************
@@ -2986,10 +3286,94 @@ WERROR _netr_DsrDeregisterDNSHostRecords(struct pipes_struct *p,
 ****************************************************************/
 
 NTSTATUS _netr_ServerTrustPasswordsGet(struct pipes_struct *p,
-				       struct netr_ServerTrustPasswordsGet *r)
+                                       struct netr_ServerTrustPasswordsGet *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_IMPLEMENTED;
+        struct netlogon_creds_CredentialState *creds;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+        NTSTATUS status;
+        char *account_name;
+        size_t account_name_last;
+        DATA_BLOB trust_secret = data_blob_null;
+        struct pdb_trusted_domain *td = NULL;
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (r->in.account_name == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        account_name = talloc_strdup(p->mem_ctx, r->in.account_name);
+        if (account_name == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        account_name_last = strlen(account_name);
+        if (account_name_last == 0) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+        account_name_last--;
+        if (account_name[account_name_last] == '.') {
+                account_name[account_name_last] = '\0';
+        }
+        if (account_name_last > 0 && account_name[account_name_last] == '$') {
+                account_name[account_name_last] = '\0';
+        }
+
+        if ((creds->secure_channel_type != SEC_CHAN_DOMAIN) &&
+            (creds->secure_channel_type != SEC_CHAN_DNS_DOMAIN)) {
+                ZERO_STRUCTP(r->out.new_owf_password);
+                ZERO_STRUCTP(r->out.old_owf_password);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = netlogon_ipasam_get_trust_secret(p, account_name,
+                                                  &trust_secret, NULL);
+        if (NT_STATUS_IS_OK(status)) {
+                status = get_password_from_trustAuth(p->mem_ctx,
+                                                     &trust_secret,
+                                                     creds,
+                                                     r->out.new_owf_password,
+                                                     r->out.old_owf_password,
+                                                     auth_type,
+                                                     auth_level);
+                data_blob_free(&trust_secret);
+                return status;
+        }
+        if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_SUPPORTED)) {
+            data_blob_free(&trust_secret);
+            return status;
+        }
+
+        status = pdb_get_trusted_domain(p->mem_ctx, account_name, &td);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (td->trust_auth_incoming.data == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = get_password_from_trustAuth(p->mem_ctx,
+                                             &td->trust_auth_incoming,
+                                             creds,
+                                             r->out.new_owf_password,
+                                             r->out.old_owf_password,
+                                             auth_type,
+                                             auth_level);
+        return status;
 }
 
 /****************************************************************

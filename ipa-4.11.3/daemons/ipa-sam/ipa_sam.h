@@ -30,3 +30,10 @@ NTSTATUS pdb_ipa_init(void);
 WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
                                    uint32_t trust_flags,
                                    struct netr_DomainTrustList *trusts);
+NTSTATUS ipasam_netlogon_get_trust_secrets(TALLOC_CTX *mem_ctx,
+                                           const char *domain,
+                                           DATA_BLOB *incoming_secret,
+                                           NTTIME *incoming_last_set,
+                                           DATA_BLOB *outgoing_secret,
+                                           NTTIME *outgoing_last_set);
+uint32_t ipasam_netlogon_supported_enctypes(void);
