@@ -280,6 +280,14 @@ default: nsSystemIndex: false
 add: nsIndexType: eq
 add: nsIndexType: pres
 
+dn: cn=objectSid,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+only: cn: objectSid
+default: objectClass: top
+default: objectClass: nsIndex
+default: nsSystemIndex: false
+add: nsIndexType: eq
+add: nsIndexType: pres
+
 dn: cn=ipaNTTrustPartner,cn=index,cn=userRoot,cn=ldbm database,cn=plugins,cn=config
 only: cn: ipaNTTrustPartner
 default: objectClass: top

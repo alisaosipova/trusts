@@ -119,6 +119,11 @@ class trust(Object):
             label=_(u'Domain Security Identifier'),
         ),
         parameters.Str(
+            'objectsid',
+            required=False,
+            label=_(u'Object SID'),
+        ),
+        parameters.Str(
             'ipantsidblacklistincoming',
             required=False,
             multivalue=True,
@@ -143,6 +148,10 @@ class trustconfig(Object):
         parameters.Str(
             'ipantsecurityidentifier',
             label=_(u'Security Identifier'),
+        ),
+        parameters.Str(
+            'objectsid',
+            label=_(u'Object SID'),
         ),
         parameters.Str(
             'ipantflatname',

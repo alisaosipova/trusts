@@ -40,10 +40,107 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <strings.h>
 #include <dirsrv/slapi-plugin.h>
 
 #include "util.h"
 #include "ipa_sidgen.h"
+
+#define SID_MAX_SUB_AUTHORITIES 15
+
+static int sid_string_to_berval(const char *sid_str, struct berval **bv_out)
+{
+    const char *pos;
+    char *end = NULL;
+    unsigned long revision;
+    unsigned long long identifier_authority;
+    uint32_t sub_authorities[SID_MAX_SUB_AUTHORITIES];
+    size_t subauth_count = 0;
+    unsigned char *buffer = NULL;
+    struct berval *bv = NULL;
+    size_t offset;
+    int ret = LDAP_SUCCESS;
+
+    if (sid_str == NULL || bv_out == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    if (strncasecmp(sid_str, "S-", 2) != 0) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    pos = sid_str + 2;
+    errno = 0;
+    revision = strtoul(pos, &end, 10);
+    if (errno != 0 || pos == end || *end != '-') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    pos = end + 1;
+    errno = 0;
+    identifier_authority = strtoull(pos, &end, 10);
+    if (errno != 0 || pos == end) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    while (*end == '-') {
+        uint32_t subauth;
+
+        if (subauth_count >= SID_MAX_SUB_AUTHORITIES) {
+            return LDAP_INVALID_SYNTAX;
+        }
+
+        pos = end + 1;
+        errno = 0;
+        subauth = strtoul(pos, &end, 10);
+        if (errno != 0 || pos == end) {
+            return LDAP_INVALID_SYNTAX;
+        }
+
+        sub_authorities[subauth_count++] = subauth;
+    }
+
+    if (*end != '\0') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    buffer = (unsigned char *)slapi_ch_malloc(8 + subauth_count * 4);
+    if (buffer == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    buffer[0] = (unsigned char)revision;
+    buffer[1] = (unsigned char)subauth_count;
+
+    buffer[2] = (identifier_authority >> 40) & 0xff;
+    buffer[3] = (identifier_authority >> 32) & 0xff;
+    buffer[4] = (identifier_authority >> 24) & 0xff;
+    buffer[5] = (identifier_authority >> 16) & 0xff;
+    buffer[6] = (identifier_authority >> 8) & 0xff;
+    buffer[7] = identifier_authority & 0xff;
+
+    offset = 8;
+    for (size_t i = 0; i < subauth_count; i++) {
+        buffer[offset] = sub_authorities[i] & 0xff;
+        buffer[offset + 1] = (sub_authorities[i] >> 8) & 0xff;
+        buffer[offset + 2] = (sub_authorities[i] >> 16) & 0xff;
+        buffer[offset + 3] = (sub_authorities[i] >> 24) & 0xff;
+        offset += 4;
+    }
+
+    bv = (struct berval *)slapi_ch_malloc(sizeof(struct berval));
+    if (bv == NULL) {
+        slapi_ch_free((void **)&buffer);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    bv->bv_val = (char *)buffer;
+    bv->bv_len = 8 + subauth_count * 4;
+    *bv_out = bv;
+
+    return ret;
+}
 
 int get_dom_sid(Slapi_ComponentId *plugin_id, const char *base_dn, char **_sid)
 {
@@ -462,6 +559,14 @@ int find_sid_for_ldap_entry(struct slapi_entry *entry,
     bool has_posix_group = false;
     bool has_ipa_id_object = false;
     const char *objectclass_to_add = NULL;
+    Slapi_Attr *objectsid_attr = NULL;
+    Slapi_Value *objectsid_value = NULL;
+    bool sid_missing;
+    bool objectsid_missing = true;
+    bool update_sid_attr = false;
+    bool update_objectsid_attr = false;
+    struct berval *objectsid_bv = NULL;
+    struct berval *objectsid_vals[2] = { NULL, NULL };
 
     dn_str = slapi_entry_get_dn_const(entry);
     if (dn_str == NULL) {
@@ -497,42 +602,56 @@ int find_sid_for_ldap_entry(struct slapi_entry *entry,
     }
 
     sid = slapi_entry_attr_get_charptr(entry, IPA_SID);
-    if (sid != NULL) {
-        LOG("Object already has a SID, nothing to do.\n");
+    sid_missing = (sid == NULL);
+
+    if (slapi_entry_attr_find(entry, IPA_OBJECT_SID, &objectsid_attr) == 0) {
+        if (slapi_attr_first_value(objectsid_attr, &objectsid_value) != -1) {
+            objectsid_missing = false;
+        }
+    }
+
+    if (sid_missing) {
+        objectclasses = slapi_entry_attr_get_charray(entry, OBJECTCLASS);
+        ret = get_objectclass_flags(objectclasses, &has_posix_account,
+                                                   &has_posix_group,
+                                                   &has_ipa_id_object);
+        if (ret != 0) {
+            LOG_FATAL("Cannot determine objectclasses on entry [%s].\n", dn_str);
+            goto done;
+        }
+
+        if (has_posix_account && uid_number != 0 && gid_number != 0) {
+            id = uid_number;
+            objectclass_to_add = IPANT_USER_ATTRS;
+        } else if (has_posix_group && gid_number != 0) {
+            id = gid_number;
+            objectclass_to_add = IPANT_GROUP_ATTRS;
+        } else if (has_ipa_id_object) {
+            id = (uid_number != 0) ? uid_number : gid_number;
+            objectclass_to_add = NULL;
+        } else {
+            LOG_FATAL("Inconsistent objectclasses and attributes on entry "
+                      "[%s], nothing to do.\n", dn_str);
+            ret = 0;
+            goto done;
+        }
+
+        ret = find_sid_for_id(id, plugin_id, base_dn, dom_sid, ranges, &sid);
+        if (ret != 0) {
+            LOG_FATAL("Cannot convert Posix ID [%lu] into an unused SID on "
+                      "entry [%s].\n", (unsigned long) id, dn_str);
+            goto done;
+        }
+
+        update_sid_attr = true;
+        update_objectsid_attr = true;
+    } else if (!objectsid_missing) {
+        LOG("Object already has SID attributes, nothing to do.\n");
         ret = 0;
         goto done;
-    }
-
-    objectclasses = slapi_entry_attr_get_charray(entry, OBJECTCLASS);
-    ret = get_objectclass_flags(objectclasses, &has_posix_account,
-                                               &has_posix_group,
-                                               &has_ipa_id_object);
-    if (ret != 0) {
-        LOG_FATAL("Cannot determine objectclasses on entry [%s].\n", dn_str);
-        goto done;
-    }
-
-    if (has_posix_account && uid_number != 0 && gid_number != 0) {
-        id = uid_number;
-        objectclass_to_add = IPANT_USER_ATTRS;
-    } else if (has_posix_group && gid_number != 0) {
-        id = gid_number;
-        objectclass_to_add = IPANT_GROUP_ATTRS;
-    } else if (has_ipa_id_object) {
-        id = (uid_number != 0) ? uid_number : gid_number;
-        objectclass_to_add = NULL;
     } else {
-        LOG_FATAL("Inconsistent objectclasses and attributes on entry "
-                  "[%s], nothing to do.\n", dn_str);
-        ret = 0;
-        goto done;
-    }
-
-    ret = find_sid_for_id(id, plugin_id, base_dn, dom_sid, ranges, &sid);
-    if (ret != 0) {
-        LOG_FATAL("Cannot convert Posix ID [%lu] into an unused SID on "
-                  "entry [%s].\n", (unsigned long) id, dn_str);
-        goto done;
+        LOG("Object already has a SID, ensuring objectSid is populated.\n");
+        update_objectsid_attr = true;
     }
 
     smods = slapi_mods_new();
@@ -546,7 +665,23 @@ int find_sid_for_ldap_entry(struct slapi_entry *entry,
         slapi_mods_add_string(smods, LDAP_MOD_ADD,
                               OBJECTCLASS, objectclass_to_add);
     }
-    slapi_mods_add_string(smods, LDAP_MOD_REPLACE, IPA_SID, sid);
+
+    if (update_sid_attr) {
+        slapi_mods_add_string(smods, LDAP_MOD_REPLACE, IPA_SID, sid);
+    }
+
+    if (update_objectsid_attr) {
+        ret = sid_string_to_berval(sid, &objectsid_bv);
+        if (ret != LDAP_SUCCESS) {
+            LOG_FATAL("Failed to encode objectSid for entry [%s].\n", dn_str);
+            goto done;
+        }
+        objectsid_vals[0] = objectsid_bv;
+        slapi_mods_add_modbvps(smods,
+                               LDAP_MOD_REPLACE | LDAP_MOD_BVALUES,
+                               IPA_OBJECT_SID,
+                               objectsid_vals);
+    }
 
     mod_pb = slapi_pblock_new();
     slapi_modify_internal_set_pb(mod_pb, dn_str,
@@ -571,6 +706,10 @@ done:
     slapi_pblock_destroy(mod_pb);
     slapi_mods_free(&smods);
     slapi_ch_array_free(objectclasses);
+    if (objectsid_bv != NULL) {
+        slapi_ch_free((void **)&objectsid_bv->bv_val);
+        slapi_ch_free((void **)&objectsid_bv);
+    }
 
     return ret;
 }

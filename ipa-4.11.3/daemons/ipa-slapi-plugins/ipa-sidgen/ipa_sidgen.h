@@ -45,6 +45,7 @@
 #define UID_NUMBER "uidnumber"
 #define GID_NUMBER "gidnumber"
 #define IPA_SID "ipantsecurityidentifier"
+#define IPA_OBJECT_SID "objectsid"
 #define IPA_UNIQUEID "ipauniqueid"
 #define IPA_UNIQUEID_AUTOGENERATE "autogenerate"
 #define DOM_ATTRS_FILTER OBJECTCLASS"=ipantdomainattrs"
