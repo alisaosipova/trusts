@@ -2485,6 +2485,12 @@ static WERROR netlogon_append_local_domain(struct netr_DomainTrustList *trusts)
 typedef WERROR (*ipasam_enum_trusts_fn)(TALLOC_CTX *mem_ctx,
                                         uint32_t trust_flags,
                                         struct netr_DomainTrustList *trusts);
+typedef WERROR (*ipasam_address_to_sitenames_fn)(TALLOC_CTX *mem_ctx,
+                                                uint32_t count,
+                                                struct netr_DsRAddress *addresses,
+                                                struct netr_DsRAddressToSitenamesExWCtr **ctr);
+typedef WERROR (*ipasam_site_coverage_fn)(TALLOC_CTX *mem_ctx,
+                                          struct DcSitesCtr **ctr);
 #endif
 
 static bool netlogon_backend_is_ipasam(void)
@@ -2597,6 +2603,128 @@ static WERROR netlogon_collect_trusts(struct pipes_struct *p,
 
         talloc_free(tmp_ctx);
         return WERR_OK;
+}
+
+#define NETLOGON_DEFAULT_SITE_NAME "Default-First-Site-Name"
+
+static WERROR netlogon_address_to_sitenames_default(TALLOC_CTX *mem_ctx,
+                                                   uint32_t count,
+                                                   struct netr_DsRAddressToSitenamesExWCtr **ctr_out)
+{
+        struct netr_DsRAddressToSitenamesExWCtr *ctr;
+        uint32_t i;
+
+        ctr = talloc_zero(mem_ctx, struct netr_DsRAddressToSitenamesExWCtr);
+        if (ctr == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->count = count;
+        ctr->sitename = talloc_zero_array(ctr, struct lsa_String, count);
+        if (ctr->sitename == NULL && count > 0) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->subnetname = talloc_zero_array(ctr, struct lsa_String, count);
+        if (ctr->subnetname == NULL && count > 0) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        for (i = 0; i < count; i++) {
+                ctr->sitename[i].string = talloc_strdup(ctr->sitename,
+                                                        NETLOGON_DEFAULT_SITE_NAME);
+                if (ctr->sitename[i].string == NULL) {
+                        TALLOC_FREE(ctr);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        *ctr_out = ctr;
+        return WERR_OK;
+}
+
+static WERROR netlogon_address_to_sitenames_ipasam(struct pipes_struct *p,
+                                                   uint32_t count,
+                                                   struct netr_DsRAddress *addresses,
+                                                   struct netr_DsRAddressToSitenamesExWCtr **ctr_out)
+{
+#ifndef HAVE_DLFCN_H
+        return WERR_NOT_SUPPORTED;
+#else
+        static ipasam_address_to_sitenames_fn ipa_addr_fn = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_addr_fn = (ipasam_address_to_sitenames_fn)dlsym(RTLD_DEFAULT,
+                                "ipasam_netlogon_address_to_sitenames");
+                if (ipa_addr_fn == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_address_to_sitenames not available\n");
+                }
+        }
+
+        if (ipa_addr_fn == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        return ipa_addr_fn(p->mem_ctx, count, addresses, ctr_out);
+#endif
+}
+
+static WERROR netlogon_get_site_coverage_default(TALLOC_CTX *mem_ctx,
+                                                 struct DcSitesCtr **ctr_out)
+{
+        struct DcSitesCtr *ctr;
+
+        ctr = talloc_zero(mem_ctx, struct DcSitesCtr);
+        if (ctr == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->num_sites = 1;
+        ctr->sites = talloc_zero_array(ctr, struct lsa_String, ctr->num_sites);
+        if (ctr->sites == NULL) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->sites[0].string = talloc_strdup(ctr->sites,
+                                             NETLOGON_DEFAULT_SITE_NAME);
+        if (ctr->sites[0].string == NULL) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        *ctr_out = ctr;
+        return WERR_OK;
+}
+
+static WERROR netlogon_get_site_coverage_ipasam(struct pipes_struct *p,
+                                                struct DcSitesCtr **ctr_out)
+{
+#ifndef HAVE_DLFCN_H
+        return WERR_NOT_SUPPORTED;
+#else
+        static ipasam_site_coverage_fn ipa_coverage_fn = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_coverage_fn = (ipasam_site_coverage_fn)dlsym(RTLD_DEFAULT,
+                                "ipasam_netlogon_get_site_coverage");
+                if (ipa_coverage_fn == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_get_site_coverage not available\n");
+                }
+        }
+
+        if (ipa_coverage_fn == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        return ipa_coverage_fn(p->mem_ctx, ctr_out);
+#endif
 }
 
 static WERROR netlogon_fill_dc_info(struct pipes_struct *p,
@@ -2881,10 +3009,62 @@ NTSTATUS _netr_NetrLogonSendToSam(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_DsRAddressToSitenamesW(struct pipes_struct *p,
-				    struct netr_DsRAddressToSitenamesW *r)
+                                    struct netr_DsRAddressToSitenamesW *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        struct netr_DsRAddressToSitenamesExW r2;
+        struct netr_DsRAddressToSitenamesWCtr *ctr;
+        uint32_t i;
+        WERROR werr;
+
+        if (r->out.ctr == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCT(r2);
+        r2.in.server_name = r->in.server_name;
+        r2.in.count = r->in.count;
+        r2.in.addresses = r->in.addresses;
+
+        r2.out.ctr = talloc(p->mem_ctx,
+                            struct netr_DsRAddressToSitenamesExWCtr *);
+        if (r2.out.ctr == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        *r2.out.ctr = NULL;
+
+        ctr = talloc_zero(p->mem_ctx, struct netr_DsRAddressToSitenamesWCtr);
+        if (ctr == NULL) {
+                TALLOC_FREE(r2.out.ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        *r->out.ctr = ctr;
+        ctr->count = r->in.count;
+        ctr->sitename = talloc_zero_array(ctr, struct lsa_String, ctr->count);
+        if (ctr->sitename == NULL && ctr->count > 0) {
+                TALLOC_FREE(r2.out.ctr);
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        werr = _netr_DsRAddressToSitenamesExW(p, &r2);
+        if (!W_ERROR_IS_OK(werr)) {
+                TALLOC_FREE(ctr);
+                TALLOC_FREE(r2.out.ctr);
+                return werr;
+        }
+
+        if (*r2.out.ctr != NULL) {
+                for (i = 0; i < ctr->count; i++) {
+                        ctr->sitename[i].string = talloc_steal(ctr->sitename,
+                                                                (*r2.out.ctr)->sitename[i].string);
+                }
+                TALLOC_FREE(*r2.out.ctr);
+        }
+
+        TALLOC_FREE(r2.out.ctr);
+
+        return WERR_OK;
 }
 
 /****************************************************************
@@ -2933,20 +3113,71 @@ WERROR _netr_NetrEnumerateTrustedDomainsEx(struct pipes_struct *p,
 ****************************************************************/
 
 WERROR _netr_DsRAddressToSitenamesExW(struct pipes_struct *p,
-				      struct netr_DsRAddressToSitenamesExW *r)
+                                      struct netr_DsRAddressToSitenamesExW *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        struct netr_DsRAddressToSitenamesExWCtr *ctr = NULL;
+        WERROR werr = WERR_NOT_SUPPORTED;
+
+        if (r->out.ctr == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        if (netlogon_backend_is_ipasam()) {
+                werr = netlogon_address_to_sitenames_ipasam(p,
+                                                            r->in.count,
+                                                            r->in.addresses,
+                                                            &ctr);
+                if (W_ERROR_IS_OK(werr)) {
+                        *r->out.ctr = ctr;
+                        return WERR_OK;
+                }
+                if (!W_ERROR_EQUAL(werr, WERR_NOT_SUPPORTED)) {
+                        return werr;
+                }
+        }
+
+        werr = netlogon_address_to_sitenames_default(p->mem_ctx,
+                                                     r->in.count,
+                                                     &ctr);
+        if (!W_ERROR_IS_OK(werr)) {
+                return werr;
+        }
+
+        *r->out.ctr = ctr;
+        return WERR_OK;
 }
 
 /****************************************************************
 ****************************************************************/
 
 WERROR _netr_DsrGetDcSiteCoverageW(struct pipes_struct *p,
-				   struct netr_DsrGetDcSiteCoverageW *r)
+                                   struct netr_DsrGetDcSiteCoverageW *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return WERR_NOT_SUPPORTED;
+        struct DcSitesCtr *ctr = NULL;
+        WERROR werr = WERR_NOT_SUPPORTED;
+
+        if (r->out.ctr == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        if (netlogon_backend_is_ipasam()) {
+                werr = netlogon_get_site_coverage_ipasam(p, &ctr);
+                if (W_ERROR_IS_OK(werr)) {
+                        *r->out.ctr = ctr;
+                        return WERR_OK;
+                }
+                if (!W_ERROR_EQUAL(werr, WERR_NOT_SUPPORTED)) {
+                        return werr;
+                }
+        }
+
+        werr = netlogon_get_site_coverage_default(p->mem_ctx, &ctr);
+        if (!W_ERROR_IS_OK(werr)) {
+                return werr;
+        }
+
+        *r->out.ctr = ctr;
+        return WERR_OK;
 }
 
 /****************************************************************

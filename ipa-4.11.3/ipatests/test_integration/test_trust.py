@@ -199,14 +199,36 @@ class TestTrust(BaseTestTrust):
             nltest_path,
             '--kerberos',
             '--server', self.master.hostname,
+            '--cldap',
             '--dsgetdc', self.master.domain.realm,
         ]
         dsgetdc = self.master.run_command(dsgetdc_cmd)
         dsgetdc_output = dsgetdc.stdout_text.upper()
+        dsgetdc_text = dsgetdc.stdout_text
         assert (f'DOM NAME: {self.master.domain.realm.upper()}'
                 in dsgetdc_output)
         assert (f'DC: \\{self.master.hostname.upper()}'
                 in dsgetdc_output)
+
+        dc_site_line = next(
+            (line for line in dsgetdc_text.splitlines()
+             if line.startswith('  Dc Site Name: ')),
+            None,
+        )
+        our_site_line = next(
+            (line for line in dsgetdc_text.splitlines()
+             if line.startswith('Our Site Name: ')),
+            None,
+        )
+        assert dc_site_line is not None
+        assert our_site_line is not None
+
+        dc_site = dc_site_line.split(':', 1)[1].strip()
+        our_site = our_site_line.split(':', 1)[1].strip()
+
+        assert dc_site
+        assert our_site
+        assert dc_site == our_site
 
         trust_flags = '0x23'
         enum_cmd = [
