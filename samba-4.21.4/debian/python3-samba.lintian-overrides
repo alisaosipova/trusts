@@ -1,0 +1,3 @@
+# False positives, see #896012
+python3-samba: library-not-linked-against-libc *
+python3-samba: shared-library-lacks-prerequisites */samba/*.cpython*.so*

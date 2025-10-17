@@ -1,0 +1,7 @@
+extend-diff-ignore = .copr|.github|.git-commit-template|.travis*|.tx|zanata.xml
+extend-diff-ignore = contrib|po/.*|scripts/release.sh|src/man/po/LINGUAS
+extend-diff-ignore = README.md|src/tests
+extend-diff-ignore = Dockerfile*|Jenkinsfile|Vagrantfile
+extend-diff-ignore = src/providers/data_provider/dp_pam_data.h|src/providers/data_provider/dp_sbus.c
+extend-diff-ignore = src/man/po/.*.po
+extend-diff-ignore = setup.cfg

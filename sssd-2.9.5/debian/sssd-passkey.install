@@ -1,0 +1,3 @@
+usr/lib/*/sssd/modules/sssd_krb5_passkey_plugin.so
+usr/libexec/sssd/passkey_child
+usr/share/sssd/krb5-snippets/sssd_enable_passkey

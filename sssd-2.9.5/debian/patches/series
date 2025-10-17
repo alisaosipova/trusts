@@ -1,0 +1,3 @@
+fix-whitespace-test.diff
+default-to-socket-activated-services.diff
+fix-shebang-on-sss_analyze.patch

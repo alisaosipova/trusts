@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+# in 4.17.4+dfsg-3 we stopped masking services, unmask them here
+if [ configure = "$1" ] && dpkg --compare-versions "$2" lt-nl 2:4.17.4+dfsg-3~
+then
+    for s in winbind; do
+        if [ /dev/null = $(realpath /etc/systemd/system/$s.service) ]
+        then
+            rm -f /etc/systemd/system/$s.service
+        fi
+    done
+fi
+
+if [ configure = "$1" -a ! "$2" ] # only do this if not upgrading
+then
+    # groupadd --force: ok if group already exist
+    groupadd --system --force winbindd_priv
+    dir=/var/lib/samba/winbindd_privileged
+    [ -d $dir ] || install -d -m 0750 -g winbindd_priv $dir
+fi
+
+#DEBHELPER#

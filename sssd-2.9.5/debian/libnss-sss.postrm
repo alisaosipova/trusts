@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+log() {
+    echo "$*"
+}
+
+remove_nss_automount_db () {
+    log "Checking NSS setup..."
+    # abort if /etc/nsswitch.conf does not exist
+    if ! [ -e "${DPKG_ROOT}/etc/nsswitch.conf" ]; then
+        log "Could not find ${DPKG_ROOT}/etc/nsswitch.conf."
+        return
+    fi
+
+    # Remove NSS databases: `automount` and `automounter` (legacy).
+    sed -i '/^automount/d' "${DPKG_ROOT}/etc/nsswitch.conf"
+}
+
+case "$1" in
+    remove|purge)
+        if [ "${DPKG_MAINTSCRIPT_PACKAGE_REFCOUNT:-1}" = 1 ]; then
+            remove_nss_automount_db
+        fi
+    ;;
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac

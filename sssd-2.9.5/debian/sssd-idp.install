@@ -1,0 +1,4 @@
+etc/krb5.conf.d/sssd_enable_idp
+usr/lib/*/sssd/modules/sssd_krb5_idp_plugin.so 
+usr/libexec/sssd/oidc_child
+usr/share/sssd/krb5-snippets/sssd_enable_idp

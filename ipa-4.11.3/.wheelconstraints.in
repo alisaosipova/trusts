@@ -1,0 +1,14 @@
+# placeholder
+freeipa == @VERSION@
+ipa == @VERSION@
+# actual packages
+ipaclient == @VERSION@
+ipalib == @VERSION@
+ipaplatform == @VERSION@
+ipapython == @VERSION@
+ipaserver == @VERSION@
+ipatests == @VERSION@
+
+# keep pylint version in sync with current Fedora release
+# F39 has 3.0.25
+pylint ~= 3.0.2

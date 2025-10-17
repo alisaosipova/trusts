@@ -1,0 +1,36 @@
+wheel
+
+sphinx > 3.0
+sphinx-book-theme
+
+# convert markdown to rest
+# m2r2 fork is active in development and works with
+# newer sphinx versions
+m2r2
+
+## ipa dependencies
+dnspython
+jwcrypto
+netaddr
+qrcode
+six
+pyasn1
+pyasn1-modules
+requests
+
+## C libraries with binary wheels
+cffi
+cryptography
+lxml
+
+## C libraries without binaries wheels
+# gssapi
+# dbus-python
+# python-ldap
+
+## No sufficient PyPI packages
+# dogtag-pki
+
+# Sequence diagrams generator
+sphinxcontrib-plantuml
+pillow

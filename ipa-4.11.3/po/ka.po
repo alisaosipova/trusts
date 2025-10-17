@@ -1,0 +1,1242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR FreeIPA Contributors
+# This file is distributed under the same license as the freeipa package.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.10.0.dev202204261349+gitfbfd64fc2\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2024-02-11 08:36+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
+"freeipa/ipa-4-11/ka/>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.3.1\n"
+
+msgid ""
+"\n"
+"Permissions\n"
+msgstr ""
+"\n"
+"წვდომები\n"
+
+#, python-format
+msgid "%s"
+msgstr "%s"
+
+msgid "A IP Address"
+msgstr "IP მისამართი"
+
+msgid "About"
+msgstr "შესახებ"
+
+msgid "Access Denied"
+msgstr "წვდომა აკრძალულია"
+
+msgid "Account"
+msgstr "ანგარიში"
+
+msgid "Account Settings"
+msgstr "ანგარიშის მორგება"
+
+msgid "Actions"
+msgstr "ქმედებები"
+
+msgid "Activate"
+msgstr "აქტივაცია"
+
+msgid "Active Directory domain"
+msgstr "Active Directory-ის დომენი"
+
+msgid "Add"
+msgstr "დამატება"
+
+msgid "Add a new host."
+msgstr "ახალი ჰოსტის დამატება."
+
+msgid "Add role"
+msgstr "როლის დამატება"
+
+msgid "Add rule"
+msgstr "წესის დამატება"
+
+msgid "Add service"
+msgstr "სერვისის დამატება"
+
+msgid "Add user"
+msgstr "მომხმარებლის დამატება"
+
+msgid "Administrative account"
+msgstr "ადმინისტრატიული წვდომა"
+
+msgid "Algorithm"
+msgstr "ალგორითმი"
+
+msgid "All"
+msgstr "ყველა"
+
+msgid "Allow"
+msgstr "დაშვება"
+
+msgid "Altitude"
+msgstr "სიმაღლე"
+
+msgid "Always ask"
+msgstr "ყოველთვის კითხვა"
+
+msgid "Any Service"
+msgstr "ნებისმიერი სერვისი"
+
+msgid "Apply"
+msgstr "გადატარება"
+
+msgid "Attribute"
+msgstr "ატრიბუტი"
+
+msgid "Attributes"
+msgstr "ატრიბუტები"
+
+msgid "Audit"
+msgstr "აუდიტი"
+
+msgid "Authenticating"
+msgstr "ავთენტიკაცია"
+
+msgid "Authentication"
+msgstr "ავთენტიკაცია"
+
+msgid "Available"
+msgstr "ხელმისაწვდომია"
+
+msgid "Back"
+msgstr "უკან"
+
+msgid "Base DN"
+msgstr "საბაზისო DN"
+
+msgid "Base URL"
+msgstr "ძირითადი URL"
+
+msgid "CA"
+msgstr "CA"
+
+msgid "CA certificate"
+msgstr "CA სერტიფიკატი"
+
+msgid "Cancel"
+msgstr "გაუქმება"
+
+msgid "Certificate"
+msgstr "სერტიფიკატი"
+
+msgid "Certificate Authorities"
+msgstr "სერტიფიკატების გამომცემელი"
+
+msgid "Certificate Authority"
+msgstr "სერტიფიკატების გამომცემელი"
+
+msgid "Certificate Hold"
+msgstr "სერტიფიკატის შეჩერება"
+
+msgid "Certificate Type"
+msgstr "სერტიფიკატის ტიპი"
+
+msgid "Certificates"
+msgstr "სერტიფიკატები"
+
+msgid "Change password"
+msgstr "პაროლის შეცვლა"
+
+msgid "City"
+msgstr "ქალაქი"
+
+msgid "Class"
+msgstr "კლასი"
+
+msgid "Clear"
+msgstr "გაწმენდა"
+
+msgid "Close"
+msgstr "დახურვა"
+
+msgid "Collapse All"
+msgstr "ყველას ჩაკეცვა"
+
+msgid "Commands"
+msgstr "ბრძანებები"
+
+msgid "Common Name"
+msgstr "სახელი"
+
+msgid "Configuration"
+msgstr "მორგება"
+
+msgid "Confirm (password)"
+msgstr "დადასტურება (პაროლი)"
+
+msgid "Confirmation"
+msgstr "დასტური"
+
+msgid "Connectivity"
+msgstr "დაკავშირება"
+
+msgid "Continue"
+msgstr "გაგრძელება"
+
+msgid "Credentials"
+msgstr "მომხმ/პაროლი"
+
+msgid "Current Password"
+msgstr "მიმდინარე პაროლი"
+
+msgid "Custom value"
+msgstr "მითითებული მნიშვნელობა"
+
+msgid "Customization"
+msgstr "ხელით შეტანილი ცვლილებები"
+
+msgid "DNS"
+msgstr "DNS"
+
+msgid "DNS Server"
+msgstr "DNS სერვერი"
+
+msgid "DNS Servers"
+msgstr "DNS სერვერები"
+
+msgid "DNS label cannot be longer than 63 characters"
+msgstr "DNS-ის ჭდე 64 სიმბოლოზე გრძელი არ შეიძლება იყოს"
+
+msgid "DNS label cannot be longer that 63 characters"
+msgstr "DNS-ის ჭდე არ შეიძლება 63 სიმბოლოზე გრძელი იყოს"
+
+msgid "DNS server"
+msgstr "DNS სერვერი"
+
+msgid "DNS servers"
+msgstr "DNS სერვერები"
+
+msgid "Data"
+msgstr "მონაცემები"
+
+msgid "Debugging output"
+msgstr "დამატებითი ინფორმაციის გამოტანა"
+
+msgid "Default"
+msgstr "ნაგულისხმევი"
+
+msgid "Delete"
+msgstr "წაშლა"
+
+msgid "Delete a user"
+msgstr "მომხმარებლის წაშლა"
+
+msgid "Delete a user."
+msgstr "მომხმარებლის წაშლა."
+
+msgid "Delete all?"
+msgstr "წავშალო ყველა?"
+
+msgid "Deny"
+msgstr "უარყოფა"
+
+msgid "Description"
+msgstr "აღწერა"
+
+msgid "Detect"
+msgstr "დადგენა"
+
+msgid "Digest"
+msgstr "დაიჯესტი"
+
+msgid "Direct"
+msgstr "პირდაპირი"
+
+msgid "Disable"
+msgstr "გამორთვა"
+
+msgid "Disabled"
+msgstr "გამორთულია"
+
+msgid "Display name"
+msgstr "ნაჩვენები სახელი"
+
+msgid "Documentation"
+msgstr "დოკუმენტაცია"
+
+msgid "Domain"
+msgstr "დომენი"
+
+msgid "Domain GUID"
+msgstr "დომენის GUID"
+
+msgid "Domain SID"
+msgstr "დომენის SID"
+
+msgid "Domain name"
+msgstr "დომენის სახელი"
+
+msgid "Download"
+msgstr "გადმოწერა"
+
+msgid "Edit"
+msgstr "ჩასწორება"
+
+msgid "Email address"
+msgstr "ელფოსტის მისამართი"
+
+msgid "Enable"
+msgstr "ჩართვა"
+
+msgid "Enabled"
+msgstr "ჩართულია"
+
+msgid "Entry"
+msgstr "ჩანაწერი"
+
+msgid "Error"
+msgstr "შეცდომა"
+
+msgid "Excluded attributes"
+msgstr "გაფართოებული ატრიბუტები"
+
+msgid "Exclusive"
+msgstr "ექსკლუზიური"
+
+msgid "Expand All"
+msgstr "ყველას ამოკეცვა"
+
+msgid "Expression"
+msgstr "გამოსახულება"
+
+msgid "External"
+msgstr "გარე"
+
+msgid "Failed to add"
+msgstr "დამატების შეცდომა"
+
+msgid "False"
+msgstr "მცდარი"
+
+msgid "Filter"
+msgstr "ფილტრი"
+
+msgid "Find"
+msgstr "მოძებნა"
+
+msgid "Fingerprint"
+msgstr "ანაბეჭდი"
+
+msgid "Fingerprints"
+msgstr "თითის ანაბეჭდები"
+
+msgid "First"
+msgstr "პირველი"
+
+msgid "First name"
+msgstr "სახელი"
+
+msgid "Flags"
+msgstr "ალმები"
+
+msgid "Force"
+msgstr "ძალა"
+
+msgid "Full name"
+msgstr "სრული სახელი"
+
+msgid "GID"
+msgstr "GID"
+
+msgid "GSSAPI|EXTERNAL"
+msgstr "GSSAPI|EXTERNAL"
+
+msgid "General"
+msgstr "ზოგადი"
+
+msgid "Get"
+msgstr "მიღება"
+
+msgid "Google"
+msgstr "Google"
+
+msgid "Group"
+msgstr "ჯგუფი"
+
+msgid "Group name"
+msgstr "ჯგუფის სახელი"
+
+msgid "Groups"
+msgstr "ჯგუფები"
+
+msgid "Hide"
+msgstr "დამალვა"
+
+msgid "Hide details"
+msgstr "დეტალების დამალვა"
+
+msgid "Home directory"
+msgstr "საწყისი საქაღალდე"
+
+msgid "Host"
+msgstr "ჰოსტი"
+
+msgid "Host Group"
+msgstr "ჰოსტების ჯგუფი"
+
+msgid "Host Groups"
+msgstr "ჰოსტის ჯგუფები"
+
+msgid "Host Name"
+msgstr "ჰოსტის სახელი"
+
+msgid "Host name"
+msgstr "ჰოსტის სახელი"
+
+msgid "Host-group"
+msgstr "ჰოსტების ჯგუფი"
+
+msgid "Hostname"
+msgstr "ჰოსტის სახელი"
+
+msgid "Hosts"
+msgstr "ჰოსტები"
+
+msgid "IP Address"
+msgstr "IP მისამართი"
+
+msgid "IPA CA certificate"
+msgstr "IPA CA სერტიფიკატი"
+
+msgid "IPA CA servers"
+msgstr "IPCA CA სერვერები"
+
+msgid "IPA DNS servers"
+msgstr "IPA DNS სერვერები"
+
+msgid "IPA KRA servers"
+msgstr "IPA KRA სერვერები"
+
+msgid "Identity"
+msgstr "იდენტიფიკაცია"
+
+msgid "Included attributes"
+msgstr "ჩასმული ატრიბუტები"
+
+msgid "Indirect"
+msgstr "არაპირდაპირი"
+
+msgid "Initials"
+msgstr "ინიციალები"
+
+msgid "Input file"
+msgstr "შეყვანის ფაილი"
+
+msgid "Input filename"
+msgstr "შეიყვანეთ ფაილის სახელი"
+
+msgid "Internal Error"
+msgstr "შიდა შეცდომა"
+
+msgid "Invalid number of parts!"
+msgstr "ნაწილების რაოდენობა არასწორია!"
+
+msgid "Issue"
+msgstr "Პრობლემა"
+
+msgid "Issued On"
+msgstr "გამოცემის თარიღი"
+
+msgid "Issuer"
+msgstr "გამომცემელი"
+
+msgid "Job Title"
+msgstr "პროფესია"
+
+msgid "Key"
+msgstr "გასაღები"
+
+msgid "LDAP DN"
+msgstr "LDAP DN"
+
+msgid "LDAP basedn"
+msgstr "LDAP basedn"
+
+msgid "LDAP password"
+msgstr "LDAP პაროლი"
+
+msgid "Label"
+msgstr "ჭდე"
+
+msgid "Labels"
+msgstr "ჭდეები"
+
+msgid "Last"
+msgstr "ბოლო"
+
+msgid "Last name"
+msgstr "გვარი"
+
+msgid "Level"
+msgstr "დონე"
+
+msgid "Loading"
+msgstr "ჩატვირთვა"
+
+msgid "Locality"
+msgstr "რაიონი"
+
+msgid "Location"
+msgstr "მდებარეობა"
+
+msgid "Log in"
+msgstr "შესვლა"
+
+msgid "Log out"
+msgstr "გასვლა"
+
+msgid "MAC address"
+msgstr "MAC მისამართი"
+
+msgid "Manager"
+msgstr "მმართველი"
+
+msgid "Map"
+msgstr "რუკა"
+
+msgid "Match"
+msgstr "დამთხვევა"
+
+msgid "Matched"
+msgstr "ემთხვევა"
+
+msgid "Member of"
+msgstr "წარმოადგენს წევრს"
+
+msgid "Members"
+msgstr "წევრები"
+
+msgid "Migrate"
+msgstr "მიგრაცია"
+
+msgid "Migrating"
+msgstr "მიგრირება"
+
+msgid "Minimum length of password"
+msgstr "პაროლის მინიმალური სიგრძე"
+
+msgid "Model"
+msgstr "მოდელი"
+
+msgid "Modified"
+msgstr "შეცვლილია"
+
+msgid "Mount point"
+msgstr "მიმაგრების წერტილი"
+
+msgid "Must be a positive number"
+msgstr "უნდა წარმოადგენდეს დადებით რიცხვს"
+
+msgid "Name"
+msgstr "სახელი"
+
+msgid "Network Services"
+msgstr "ქსელური სერვისები"
+
+msgid "New Password"
+msgstr "ახალი პაროლი"
+
+msgid "Next"
+msgstr "შემდეგი"
+
+msgid "Non-Active Directory domain"
+msgstr "არა-Active Directory-ის დომენი"
+
+msgid "Note"
+msgstr "შენიშვნა"
+
+msgid "OK"
+msgstr "დიახ"
+
+msgid "OTP Configuration"
+msgstr "OTP-ის მორგება"
+
+msgid "One-Time Password"
+msgstr "ერთჯერადი პაროლი"
+
+msgid "Operating system"
+msgstr "ოპერაციული სისტემა"
+
+msgid "Options"
+msgstr "მორგება"
+
+msgid "Order"
+msgstr "დალაგება"
+
+msgid "Organization"
+msgstr "ორგანიზაცია"
+
+msgid "Organizational Unit"
+msgstr "ორგანიზაციული ერთეული"
+
+#, c-format
+msgid "Out of Memory!\n"
+msgstr "არასაკმარისი მეხსიერება!\n"
+
+msgid "Out of memory\n"
+msgstr "არასაკმარისი მეხსიერება!\n"
+
+#, c-format
+msgid "Out of memory \n"
+msgstr "არასაკმარისი მეხსიერება! \n"
+
+#, c-format
+msgid "Out of memory!"
+msgstr "არასაკმარისი მეხსიერება!"
+
+#, c-format
+msgid "Out of memory!\n"
+msgstr "არასაკმარისი მეხსიერება!\n"
+
+msgid "Out of memory!?\n"
+msgstr "არასაკმარისი მეხსიერება!\n"
+
+msgid "Output filename"
+msgstr "გამოტანის ფაილის სახელი"
+
+msgid "Owner"
+msgstr "მფლობელი"
+
+msgid "Owners"
+msgstr "მფლობელები"
+
+msgid "PAD"
+msgstr "PAD"
+
+msgid "Page"
+msgstr "გვერდი"
+
+msgid "Parameters"
+msgstr "პარამეტრები"
+
+msgid "Parse error"
+msgstr "დამუშავების შეცდომა"
+
+msgid "Password"
+msgstr "პაროლი"
+
+msgid "Password expiration"
+msgstr "პაროლის ვადა"
+
+msgid "Passwords do not match"
+msgstr "პაროლები არ ემთხვევა"
+
+msgid "Passwords do not match!"
+msgstr "პაროლები არ ემთხვევა!"
+
+#, c-format
+msgid "Passwords do not match!\n"
+msgstr "პაროლები არ ემთხვევა!\n"
+
+msgid "Passwords must match"
+msgstr "პაროლები არ ემთხვევა"
+
+msgid "Permission"
+msgstr "წვდომა"
+
+msgid "Permissions"
+msgstr "წვდომები"
+
+msgid "Platform"
+msgstr "პლატფორმა"
+
+msgid "Policy"
+msgstr "პოლიტიკა"
+
+msgid "Port"
+msgstr "პორტი"
+
+msgid "Positional argument"
+msgstr "პოზიციური არგუმენტები"
+
+msgid "Positional arguments"
+msgstr "პოზიციური არგუმენტები"
+
+msgid "Preference"
+msgstr "მორგება"
+
+msgid "Prev"
+msgstr "წინა"
+
+msgid "Print debugging information"
+msgstr "პროგრამის გასამართი ინფორმაციის გამოტანა"
+
+msgid "Priority"
+msgstr "პრიორიტეტი"
+
+msgid "Privilege"
+msgstr "პრივილეგიები"
+
+msgid "Privilege description"
+msgstr "პრივილეგიის აღწერა"
+
+msgid "Privileges"
+msgstr "პრივილეგიები"
+
+msgid "Profile"
+msgstr "პროფილი"
+
+msgid "Profile ID"
+msgstr "პროფილის ID"
+
+msgid "Profile description"
+msgstr "პროფილის აღწერა"
+
+msgid "Profiles"
+msgstr "პროფილები"
+
+msgid "Protocol"
+msgstr "პროტოკოლი"
+
+msgid "Provisioning"
+msgstr "მუშაობისთვის მომზადება"
+
+msgid "Public Key"
+msgstr "საჯარო გასაღები"
+
+msgid "Public key"
+msgstr "საჯარო გასაღები"
+
+msgid "Public key:"
+msgstr "საჯარო გასაღები:"
+
+msgid "Quantity"
+msgstr "რაოდენობა"
+
+msgid "Reason"
+msgstr "მიზეზი"
+
+msgid "Record Type"
+msgstr "ჩანაწერის ტიპი"
+
+msgid "Record type"
+msgstr "ჩანაწერის ტიპი"
+
+msgid "Refresh"
+msgstr "განახლება"
+
+msgid "Regular Expression"
+msgstr "რეგულარული ექსპრესია"
+
+msgid "Remove"
+msgstr "წაშლა"
+
+msgid "Remove hold"
+msgstr "ქმედების შეჩერების გაუქმება"
+
+msgid "Remove hosts"
+msgstr "ჰოსტის წაშლა"
+
+msgid "Remove services"
+msgstr "სერვისების წაშლა"
+
+msgid "Rename"
+msgstr "გადარქმევა"
+
+msgid "Replacement"
+msgstr "შემცვლელი"
+
+msgid "Required"
+msgstr "საჭიროა"
+
+msgid "Reset"
+msgstr "საწყის მნიშვნელობებზე დაბრუნება"
+
+msgid "Restore"
+msgstr "აღდგენა"
+
+msgid "Result"
+msgstr "შედეგი"
+
+msgid "Retries"
+msgstr "თავიდან ცდები"
+
+msgid "Retry"
+msgstr "თავიდან ცდა"
+
+msgid "Revert"
+msgstr "დაბრუნება"
+
+msgid "Revoke"
+msgstr "გაუქმება"
+
+msgid "Revoked"
+msgstr "ამოღებული"
+
+msgid "Rights"
+msgstr "უფლებები"
+
+msgid "Role"
+msgstr "როლი"
+
+msgid "Role name"
+msgstr "როლის სახელი"
+
+msgid "Roles"
+msgstr "როლები"
+
+msgid "Rules"
+msgstr "წესები"
+
+msgid "Run Commands"
+msgstr "ბრძანებების გაშვება"
+
+msgid "SELinux User"
+msgstr "SELinux-ის მომხმარებელი"
+
+msgid "SID"
+msgstr "SID"
+
+msgid "SSH public key"
+msgstr "SSH საჯარო გასაღები"
+
+msgid "SSH public key:"
+msgstr "SSH საჯარო გასაღები:"
+
+msgid "SSH public keys"
+msgstr "SSH საჯარო გასაღები"
+
+msgid "Save"
+msgstr "შენახვა"
+
+msgid "Scope"
+msgstr "ფარგლები"
+
+msgid "Search"
+msgstr "ძებნა"
+
+msgid "Secret"
+msgstr "საიდუმლო"
+
+msgid "Select All"
+msgstr "ყველას მონიშვნა"
+
+msgid "Self"
+msgstr "Self"
+
+msgid "Serial"
+msgstr "სერიული"
+
+msgid "Serial Number"
+msgstr "სერიული ნომერი"
+
+msgid "Serial number"
+msgstr "სერიული ნომერი"
+
+msgid "Server"
+msgstr "სერვერი"
+
+msgid "Server Name"
+msgstr "სერვერის სახელი"
+
+msgid "Server Options"
+msgstr "სერვერის პარამეტრები"
+
+msgid "Server name"
+msgstr "სერვერი სახელი"
+
+msgid "Servers"
+msgstr "სერვერები"
+
+msgid "Service"
+msgstr "სერვისი"
+
+msgid "Service Options"
+msgstr "სერვისის მორგება"
+
+msgid "Service Settings"
+msgstr "სერვერის მორგება"
+
+msgid "Services"
+msgstr "სერვისები"
+
+msgid "Set"
+msgstr "დაყენება"
+
+msgid "Set One-Time Password"
+msgstr "ერთჯერადი პაროლის დაყენება"
+
+msgid "Set public key"
+msgstr "საჯარო გასაღების დაყენება"
+
+msgid "Settings"
+msgstr "მორგება"
+
+msgid "Shared"
+msgstr "გაზიარებული"
+
+msgid "Show"
+msgstr "ჩვენება"
+
+msgid "Show QR code"
+msgstr "QR კოდის ჩვენება"
+
+msgid "Show details"
+msgstr "დეტალების ჩვენება"
+
+msgid "Signature"
+msgstr "ხელმოწერა"
+
+msgid "Size"
+msgstr "ზომა"
+
+msgid "Source Hosts"
+msgstr "საწყისი ჰოსტები"
+
+msgid "Source host"
+msgstr "საწყისი ჰოსტი"
+
+msgid "Stage"
+msgstr "დაუდასტურებლად მონიშვნა"
+
+msgid "Standard"
+msgstr "სტანდარტული"
+
+msgid "State"
+msgstr "მდგომარეობა"
+
+msgid "State/Province"
+msgstr "რეგიონი/მხარე"
+
+msgid "Status"
+msgstr "სტატუსი"
+
+msgid "Street address"
+msgstr "ქუჩის მისამართი"
+
+msgid "Subject"
+msgstr "თემა"
+
+msgid "Subtype"
+msgstr "ქვეტიპი"
+
+msgid "Success"
+msgstr "წარმატება"
+
+msgid "Synchronizing"
+msgstr "სინქრონიზაცია"
+
+msgid "Target"
+msgstr "სამიზნე"
+
+msgid "Telephone Number"
+msgstr "ტელეფონის ნომერი"
+
+msgid "Timeout"
+msgstr "დროის ამოწურვა"
+
+msgid "Topology"
+msgstr "ტოპოლოგია"
+
+msgid "True"
+msgstr "ჭეშმარიტი"
+
+msgid "Trust"
+msgstr "ნდობა"
+
+msgid "Trusts"
+msgstr "ნდობები"
+
+msgid "Type"
+msgstr "ტიპი"
+
+msgid "UID"
+msgstr "UID"
+
+msgid "URI"
+msgstr "URI"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "Unable to communicate with CMS"
+msgstr "CMS-თან დაკავშირება შეუძლებელია"
+
+msgid "Undo"
+msgstr "დაბრუნება"
+
+msgid "Unknown"
+msgstr "უცნობი"
+
+msgid "Unknown Error"
+msgstr "უცნობი შეცდომა"
+
+msgid "Unlock"
+msgstr "განბლოკვა"
+
+msgid "Unsaved Changes"
+msgstr "შეუნახავი ცვლილებები"
+
+msgid "Unspecified"
+msgstr "მიუთითებელი"
+
+msgid "Unsupported value"
+msgstr "მხარდაუჭერელი მნიშვნელობა"
+
+msgid "Update"
+msgstr "განახლება"
+
+msgid "User"
+msgstr "მომხმარებელი"
+
+msgid "User Group"
+msgstr "მომხმარებლის ჯგუფი"
+
+msgid "User Groups"
+msgstr "მომხმარებლის ჯგუფები"
+
+msgid "User ID"
+msgstr "მომხმარებლის ID"
+
+msgid "User Login"
+msgstr "მომხმარებლის შესვლა"
+
+msgid "User Options"
+msgstr "მომხმარებლის პარამეტრები"
+
+msgid "User group"
+msgstr "მომხმარებლის ჯგუფი"
+
+msgid "User login"
+msgstr "მომხმარებლის შესვლა"
+
+msgid "User logins"
+msgstr "მომხმარებლის სახელები"
+
+msgid "User name"
+msgstr "მომხმარებლის სახელი"
+
+msgid "Username"
+msgstr "მომხმარებელი"
+
+msgid "Users"
+msgstr "მომხმარებლები"
+
+msgid "Valid from"
+msgstr "Ძალაშია"
+
+msgid "Validation error"
+msgstr "შემოწმების შეცდომა"
+
+msgid "Validity"
+msgstr "სისწორე"
+
+msgid "Vault configuration"
+msgstr "საცავის მორგება"
+
+msgid "Vendor"
+msgstr "მომწოდებელი"
+
+msgid "Version"
+msgstr "ვერსია"
+
+msgid "View"
+msgstr "ხედი"
+
+msgid "Warning"
+msgstr "ყურადღება"
+
+msgid "Weight"
+msgstr "სიმძიმე"
+
+msgid "Working"
+msgstr "მუშაობს"
+
+msgid "Your session has expired. Please log in again."
+msgstr "სესიის ვადა გასულია. თავიდან შედით."
+
+msgid "ZIP"
+msgstr "ZIP"
+
+msgid "basedn"
+msgstr "basedn"
+
+msgid "cannot be longer that {} characters"
+msgstr "არ შეიძლება {} სიმბოლოზე გრძელი იყოს"
+
+msgid "command"
+msgstr "ბრძანება"
+
+msgid "commands"
+msgstr "ბრძანებები"
+
+msgid "delete"
+msgstr "წაშლა"
+
+msgid "description"
+msgstr "აღწერა"
+
+msgid "domain"
+msgstr "დომენი"
+
+msgid "entries"
+msgstr "ჩანაწერები"
+
+msgid "entry"
+msgstr "ჩანაწერი"
+
+msgid "filename"
+msgstr "ფაილის სახელი"
+
+#, c-format
+msgid "fork() failed\n"
+msgstr "fork() -ის შეცდომა\n"
+
+msgid "group"
+msgstr "ჯგუფი"
+
+msgid "groups"
+msgstr "ჯგუფები"
+
+msgid "host"
+msgstr "ჰოსტი"
+
+msgid "host group"
+msgstr "ჰოსტების ჯგუფი"
+
+msgid "host groups"
+msgstr "ჰოსტის ჯგუფები"
+
+msgid "hostgroup"
+msgstr "ჰოსტების ჯგუფი"
+
+msgid "hostgroups"
+msgstr "ჰოსტის ჯგუფები"
+
+msgid "hostname"
+msgstr "ჰოსტის სახელი"
+
+msgid "hosts"
+msgstr "ჰოსტები"
+
+msgid "invalid port number"
+msgstr "პორტის არასწორი ნომერი"
+
+msgid "is required"
+msgstr "აუცილებელია"
+
+#, c-format
+msgid "krb5_kt_close %1$d: %2$s\n"
+msgstr "krb5_kt_close %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_get_entry %1$d: %2$s\n"
+msgstr "krb5_kt_get_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_remove_entry %1$d: %2$s\n"
+msgstr "krb5_kt_remove_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_parse_name %1$d: %2$s\n"
+msgstr "krb5_parse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_unparse_name %1$d: %2$s\n"
+msgstr "krb5_unparse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "kvno %d\n"
+msgstr "kvno %d\n"
+
+msgid "location"
+msgstr "მდებარეობა"
+
+msgid "locations"
+msgstr "მდებარეობები"
+
+msgid "not found"
+msgstr "ვერ მოიძებნა"
+
+#, c-format
+msgid "out of memory\n"
+msgstr "არასაკმარისი მეხსიერება\n"
+
+msgid "password"
+msgstr "პაროლი"
+
+msgid "permission"
+msgstr "წვდომა"
+
+msgid "permissions"
+msgstr "წვდომები"
+
+msgid "preserve"
+msgstr "შენარჩუნება"
+
+msgid "privilege"
+msgstr "პრივილეგიები"
+
+msgid "privileges"
+msgstr "პრივილეგიები"
+
+#, c-format
+msgid "read error\n"
+msgstr "კითხვის შეცდომა\n"
+
+#, c-format
+msgid "realm not found\n"
+msgstr "რეალმი არ არსებობს\n"
+
+msgid "role"
+msgstr "როლები"
+
+msgid "roles"
+msgstr "როლები"
+
+msgid "seconds"
+msgstr "წამი"
+
+msgid "server"
+msgstr "სერვერი"
+
+msgid "servers"
+msgstr "სერვერები"
+
+msgid "service"
+msgstr "სერვისი"
+
+msgid "services"
+msgstr "სერვისები"
+
+msgid "trust"
+msgstr "ნდობა"
+
+msgid "trust configuration"
+msgstr "ნდობის მორგება"
+
+msgid "unknown provider"
+msgstr "უცნობი მომწოდებელი"
+
+msgid "url"
+msgstr "url"
+
+msgid "user"
+msgstr "მომხმარებელი"
+
+msgid "users"
+msgstr "მომხმარებლები"
+
+msgid "value"
+msgstr "მნიშვნელობა"
+
+msgid "value is missing"
+msgstr "აკლია მნიშვნელობა"

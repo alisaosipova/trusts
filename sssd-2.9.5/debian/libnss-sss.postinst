@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        if [ -n "$2" ]; then
+            # upgrade
+            version="$2"
+
+            # fix automount typo
+            if dpkg --compare-versions $version lt "2.2.3-3"; then
+                sed -i 's/automounter/automount/' "${DPKG_ROOT}/etc/nsswitch.conf"
+            fi
+        fi
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+
+#DEBHELPER#

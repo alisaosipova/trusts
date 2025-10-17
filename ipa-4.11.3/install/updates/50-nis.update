@@ -1,0 +1,3 @@
+# Updates are applied only if NIS plugin has been configured
+# update definitions are located in install/share/nis-update.uldif
+plugin: update_nis_configuration

@@ -1,0 +1,2 @@
+krb5-gss-samples: no-manual-page usr/bin/gss-client
+krb5-gss-samples: no-manual-page usr/bin/gss-server

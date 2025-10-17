@@ -1,0 +1,306 @@
+# -*- coding: utf-8 -*-
+
+The following people have contributed to the FreeIPA project.
+(Listed in alphabetical order within category)
+
+Developers:
+	Abhijeet
+	Abhijeet Kasurde
+	Adam Misnyovszki
+	Adam Williamson
+	Adam Young
+	Ade Lee
+	Aleksei Slaikovskii
+	Ales 'alich' Marecek
+	Alex Zeleznikov
+	Alexander Bokovoy
+	Alexander Koksharov
+	Alexander Scheel
+	Alexandra Nikandrova
+	Alexandre Mulatinho
+	Alexey Slaykovsky
+	Alexey Tikhonov
+	Amit Kumar
+	Ana Krivokapić
+	Andika Triwidada
+	Andrew Wnuk
+	Antonio Torres
+	Antonio Torres Moríñigo
+	Anuja More
+	Ariel O. Barria
+	Armando Neto
+	Ben Lipton
+	Benjamin Drung
+	Brian Cook
+	Brian J. Murrell
+	Brian Turek
+	Carl George
+	Carla Martinez
+	Cédric Jeanneret
+	Changmin Teng
+	Chris Kelley
+	Christian Heimes
+	Christian Hermann
+	Daniel Lara Souza
+	David Kreitschmann
+	David Kupka
+	David O'Brien
+	David Pascual
+	David Spångberg
+	Diane Trout
+	Dinesh Prasanth M K
+	Diogo Nunes
+	Dmitri Pal
+	Don Davis
+	Drew Erny
+	Emilio Herrera
+	Endi Sukma Dewata
+	Erik
+	Erik Belko
+	Fabiano Fidêncio
+	Felipe Volpone
+	Filip Dvorak
+	Filip Skola
+	Florence Blanc-Renaud
+	Francesco Marella
+	Francisco Trivino
+	François Cami
+	Frank Cusack
+	Fraser Tweedale
+	Gabe Alford
+	Ganna Kaihorodova
+	Gaurav Talreja
+	German Parente
+	Gowrishankar Rajaiyan
+	Günther Deschner
+	Hela Basa
+	Ian Kumlien
+	Ian Pilcher
+	Iker Pedrosa
+	Isaac Boukris
+	Jakub Hrozek
+	James Groffen
+	Jan Barta
+	Jan Cholasta
+	Jan Kuparinen
+	Jan Pazdziora
+	Jan Zelený
+	Jarl Gullberg
+	Jason Gerard DeRose
+	Jason Woods
+	Jayesh
+	Jayesh Garg
+	Jeremy Frasier
+	Jérôme Fenal
+	Jerry James
+	Jesse Sandberg
+	jh23453
+	Jim Meyering
+	Jochen Kellner
+	JoeDrane
+	John Dennis
+	John L
+	John Morris
+	Jr Aquino
+	Julian Gethmann
+	Julien Rische
+	Justin Stephenson
+	Kaleemullah Siddiqui
+	Karl MacMillan
+	Kevin McCarthy
+	Krzysztof Klimonda
+	Kyle Baker
+	Lars Sjostrom
+	Lenka Doudova
+	Lenka Ryznarova
+	Lenz Grimmer
+	Lewis Eason
+	Lubomír Rintel
+	Ludwig Krispenz
+	Lukáš Slebodník
+	Lynn Root
+	Marcin Stanclik
+	Mark McLoughlin
+	Mark Reynolds
+	Marko Myllynen
+	Martin Babinsky
+	Martin Bašti
+	Martin Košek
+	Martin Nagy
+	Matt Rogers
+	Matthew Davis
+	mbhalodi
+	Michael Simacek
+	Michal Polovka
+	Michal Reznik
+	Michal Židek
+	Milan Kubík
+	Miro Hrončok
+	MIZUTA Takeshi
+	Mohammad Rizwan
+	Mohammad Rizwan Yusuf
+	Nalin Dahyabhai
+	Nathan Kinder
+	Nathaniel McCallum
+	ndehadra
+	Nick Hatch
+	Nikhil Dehadrai
+	Nikola Knazekova
+	Nikolai Kondrashov
+	Niranjan Mallapadi
+	Niranjan MR
+	Oğuz Ersen
+	Oleg Fayans
+	Oleg Kozlov
+	Oliver Gutierrez
+	Ondřej Hamada
+	Orion Poplawski
+	Patrice Duc-Jacquet
+	Pavel Březina
+	Pavel Picka
+	Pavel Vomáčka
+	Pavel Zůna
+	Pete Rowley
+	Peter Keresztes Schmidt
+	Peter Lacko
+	Petr Čech
+	Petr Špaček
+	Petr Viktorin
+	Petr Voborník
+	Piotr Drąg
+	Rafael Fontenelle
+	Rafael Guterres Jeffman
+	realsobek
+	René Genz
+	Rich Megginson
+	Ricky Tigg
+	Rishabh Dave
+	Rob Crittenden
+	Robbie Harwood
+	Robert Collins
+	Robert Kuska
+	s1341
+	Sam Bristow
+	Sam Morris
+	Scott Poore
+	Sergey Orlov
+	Sergio Oliveira Campos
+	Serhii Tsymbaliuk
+	shanyin
+	Simo Sorce
+	Simon Nussbaum
+	Slava Aseev
+	Spencer E. Olson
+	Stanislav Laznicka
+	Stanislav Levin
+	Stasiek Michalski
+	Stephen Gallagher
+	sudharsanomprakash
+	Sudhir Menon
+	Sumedh Sidhaye
+	sumenon
+	Sumit Bose
+	Sylvain Baubeau
+	Takeshi MIZUTA
+	Temuri Doghonadze
+	Theodor van Nahl
+	Thierry Bordaz
+	Thomas Woerner
+	Thorsten Scherf
+	Tibor Dudlák
+	Timo Aaltonen
+	Todd Zullinger
+	Tomáš Babej
+	Tomas Halman
+	Tomáš Křížek
+	Troy Dawson
+	Varun Mylaraiah
+	Viacheslav Sychov
+	Viktor Ashirov
+	Vit Mojzis
+	W. Michael Petullo
+	Weblate
+	William Brown
+	William Jon McCann
+	Xiao-Long Chen
+	Yuri Chornoivan
+	Zdenek Pytela
+	zdover
+	김인수
+
+Documentation:
+	Gabe Alford
+	Martin Bašti
+	Tomáš Čapek
+	Ella Deon Lackey
+	David O'Brien
+
+Testing:
+	Xiyang Dong
+	Michael Gregg
+	Steeve Goveas
+	Suzanne Hillman
+	Chandrasekar Kannan
+	Namita Krishnan
+	Varun Mylaraiah
+	Scott Poore
+	Gowrishankar Rajaiyan
+	Jenny Severance
+	Kaleemullah Siddiqui
+	Yi Zhang
+
+Translators:
+	A S Alam
+	Abhijeet Kasurde
+	Alex
+	Alexander Bokovoy
+	Andi Chandler
+	Andrew Martynov
+	Brian Curtich
+	David Kreitschmann
+	dominique
+	Emilio Herrera
+	Gundachandru
+	Héctor Daniel Cabrera
+	Jake Li
+	Jérôme Fenal
+	Josef Hruška
+	Manuela Silva
+	Marco Aurélio Krause
+	Martin Bašti
+	Martin Kosek
+	Martin Liu
+	Olesya Gerasimenko
+	Omar Berroterán S.
+	Paul Ritter
+	Pavel Borecki
+	Pavel Vomacka
+	Piotr Drąg
+	Robert Antoni Buj Gelonch
+	Sankarshan Mukhopadhyay
+	Teguh DC
+	Tomas Babej
+	Yuri Chornoivan
+	Zdenek
+	zhenglei
+
+Wiki, Solution and Idea Contributors:
+	James Hogarth
+	Dale Macartney
+	Viji V Nair
+	Bryce Nordgren
+	Ryan Thompson
+	David Zeuthen
+
+Graphic Design and User Interaction Design:
+	Kyle Baker
+	Máirín Duffy
+
+Management:
+	Scott Haines
+	Nathan Kinder
+	Martin Košek
+	Bob Lord
+	Dmitri Pal
+	Kevin Unthank
+	Karl Wirth

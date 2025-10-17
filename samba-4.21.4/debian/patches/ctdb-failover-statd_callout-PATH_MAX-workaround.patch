@@ -1,0 +1,15 @@
+From: Michael Tokarev <mjt@tls.msk.ru>
+Date: Mon, 06 Jan 2025 22:38:32 +0300
+Subject: ctdb/failover/statd_callout.c: add PATH_MAX workaround
+
+diff --git a/ctdb/failover/statd_callout.c b/ctdb/failover/statd_callout.c
+--- a/ctdb/failover/statd_callout.c
++++ b/ctdb/failover/statd_callout.c
+@@ -26,4 +26,7 @@
+ #include <time.h>
+ #include <unistd.h>
++#ifndef PATH_MAX
++# define PATH_MAX 1024
++#endif
+ 
+ /*

@@ -1,0 +1,1733 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR FreeIPA Contributors
+# This file is distributed under the same license as the freeipa package.
+# Oğuz Ersen <oguzersen@protonmail.com>, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.9.0.dev202006101925+gitba7974bfd\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2020-08-29 11:29+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"Language-Team: Turkish <https://translate.fedoraproject.org/projects/freeipa/"
+"master/tr/>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.1\n"
+
+msgid ""
+"\n"
+" Add a new server:\n"
+"   ipa radiusproxy-add MyRADIUS --server=radius.example.com:1812\n"
+msgstr ""
+"\n"
+" Yeni bir sunucu ekleyin:\n"
+"   ipa radiusproxy-add MyRADIUS --server=radius.example.com:1812\n"
+
+msgid ""
+"\n"
+" Add a permission that grants the ability to manage group membership:\n"
+"   ipa permission-add --attrs=member --permissions=write --type=group "
+"\"Manage Group Members\"\n"
+msgstr ""
+"\n"
+" Grup üyeliğini yönetme yeteneği veren bir izin ekleyin:\n"
+"   ipa permission-add --attrs=member --permissions=write --type=group "
+"\"Manage Group Members\"\n"
+
+msgid ""
+"\n"
+" Add a permission that grants the creation of users:\n"
+"   ipa permission-add --type=user --permissions=add \"Add Users\"\n"
+msgstr ""
+"\n"
+" Kullanıcıların oluşturulmasına izin veren bir izin ekleyin:\n"
+"   ipa permission-add --type=user --permissions=add \"Add Users\"\n"
+
+msgid ""
+"\n"
+" Change the secret:\n"
+"   ipa radiusproxy-mod MyRADIUS --secret\n"
+msgstr ""
+"\n"
+" Parolayı değiştirin:\n"
+"   ipa radiusproxy-mod MyRADIUS --secret\n"
+
+msgid ""
+"\n"
+" Delete a configuration:\n"
+"   ipa radiusproxy-del MyRADIUS\n"
+msgstr ""
+"\n"
+" Bir yapılandırmayı silin:\n"
+"   ipa radiusproxy-del MyRADIUS\n"
+
+msgid ""
+"\n"
+" Examine the configuration:\n"
+"   ipa radiusproxy-show MyRADIUS\n"
+msgstr ""
+"\n"
+" Yapılandırmayı inceleyin:\n"
+"   ipa radiusproxy-show MyRADIUS\n"
+
+msgid ""
+"\n"
+" Find all servers whose entries include the string \"example.com\":\n"
+"   ipa radiusproxy-find example.com\n"
+msgstr ""
+"\n"
+" Girdileri \"example.com\" dizgesini içeren tüm sunucuları bulun:\n"
+"   ipa radiusproxy-find example.com\n"
+
+msgid ""
+"\n"
+"* A permission grants access to read, write, add, delete, read, search,\n"
+"  or compare.\n"
+"* A privilege combines similar permissions (for example all the permissions\n"
+"  needed to add a user).\n"
+"* A role grants a set of privileges to users, groups, hosts or hostgroups.\n"
+msgstr ""
+"\n"
+"* Bir izin okuma, yazma, ekleme, silme, arama veya karşılaştırma erişimi "
+"verir.\n"
+"* Bir ayrıcalık, benzer izinleri birleştirir (örneğin, bir kullanıcı "
+"eklemek\n"
+"  için gereken tüm izinler).\n"
+"* Bir rol kullanıcılara, gruplara, ana makinelere veya ana makine "
+"gruplarına\n"
+"  bir dizi ayrıcalık verir.\n"
+
+msgid ""
+"\n"
+"A permission enables fine-grained delegation of rights. A permission is\n"
+"a human-readable wrapper around a 389-ds Access Control Rule,\n"
+"or instruction (ACI).\n"
+"A permission grants the right to perform a specific task such as adding a\n"
+"user, modifying a group, etc.\n"
+msgstr ""
+"\n"
+"Bir izin, hakların ayrıntılı şekilde tayin edilmesini sağlar. İzin, 389-ds\n"
+"Erişim Denetim Kuralı veya talimatı (ACI) etrafında insan tarafından\n"
+"okunabilir bir sarmalayıcıdır.\n"
+"Bir izin, kullanıcı ekleme, grup değiştirme vb. gibi belirli bir görevi\n"
+"gerçekleştirme hakkı verir.\n"
+
+msgid ""
+"\n"
+"A permission is made up of a number of different parts:\n"
+"\n"
+"1. The name of the permission.\n"
+"2. The target of the permission.\n"
+"3. The rights granted by the permission.\n"
+msgstr ""
+"\n"
+"Bir izin birkaç farklı bölümden oluşur:\n"
+"\n"
+"1. İznin adı.\n"
+"2. İznin hedefi.\n"
+"3. İzin tarafından verilen haklar.\n"
+
+msgid ""
+"\n"
+"A permission may not contain other permissions.\n"
+msgstr ""
+"\n"
+"Bir izin başka izinler içeremez.\n"
+
+msgid ""
+"\n"
+"Additionally, there are the following convenience options.\n"
+"Setting one of these options will set the corresponding attribute(s).\n"
+"1. type: a type of object (user, group, etc); sets subtree and target "
+"filter.\n"
+"2. memberof: apply to members of a group; sets target filter\n"
+"3. targetgroup: grant access to modify a specific group (such as granting\n"
+"   the rights to manage group membership); sets target.\n"
+msgstr ""
+"\n"
+"Ek olarak, aşağıdaki kolaylık seçenekleri vardır.\n"
+"Bu seçeneklerden birinin ayarlanması, ilgili nitelik(ler)i ayarlayacaktır.\n"
+"1. type: bir nesne türü (user, group, vs.); alt ağacı ve hedef filtreyi "
+"ayarlar.\n"
+"2. memberof: bir grubun üyelerine uygula; hedef filtreyi ayarlar\n"
+"3. targetgroup: belirli bir grubu değiştirmek için izin ver (örneğin, grup\n"
+"   üyeliğini yönetme hakları vermek); hedefi ayarlar.\n"
+
+msgid ""
+"\n"
+"Deleting or renaming a managed permission, as well as changing its target,\n"
+"is not allowed.\n"
+msgstr ""
+"\n"
+"Yönetilen bir iznin silinmesine veya yeniden adlandırılmasına ve hedefinin\n"
+"değiştirilmesine izin verilmez.\n"
+
+msgid ""
+"\n"
+"EXAMPLES:\n"
+msgstr ""
+"\n"
+"ÖRNEKLER:\n"
+
+msgid ""
+"\n"
+"IPA supports the use of an external RADIUS proxy server for krb5 OTP\n"
+"authentications. This permits a great deal of flexibility when\n"
+"integrating with third-party authentication services.\n"
+msgstr ""
+"\n"
+"IPA, krb5 OTP kimlik doğrulamaları için harici bir RADIUS vekil\n"
+"sunucusunun kullanılmasını destekler. Bu, üçüncü taraf kimlik doğrulama\n"
+"hizmetleriyle birleşme sırasında büyük bir esneklik sağlar.\n"
+
+msgid ""
+"\n"
+"Kerberos PKINIT feature status reporting tools.\n"
+"\n"
+"Report IPA masters on which Kerberos PKINIT is enabled or disabled\n"
+"\n"
+"EXAMPLES:\n"
+" List PKINIT status on all masters:\n"
+"   ipa pkinit-status\n"
+"\n"
+" Check PKINIT status on `ipa.example.com`:\n"
+"   ipa pkinit-status --server ipa.example.com\n"
+"\n"
+" List all IPA masters with disabled PKINIT:\n"
+"   ipa pkinit-status --status='disabled'\n"
+"\n"
+"For more info about PKINIT support see:\n"
+"\n"
+"https://www.freeipa.org/page/V4/Kerberos_PKINIT\n"
+msgstr ""
+"\n"
+"Kerberos PKINIT özellik durumu bildirim araçları.\n"
+"\n"
+"Kerberos PKINIT etkinleştirilen veya devre dışı bırakılan IPA yöneticilerini "
+"bildir\n"
+"\n"
+"ÖRNEKLER:\n"
+" Tüm yöneticilerde PKINIT durumunu listele:\n"
+"   ipa pkinit-status\n"
+"\n"
+" `ipa.example.com` üzerinde PKINIT durumunu denetle:\n"
+"   ipa pkinit-status --server ipa.example.com\n"
+"\n"
+" PKINIT devre dışı bırakılan tüm IPA yöneticilerini listele:\n"
+"   ipa pkinit-status --status='disabled'\n"
+"\n"
+"PKINIT desteği hakkında daha fazla bilgi için:\n"
+"\n"
+"https://www.freeipa.org/page/V4/Kerberos_PKINIT\n"
+
+msgid ""
+"\n"
+"Manage RADIUS Proxy Servers.\n"
+msgstr ""
+"\n"
+"RADIUS Vekil Sunucularını yönetin.\n"
+
+msgid ""
+"\n"
+"Managed permissions\n"
+msgstr ""
+"\n"
+"Yönetilen izinler\n"
+
+msgid ""
+"\n"
+"Netgroups\n"
+"\n"
+"A netgroup is a group used for permission checking. It can contain both\n"
+"user and host values.\n"
+"\n"
+"EXAMPLES:\n"
+"\n"
+" Add a new netgroup:\n"
+"   ipa netgroup-add --desc=\"NFS admins\" admins\n"
+"\n"
+" Add members to the netgroup:\n"
+"   ipa netgroup-add-member --users=tuser1 --users=tuser2 admins\n"
+"\n"
+" Remove a member from the netgroup:\n"
+"   ipa netgroup-remove-member --users=tuser2 admins\n"
+"\n"
+" Display information about a netgroup:\n"
+"   ipa netgroup-show admins\n"
+"\n"
+" Delete a netgroup:\n"
+"   ipa netgroup-del admins\n"
+msgstr ""
+"\n"
+"Ağ grupları (netgroups)\n"
+"\n"
+"Bir ağ grubu, izin denetimi için kullanılan bir gruptur. Hem kullanıcı\n"
+"hem de ana makine değerleri içerebilir.\n"
+"\n"
+"ÖRNEKLER:\n"
+"\n"
+" Yeni bir ağ grubu ekleyin:\n"
+"   ipa netgroup-add --desc=\"NFS admins\" admins\n"
+"\n"
+" Ağ grubuna üye ekleyin:\n"
+"   ipa netgroup-add-member --users=tuser1 --users=tuser2 admins\n"
+"\n"
+" Bir üyeyi ağ grubundan kaldırın:\n"
+"   ipa netgroup-remove-member --users=tuser2 admins\n"
+"\n"
+" Bir ağ grubu hakkında bilgileri görüntüleyin:\n"
+"   ipa netgroup-show admins\n"
+"\n"
+" Bir ağ grubunu silin:\n"
+"   ipa netgroup-del admins\n"
+
+msgid ""
+"\n"
+"Note the distinction between attributes and entries. The permissions are\n"
+"independent, so being able to add a user does not mean that the user will\n"
+"be editable.\n"
+msgstr ""
+"\n"
+"Nitelikler ve girdiler arasındaki farka dikkat edin. İzinler bağımsızdır, "
+"bu\n"
+"nedenle bir kullanıcı ekleyebilmek, kullanıcının düzenlenebilir olacağı\n"
+"anlamına gelmez.\n"
+
+msgid ""
+"\n"
+"Permissions\n"
+msgstr ""
+"\n"
+"İzinler\n"
+
+msgid ""
+"\n"
+"Permissions that come with IPA by default can be so-called \"managed\"\n"
+"permissions. These have a default set of attributes they apply to,\n"
+"but the administrator can add/remove individual attributes to/from the set.\n"
+msgstr ""
+"\n"
+"IPA ile birlikte öntanımlı olarak gelen izinler, \"yönetilen\" izinler "
+"olarak\n"
+"adlandırılabilir. Bunların geçerli oldukları öntanımlı bir nitelik kümesi "
+"vardır,\n"
+"ancak yönetici kümeye nitelikler ekleyebilir/kümeden nitelikleri "
+"kaldırabilir.\n"
+
+msgid ""
+"\n"
+"RADIUS Proxy Servers\n"
+msgstr ""
+"\n"
+"RADIUS Vekil Sunucuları\n"
+
+msgid ""
+"\n"
+"Rights define what operations are allowed, and may be one or more\n"
+"of the following:\n"
+"1. write - write one or more attributes\n"
+"2. read - read one or more attributes\n"
+"3. search - search on one or more attributes\n"
+"4. compare - compare one or more attributes\n"
+"5. add - add a new entry to the tree\n"
+"6. delete - delete an existing entry\n"
+"7. all - all permissions are granted\n"
+msgstr ""
+"\n"
+"Haklar, hangi işlemlere izin verildiğini tanımlar ve aşağıdakilerden biri\n"
+"veya daha fazlası olabilir:\n"
+"1. write - bir veya daha fazla nitelik yaz\n"
+"2. read - bir veya daha fazla niteliği oku\n"
+"3. search - bir veya daha fazla nitelik ara\n"
+"4. compare - bir veya daha fazla niteliği karşılaştır\n"
+"5. add - ağaca yeni bir girdi ekle\n"
+"6. delete - mevcut bir girdiyi sil\n"
+"7. all - tüm izinler verildi\n"
+
+msgid ""
+"\n"
+"Self-service Permissions\n"
+"\n"
+"A permission enables fine-grained delegation of permissions. Access Control\n"
+"Rules, or instructions (ACIs), grant permission to permissions to perform\n"
+"given tasks such as adding a user, modifying a group, etc.\n"
+"\n"
+"A Self-service permission defines what an object can change in its own "
+"entry.\n"
+"\n"
+"\n"
+"EXAMPLES:\n"
+"\n"
+" Add a self-service rule to allow users to manage their address (using Bash\n"
+" brace expansion):\n"
+"   ipa selfservice-add --permissions=write --attrs={street,postalCode,l,c,"
+"st} \"Users manage their own address\"\n"
+"\n"
+" When managing the list of attributes you need to include all attributes\n"
+" in the list, including existing ones.\n"
+" Add telephoneNumber to the list (using Bash brace expansion):\n"
+"   ipa selfservice-mod --attrs={street,postalCode,l,c,st,telephoneNumber} "
+"\"Users manage their own address\"\n"
+"\n"
+" Display our updated rule:\n"
+"   ipa selfservice-show \"Users manage their own address\"\n"
+"\n"
+" Delete a rule:\n"
+"   ipa selfservice-del \"Users manage their own address\"\n"
+msgstr ""
+"\n"
+"Self-servis İzinleri\n"
+"\n"
+"Bir izin, izinlerin ayrıntılı şekilde tayin edilmesini sağlar. Erişim "
+"Denetim\n"
+"Kuralları veya talimatları (ACI), kullanıcı ekleme, grup değiştirme vb. "
+"gibi\n"
+"belirli görevleri gerçekleştirme izinleri için izin verir.\n"
+"\n"
+"Self-servis izni, bir nesnenin kendi girdisinde neleri değiştirebileceğini "
+"tanımlar.\n"
+"\n"
+"\n"
+"ÖRNEKLER:\n"
+"\n"
+" Kullanıcıların adreslerini yönetmesine izin vermek için bir self-servis "
+"kuralı\n"
+" ekleyin (Bash küme ayracı genişletmesini kullanarak):\n"
+"   ipa selfservice-add --permissions=write --attrs={street,postalCode,l,c,"
+"st} \"Users manage their own address\"\n"
+"\n"
+" Nitelikler listesini yönetirken, mevcut özellikler de dahil olmak üzere\n"
+" tüm nitelikleri listeye eklemeniz gerekir.\n"
+" Listeye telephoneNumber ekleyin (Bash küme ayracı genişletmesini "
+"kullanarak):\n"
+"   ipa selfservice-mod --attrs={street,postalCode,l,c,st,telephoneNumber} "
+"\"Users manage their own address\"\n"
+"\n"
+" Güncellenmiş kuralımızı görüntüleyin:\n"
+"   ipa selfservice-show \"Users manage their own address\"\n"
+"\n"
+" Bir kuralı silin:\n"
+"   ipa selfservice-del \"Users manage their own address\"\n"
+
+msgid ""
+"\n"
+"There are a number of allowed targets:\n"
+"1. subtree: a DN; the permission applies to the subtree under this DN\n"
+"2. target filter: an LDAP filter\n"
+"3. target: DN with possible wildcards, specifies entries permission applies "
+"to\n"
+msgstr ""
+"\n"
+"İzin verilen birkaç hedef vardır:\n"
+"1. alt ağaç: bir DN; izin, bu DN altındaki alt ağaç için geçerlidir\n"
+"2. hedef filtre: bir LDAP filtresi\n"
+"3. hedef: Olası joker karakterli DN, iznin geçerli olduğu girdileri "
+"belirtir\n"
+
+msgid "  ipa <command> --help"
+msgstr "  ipa <komut> --help"
+
+#, python-format
+msgid "\"%s\" is not a valid permission type"
+msgstr "\"%s\" geçerli bir izin türü değil"
+
+#, python-format
+msgid "\"%s\" is not an object type"
+msgstr "\"%s\" bir nesne türü değil"
+
+#, python-format
+msgid "%(attr)s does not contain '%(value)s'"
+msgstr "%(attr)s, '%(value)s' içermiyor"
+
+#, python-format
+msgid "%(attr)s: Invalid syntax."
+msgstr "%(attr)s: Geçersiz söz dizimi."
+
+#, python-format
+msgid "%(attr)s: Only one value allowed."
+msgstr "%(attr)s: Sadece bir değere izin veriliyor."
+
+#, python-format
+msgid "%(count)d RADIUS proxy server matched"
+msgid_plural "%(count)d RADIUS proxy servers matched"
+msgstr[0] "%(count)d RADIUS vekil sunucusu eşleşti"
+msgstr[1] "%(count)d RADIUS vekil sunucusu eşleşti"
+
+#, python-format
+msgid "%(count)d netgroup matched"
+msgid_plural "%(count)d netgroups matched"
+msgstr[0] "%(count)d ağ grubu eşleşti"
+msgstr[1] "%(count)d ağ grubu eşleşti"
+
+#, python-format
+msgid "%(count)d plugin loaded"
+msgid_plural "%(count)d plugins loaded"
+msgstr[0] "%(count)d eklenti yüklendi"
+msgstr[1] "%(count)d eklenti yüklendi"
+
+#, python-format
+msgid "%(count)d selfservice matched"
+msgid_plural "%(count)d selfservices matched"
+msgstr[0] "%(count)d self-servis eşleşti"
+msgstr[1] "%(count)d self-servis eşleşti"
+
+#, python-format
+msgid "%(count)d variables"
+msgstr "%(count)d değişken"
+
+#, python-format
+msgid "%(count)s server matched"
+msgid_plural "%(count)s servers matched"
+msgstr[0] "%(count)s sunucu eşleşti"
+msgstr[1] "%(count)s sunucu eşleşti"
+
+#, python-format
+msgid "%(cver)s client incompatible with %(sver)s server at '%(server)s'"
+msgstr ""
+"%(cver)s istemcisi '%(server)s' konumundaki %(sver)s sunucusu ile uyumsuz"
+
+#, python-format
+msgid "%(desc)s: %(info)s"
+msgstr "%(desc)s: %(info)s"
+
+#, python-format
+msgid "%(exception)s"
+msgstr "%(exception)s"
+
+#, python-format
+msgid "%(filename)s: file not found"
+msgstr "%(filename)s: dosya bulunamadı"
+
+#, python-format
+msgid "%(info)s"
+msgstr "%(info)s"
+
+#, python-format
+msgid "%(key)s cannot be deleted because %(label)s %(dependent)s requires it"
+msgstr "%(key)s silinemiyor çünkü %(label)s %(dependent)s onu gerektiriyor"
+
+#, python-format
+msgid ""
+"%(key)s cannot be deleted or disabled because it is the last member of "
+"%(label)s %(container)s"
+msgstr ""
+"%(key)s, %(label)s %(container)s ögesinin son üyesi olduğu için silinemiyor "
+"veya devre dışı bırakılamıyor"
+
+#, python-format
+msgid "%(label)s %(key)s cannot be deleted/modified: %(reason)s"
+msgstr "%(label)s %(key)s silinemiyor/değiştirilemiyor: %(reason)s"
+
+#, python-format
+msgid "%(line)s"
+msgstr "%(line)s"
+
+#, python-format
+msgid "%(name)s certificate is not valid"
+msgstr "%(name)s sertifikası geçerli değil"
+
+#, python-format
+msgid "%(operation)s is not supported for %(principal_type)s principals"
+msgstr "%(operation)s, %(principal_type)s yetkilileri için desteklenmiyor"
+
+#, python-format
+msgid "%(port)s is not a valid port"
+msgstr "%(port)s geçerli bir bağlantı noktası değil"
+
+#, python-format
+msgid "%(reason)s"
+msgstr "%(reason)s"
+
+#, python-format
+msgid "%(subject)s: Malformed certificate. %(reason)s"
+msgstr "%(subject)s: Hatalı biçimlendirilmiş sertifika. %(reason)s"
+
+#, python-format
+msgid "%(task)s LDAP task timeout, Task DN: '%(task_dn)s'"
+msgstr "%(task)s LDAP görev zaman aşımı, Görev DN: '%(task_dn)s'"
+
+#, python-format
+msgid "'%(command)s' is deprecated. %(additional_info)s"
+msgstr "'%(command)s' kullanımdan kaldırıldı. %(additional_info)s"
+
+#, python-format
+msgid "'%(entry)s' doesn't have a certificate."
+msgstr "'%(entry)s' bir sertifikaya sahip değil."
+
+#, python-format
+msgid "'%(name)s' is required"
+msgstr "'%(name)s' gereklidir"
+
+#, python-format
+msgid "'%(option)s' option is deprecated. %(additional_info)s"
+msgstr "'%(option)s' seçeneği kullanımdan kaldırıldı. %(additional_info)s"
+
+msgid "A description of this RADIUS proxy server"
+msgstr "Bu RADIUS vekil sunucusunun açıklaması"
+
+msgid "A dictionary representing an LDAP entry"
+msgstr "Bir LDAP girdisini temsil eden bir sözlük"
+
+msgid "A group may not be a member of itself"
+msgstr "Bir grup, kendisinin üyesi olamaz"
+
+msgid "A group may not be added as a member of itself"
+msgstr "Bir grup, kendisinin üyesi olarak eklenemez"
+
+msgid "A list of LDAP entries"
+msgstr "LDAP girdilerinin bir listesi"
+
+msgid "A managed group cannot have a password policy."
+msgstr "Yönetilen bir grubun parola politikası olamaz."
+
+#, python-format
+msgid ""
+"A problem was encountered when verifying that all members were %(verb)s: "
+"%(exc)s"
+msgstr ""
+"Tüm üyelerin %(verb)s olduğunu doğrularken bir sorunla karşılaşıldı: %(exc)s"
+
+msgid "A string searched in all relevant object attributes"
+msgstr "İlgili tüm nesne niteliklerinde aranan bir dizge"
+
+msgid "ACI"
+msgstr "ACI"
+
+#, python-format
+msgid ""
+"API Version number was not sent, forward compatibility not guaranteed. "
+"Assuming server's API version, %(server_version)s"
+msgstr ""
+"API Sürüm numarası gönderilmedi, ileri dönük uyumluluk garanti edilmiyor. "
+"Sunucunun API sürümünü varsayılıyor, %(server_version)s"
+
+msgid "Add a new RADIUS proxy server."
+msgstr "Yeni bir RADIUS vekil sunucusu ekle."
+
+msgid "Add a new netgroup."
+msgstr "Yeni bir ağ grubu ekle."
+
+msgid "Add a new self-service permission."
+msgstr "Yeni bir self-servis izni ekle."
+
+msgid "Add members to a netgroup."
+msgstr "Bir ağ grubuna üye ekle."
+
+#, python-format
+msgid "Added RADIUS proxy server \"%(value)s\""
+msgstr "RADIUS vekil sunucusu \"%(value)s\" eklendi"
+
+#, python-format
+msgid "Added netgroup \"%(value)s\""
+msgstr "Ağ grubu \"%(value)s\" eklendi"
+
+#, python-format
+msgid "Added selfservice \"%(value)s\""
+msgstr "Self-servis \"%(value)s\" eklendi"
+
+msgid "Additional instructions:"
+msgstr "Ek talimatlar:"
+
+msgid "All commands should at least have a result"
+msgstr "Tüm komutların en azından bir sonucu olmalıdır"
+
+msgid "Already registered"
+msgstr "Zaten kayıtlı"
+
+msgid "Attributes"
+msgstr "Nitelikler"
+
+msgid "Attributes to which the permission applies."
+msgstr "İznin geçerli olduğu nitelikler."
+
+msgid ""
+"Automatic update of DNS system records failed. Please re-run update of "
+"system records manually to get list of missing records."
+msgstr ""
+"DNS sistem kayıtlarının otomatik güncellenmesi başarısız oldu. Eksik "
+"kayıtların listesini almak için lütfen sistem kayıtlarının güncellemesini el "
+"ile yeniden çalıştırın."
+
+msgid "Bad format in credentials cache"
+msgstr "Kimlik bilgileri önbelleğinde bozuk biçim"
+
+#, python-format
+msgid "Bad search filter %(info)s"
+msgstr "Yanlış arama filtresi %(info)s"
+
+#, python-format
+msgid "Base64 decoding failed: %(reason)s"
+msgstr "Base64 kod çözme başarısız oldu: %(reason)s"
+
+msgid "Cannot resolve KDC for requested realm"
+msgstr "İstenen erişim alanı (realm) için KDC çözülemiyor"
+
+#, python-format
+msgid "Certificate format error: %(error)s"
+msgstr "Sertifika biçim hatası: %(error)s"
+
+#, python-format
+msgid "Certificate operation cannot be completed: %(error)s"
+msgstr "Sertifika işlemi tamamlanamıyor: %(error)s"
+
+msgid "Client is not configured. Run ipa-client-install."
+msgstr "İstemci yapılandırılmadı. ipa-client-install komutunu çalıştırın."
+
+msgid "Client version. Used to determine if server will accept request."
+msgstr ""
+"İstemci sürümü. Sunucunun isteği kabul edip etmeyeceğini belirlemek için "
+"kullanılır."
+
+#, python-format
+msgid "Command '%(name)s' has been deprecated"
+msgstr "'%(name)s' komutu kullanımdan kaldırıldı"
+
+msgid "Command name"
+msgstr "Komut adı"
+
+msgid "Command not implemented"
+msgstr "Komut uygulanmadı"
+
+msgid "Configured administrative server limit exceeded"
+msgstr "Yapılandırılmış yönetim sunucusu sınırı aşıldı"
+
+msgid "Configured size limit exceeded"
+msgstr "Yapılandırılmış boyut sınırı aşıldı"
+
+msgid "Configured time limit exceeded"
+msgstr "Yapılandırılmış zaman sınırı aşıldı"
+
+#, python-format
+msgid "Could not get %(name)s interactively"
+msgstr "%(name)s etkileşimli olarak alınamadı"
+
+msgid "Credentials cache permissions incorrect"
+msgstr "Kimlik bilgileri önbelleği izinleri yanlış"
+
+#, python-format
+msgid "DNS check failed: Expected {%(expected)s} got {%(got)s}"
+msgstr "DNS denetimi başarısız oldu: Beklenen {%(expected)s} alınan {%(got)s}"
+
+msgid ""
+"DNS forwarder semantics changed since IPA 4.0.\n"
+"You may want to use forward zones (dnsforwardzone-*) instead.\n"
+"For more details read the docs."
+msgstr ""
+"IPA 4.0'dan beri DNS ileticisi semantiği değişti.\n"
+"Bunun yerine ileri bölgeler (dnsforwardzone-*) kullanmak isteyebilirsiniz.\n"
+"Daha fazla ayrıntı için belgeleri okuyun."
+
+msgid "DNS label cannot be longer than 63 characters"
+msgstr "DNS etiketi 63 karakterden uzun olamaz"
+
+msgid "DNS label cannot be longer that 63 characters"
+msgstr "DNS etiketi 63 karakterden uzun olamaz"
+
+#, python-format
+msgid "DNS record(s) of host %(host)s could not be removed. (%(reason)s)"
+msgstr "%(host)s ana makinesinin DNS kayıt(lar)ı kaldırılamadı. (%(reason)s)"
+
+#, python-format
+msgid ""
+"DNS server %(server)s does not support DNSSEC: %(error)s.\n"
+"If DNSSEC validation is enabled on IPA server(s), please disable it."
+msgstr ""
+"%(server)s DNS sunucusu DNSSEC desteklemiyor: %(error)s.\n"
+"IPA sunucu(lar)ında DNSSEC doğrulaması etkinse, lütfen devre dışı bırakın."
+
+#, python-format
+msgid ""
+"DNS server %(server)s does not support EDNS0 (RFC 6891): %(error)s.\n"
+"If DNSSEC validation is enabled on IPA server(s), please disable it."
+msgstr ""
+"%(server)s DNS sunucusu EDNS0 desteklemiyor (RFC 6891): %(error)s.\n"
+"IPA sunucu(lar)ında DNSSEC doğrulaması etkinse, lütfen devre dışı bırakın."
+
+#, python-format
+msgid "DNS server %(server)s: %(error)s."
+msgstr "%(server)s DNS sunucusu: %(error)s."
+
+#, python-format
+msgid ""
+"DNSSEC support is experimental.\n"
+"%(additional_info)s"
+msgstr ""
+"DNSSEC desteği deneyseldir.\n"
+"%(additional_info)s"
+
+#, python-format
+msgid ""
+"DNSSEC validation failed: %(error)s.\n"
+"Please verify your DNSSEC configuration or disable DNSSEC validation on all "
+"IPA servers."
+msgstr ""
+"DNSSEC doğrulaması başarısız oldu: %(error)s.\n"
+"Lütfen DNSSEC yapılandırmanızı doğrulayın veya tüm IPA sunucularında DNSSEC "
+"doğrulamasını devre dışı bırakın."
+
+msgid "Delete a RADIUS proxy server."
+msgstr "Bir RADIUS vekil sunucusunu sil."
+
+msgid "Delete a netgroup."
+msgstr "Bir ağ grubunu sil."
+
+msgid "Delete a self-service permission."
+msgstr "Bir self-servis iznini sil."
+
+#, python-format
+msgid "Deleted RADIUS proxy server \"%(value)s\""
+msgstr "RADIUS vekil sunucusu \"%(value)s\" silindi"
+
+#, python-format
+msgid "Deleted netgroup \"%(value)s\""
+msgstr "Ağ grubu \"%(value)s\" silindi"
+
+#, python-format
+msgid "Deleted selfservice \"%(value)s\""
+msgstr "Self-servis \"%(value)s\" silindi"
+
+msgid "Deleting a managed group is not allowed. It must be detached first."
+msgstr "Yönetilen bir grubun silinmesine izin verilmiyor. Önce ayrılmalıdır."
+
+msgid "Deprecated options"
+msgstr "Kullanımdan kaldırılan seçenekler"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "Dictionary mapping variable name to value"
+msgstr "Değişken adını değere eşleyen sözlük"
+
+msgid "Display information about a RADIUS proxy server."
+msgstr "Bir RADIUS vekil sunucusu hakkında bilgileri görüntüle."
+
+msgid "Display information about a netgroup."
+msgstr "Bir ağ grubu hakkında bilgileri görüntüle."
+
+msgid "Display information about a self-service permission."
+msgstr "Bir self-servis izni hakkında bilgileri görüntüle."
+
+#, python-format
+msgid "Domain '%(domain)s' is not a root domain for forest '%(forest)s'"
+msgstr "'%(domain)s' etki alanı '%(forest)s' ormanı için kök etki alanı değil"
+
+#, python-format
+msgid "Enter %(label)s again to verify: "
+msgstr "Doğrulamak için tekrar %(label)s girin: "
+
+msgid "Exceeded number of tries to forward a request."
+msgstr "İsteği iletme denemesi sayısı aşıldı."
+
+#, python-format
+msgid "Failure decoding Certificate Signing Request: %s"
+msgstr "Certificate Signing Request kodu çözülemedi: %s"
+
+msgid "Filename is empty"
+msgstr "Dosya adı boş"
+
+#, python-format
+msgid ""
+"Forest '%(forest)s' has existing trust to forest(s) %(domains)s which "
+"prevents a trust to '%(conflict)s'"
+msgstr ""
+"'%(forest)s' ormanının %(domains)s orman(lar)ına mevcut güveni var, bu da "
+"'%(conflict)s' güvenmeyi engelliyor"
+
+msgid "Forward to server instead of running locally"
+msgstr "Yerel olarak çalışmak yerine sunucuya ilet"
+
+msgid ""
+"Forwarding policy conflicts with some automatic empty zones. Queries for "
+"zones specified by RFC 6303 will ignore forwarding and recursion and always "
+"result in NXDOMAIN answers. To override this behavior use forward policy "
+"'only'."
+msgstr ""
+"İletme politikası bazı otomatik boş bölgelerle çakışıyor. RFC 6303 "
+"tarafından belirtilen bölgeler için sorgular, iletme ve yinelemeyi yok sayar "
+"ve her zaman NXDOMAIN cavaplarıyla sonuçlanır. Bu davranışı geçersiz kılmak "
+"için 'only' iletme politikasını kullanın."
+
+#, python-format
+msgid "Host '%(hostname)s' does not have corresponding DNS A/AAAA record"
+msgstr "'%(hostname)s' ana makinesinin karşılık gelen DNS A/AAAA kaydı yok"
+
+msgid "Host category"
+msgstr "Ana makine kategorisi"
+
+msgid "Host category the rule applies to"
+msgstr "Kuralın geçerli olduğu ana makine kategorisi"
+
+#, python-format
+msgid ""
+"IPA does not manage the zone %(zone)s, please add records to your DNS server "
+"manually"
+msgstr ""
+"IPA %(zone)s bölgesini yönetmiyor, lütfen kayıtları DNS sunucunuza el ile "
+"ekleyin"
+
+msgid "IPA server hostname"
+msgstr "IPA sunucusu ana makine adı"
+
+msgid "IPA unique ID"
+msgstr "IPA benzersiz kimliği"
+
+#, python-format
+msgid "Insufficient access: %(info)s"
+msgstr "Yetersiz erişim: %(info)s"
+
+#, python-format
+msgid "Invalid JSON-RPC request: %(error)s"
+msgstr "Geçersiz JSON-RPC isteği: %(error)s"
+
+#, c-format
+msgid ""
+"JSON-RPC request:\n"
+"%s\n"
+msgstr ""
+"JSON-RPC isteği:\n"
+"%s\n"
+
+#, python-format
+msgid "Kerberos error: %(major)s/%(minor)s"
+msgstr "Kerberos hatası: %(major)s/%(minor)s"
+
+msgid "LDAP timeout"
+msgstr "LDAP zaman aşımı"
+
+msgid "Leading and trailing spaces are not allowed"
+msgstr "Baştaki ve sondaki boşluklara izin verilmiyor"
+
+msgid "List of deletions that failed"
+msgstr "Başarısız olan silmelerin listesi"
+
+#, python-format
+msgid "Malformed principal: '%(value)s'"
+msgstr "Hatalı biçimlendirilmiş yetkili: '%(value)s'"
+
+#, python-format
+msgid ""
+"Mapping ruleset \"%(ruleset)s\" has more than one rule for the %(helper)s "
+"helper"
+msgstr ""
+"\"%(ruleset)s\" eşleme kural kümesinde %(helper)s yardımcısı için birden "
+"fazla kural var"
+
+msgid "Maximum number of entries returned (0 is unlimited)"
+msgstr "Döndürülen en fazla girdi sayısı (0 sınırsızdır)"
+
+msgid "Member Host"
+msgstr "Üye Ana Makine"
+
+#, python-format
+msgid "Missing or invalid HTTP Referer, %(referer)s"
+msgstr "Eksik veya geçersiz HTTP Yönlendiricisi, %(referer)s"
+
+#, python-format
+msgid "Modified RADIUS proxy server \"%(value)s\""
+msgstr "RADIUS vekil sunucusu \"%(value)s\" değiştirildi"
+
+#, python-format
+msgid "Modified netgroup \"%(value)s\""
+msgstr "Ağ grubu \"%(value)s\" değiştirildi"
+
+#, python-format
+msgid "Modified selfservice \"%(value)s\""
+msgstr "Self-servis \"%(value)s\" değiştirildi"
+
+msgid "Modify a RADIUS proxy server."
+msgstr "Bir RADIUS vekil sunucusunu değiştir."
+
+msgid "Modify a netgroup."
+msgstr "Bir ağ grubunu değiştir."
+
+msgid "Modify a self-service permission."
+msgstr "Bir self-servis iznini değiştir."
+
+msgid "NIS domain name"
+msgstr "NIS etki alanı adı"
+
+msgid "Netgroup"
+msgstr "Ağ grubu"
+
+msgid "Netgroup description"
+msgstr "Ağ grubu açıklaması"
+
+msgid "Netgroup name"
+msgstr "Ağ grubu adı"
+
+msgid "Netgroups"
+msgstr "Ağ grupları"
+
+#, python-format
+msgid ""
+"No DNS servers in IPA location %(location)s. Without DNS servers location is "
+"not working as expected."
+msgstr ""
+"%(location)s IPA konumunda DNS sunucusu yok. DNS sunucuları olmadan konum "
+"beklendiği gibi çalışmıyor."
+
+msgid ""
+"No DNSSEC key master is installed. DNSSEC zone signing will not work until "
+"the DNSSEC key master is installed."
+msgstr ""
+"Kurulu DNSSEC anahtar yöneticisi yok. DNSSEC anahtar yöneticisi kurulana "
+"kadar DNSSEC bölge imzalama çalışmayacaktır."
+
+msgid "No credentials cache found"
+msgstr "Kimlik bilgileri önbelleği bulunamadı"
+
+msgid "No file to read"
+msgstr "Okunacak dosya yok"
+
+msgid "No matching entries found"
+msgstr "Eşleşen girdi bulunamadı"
+
+msgid "Not allowed on non-leaf entry"
+msgstr "Yaprak (leaf) olmayan girdilerde izin verilmiyor"
+
+msgid "Not registered yet"
+msgstr "Henüz kayıtlı değil"
+
+msgid "Number of entries returned"
+msgstr "Döndürülen girdi sayısı"
+
+msgid "Number of plugins loaded"
+msgstr "Yüklenen eklenti sayısı"
+
+msgid "Number of variables returned (<= total)"
+msgstr "Döndürülen değişken sayısı (<= total)"
+
+msgid "Only one value is allowed"
+msgstr "Sadece bir değere izin veriliyor"
+
+msgid "PKINIT"
+msgstr "PKINIT"
+
+msgid "PKINIT status"
+msgstr "PKINIT durumu"
+
+msgid "Passwords do not match"
+msgstr "Parolalar eşleşmiyor"
+
+msgid "Passwords do not match!"
+msgstr "Parolalar eşleşmiyor!"
+
+msgid "Permission"
+msgstr "İzin"
+
+#, python-format
+msgid "Permission denied: %(file)s"
+msgstr "İzin reddedildi: %(file)s"
+
+msgid "Permission flags"
+msgstr "İzin bayrakları"
+
+msgid "Permission name"
+msgstr "İzin adı"
+
+msgid "Permissions"
+msgstr "İzinler"
+
+msgid "Permissions to grant (read, write). Default is write."
+msgstr "Verilecek izinler (okuma, yazma) Öntanımlı: yazma."
+
+msgid "Positional arguments"
+msgstr "Konumsal argümanlar"
+
+#, python-format
+msgid "Principal %(principal)s cannot be authenticated: %(message)s"
+msgstr "Yetkili %(principal)s doğrulanamıyor: %(message)s"
+
+#, python-format
+msgid "Principal is not of the form user@REALM: '%(principal)s'"
+msgstr "Yetkili, kullanıcı@ERİŞİM_ALANI biçiminde değil: '%(principal)s'"
+
+msgid "Print entries as stored on the server. Only affects output format."
+msgstr ""
+"Girdileri sunucuda depolandığı şekilde yazdır. Sadece çıktı biçimini etkiler."
+
+msgid "RADIUS Server"
+msgstr "RADIUS Sunucusu"
+
+msgid "RADIUS Servers"
+msgstr "RADIUS Sunucuları"
+
+msgid "RADIUS proxy server"
+msgstr "RADIUS vekil sunucusu"
+
+msgid "RADIUS proxy server name"
+msgstr "RADIUS vekil sunucusu adı"
+
+msgid "RADIUS proxy servers"
+msgstr "RADIUS vekil sunucuları"
+
+#, python-format
+msgid ""
+"Relative record name '%(record)s' contains the zone name '%(zone)s' as a "
+"suffix, which results in FQDN '%(fqdn)s'. This is usually a mistake caused "
+"by a missing dot at the end of the name specification."
+msgstr ""
+"'%(record)s' göreceli kayıt adı, '%(zone)s' bölge adını son ek olarak "
+"içeriyor, bu da '%(fqdn)s' tam nitelikli etki alanı adıyla sonuçlanıyor. Bu "
+"genellikle ad belirtiminin sonundaki noktanın eksik olmasının neden olduğu "
+"bir hatadır."
+
+msgid "Remove members from a netgroup."
+msgstr "Bir ağ grubundan üye kaldır."
+
+#, python-format
+msgid "Replication agreement for %(hostname)s not found"
+msgstr "%(hostname)s için çoğaltma anlaşması bulunamadı"
+
+msgid "Report PKINIT status on the IPA masters"
+msgstr "IPA yöneticilerinde PKINIT durumunu bildir"
+
+#, python-format
+msgid "Request failed with status %(status)s: %(reason)s"
+msgstr "%(status)s durumuyla istek başarısız oldu: %(reason)s"
+
+msgid "Results are truncated, try a more specific search"
+msgstr "Sonuçlar kısaltıldı, daha özel bir arama yapmayı deneyin"
+
+msgid "Retries"
+msgstr "Yeniden denemeler"
+
+msgid ""
+"Retrieve and print all attributes from the server. Affects command output."
+msgstr "Tüm nitelikleri sunucudan al ve yazdır. Komut çıktısını etkiler."
+
+#, python-format
+msgid "Retrieving CA cert chain failed: %s"
+msgstr "CA sertifika zinciri alınamadı: %s"
+
+#, python-format
+msgid "Retrieving CA status failed with status %d"
+msgstr "CA durumunu alma %d durumuyla başarısız oldu"
+
+#, python-format
+msgid "Retrieving CA status failed: %s"
+msgstr "CA durumu alınamadı: %s"
+
+#, python-format
+msgid "Same as --%s"
+msgstr "--%s ile aynı"
+
+#, python-format
+msgid "Schema is up to date (FP '%(fingerprint)s', TTL %(ttl)s s)"
+msgstr "Şema güncel (FP '%(fingerprint)s', TTL %(ttl)s s)"
+
+msgid "Search for RADIUS proxy servers."
+msgstr "RADIUS vekil sunucularını ara."
+
+msgid "Search for a netgroup."
+msgstr "Bir ağ grubu ara."
+
+msgid "Search for a self-service permission."
+msgstr "Bir self-servis izni ara."
+
+#, python-format
+msgid "Search result has been truncated: %(reason)s"
+msgstr "Arama sonucu kısaltıldı: %(reason)s"
+
+msgid "Secret"
+msgstr "Parola"
+
+msgid "Self Service Permission"
+msgstr "Self Servis İzni"
+
+msgid "Self Service Permissions"
+msgstr "Self Servis İzinleri"
+
+msgid "Self-service name"
+msgstr "Self-servis adı"
+
+#, python-format
+msgid ""
+"Semantic of %(label)s was changed. %(current_behavior)s\n"
+"%(hint)s"
+msgstr ""
+"%(label)s semantiği değişti. %(current_behavior)s\n"
+"%(hint)s"
+
+msgid "Server"
+msgstr "Sunucu"
+
+msgid "Server name"
+msgstr "Sunucu adı"
+
+#, python-format
+msgid "Server removal aborted: %(reason)s."
+msgstr "Sunucu kaldırma işlemi iptal edildi: %(reason)s."
+
+#, python-format
+msgid ""
+"Service %(service)s requires restart on IPA server %(server)s to apply "
+"configuration changes."
+msgstr ""
+"%(service)s hizmeti, yapılandırma değişikliklerini uygulamak için %(server)s "
+"IPA sunucusunda yeniden başlatma gerektiriyor."
+
+#, python-format
+msgid "Service '%(service)s' not found in Kerberos database"
+msgstr "'%(service)s' hizmeti Kerberos veri tabanında bulunamadı"
+
+#, python-format
+msgid ""
+"Service principal is not of the form: service/fully-qualified host name: "
+"%(reason)s"
+msgstr ""
+"Hizmet yetkilisi şu biçimde değil: hizmet/tam nitelikli ana makine adı: "
+"%(reason)s"
+
+msgid "Service principal is required"
+msgstr "Hizmet yetkilisi gereklidir"
+
+msgid "Session error"
+msgstr "Oturum hatası"
+
+msgid "Show all loaded plugins."
+msgstr "Yüklenen tüm eklentileri göster."
+
+msgid "Show environment variables."
+msgstr "Ortam değişkenlerini göster."
+
+msgid "Size Limit"
+msgstr "Boyut Sınırı"
+
+#, python-format
+msgid ""
+"System encoding must be UTF-8, '%(encoding)s' is not supported. Set "
+"LC_ALL=\"C.UTF-8\", or LC_ALL=\"\" and LC_CTYPE=\"C.UTF-8\"."
+msgstr ""
+"Sistem kodlaması UTF-8 olmalı, '%(encoding)s' desteklenmiyor. LC_ALL=\"C."
+"UTF-8\", veya LC_ALL=\"\" ve LC_CTYPE=\"C.UTF-8\" olarak ayarlayın."
+
+#, python-format
+msgid ""
+"The _kerberos TXT record from domain %(domain)s could not be created "
+"(%(error)s).\n"
+"This can happen if the zone is not managed by IPA. Please create the record "
+"manually, containing the following value: '%(realm)s'"
+msgstr ""
+"%(domain)s etki alanından _kerberos TXT kaydı oluşturulamadı (%(error)s).\n"
+"Bu, bölge IPA tarafından yönetilmiyorsa meydana gelebilir. Lütfen kaydı şu "
+"değeri içerecek şekilde el ile oluşturun: '%(realm)s'"
+
+#, python-format
+msgid ""
+"The _kerberos TXT record from domain %(domain)s could not be removed "
+"(%(error)s).\n"
+"This can happen if the zone is not managed by IPA. Please remove the record "
+"manually."
+msgstr ""
+"%(domain)s etki alanından _kerberos TXT kaydı kaldırılamadı (%(error)s).\n"
+"Bu, bölge IPA tarafından yönetilmiyorsa meydana gelebilir. Lütfen kaydı el "
+"ile kaldırın."
+
+#, python-format
+msgid "The certificate for %(ca)s is not available on this server."
+msgstr "%(ca)s için bu sunucuda sertifika yok."
+
+#, python-format
+msgid "The character %(char)r is not allowed."
+msgstr "%(char)r karakterine izin verilmiyor."
+
+msgid "The default users group cannot be removed"
+msgstr "Öntanımlı kullanıcılar grubu kaldırılamaz"
+
+#, python-format
+msgid "The host was added but the DNS update failed with: %(reason)s"
+msgstr "Ana makine eklendi ancak DNS güncellemesi başarısız oldu: %(reason)s"
+
+msgid "The hostname or IP (with or without port)"
+msgstr "Ana makine adı veya IP (bağlantı noktasıyla birlikte veya değil)"
+
+msgid "The number of times to retry authentication"
+msgstr "Kimlik doğrulamayı yeniden deneme sayısı"
+
+msgid "The primary_key value of the entry, e.g. 'jdoe' for a user"
+msgstr ""
+"Girdinin primary_key (birincil anahtar) değeri, örneğin bir kullanıcı için "
+"'jdoe'"
+
+msgid ""
+"The realm for the principal does not match the realm for this IPA server"
+msgstr "Yetkilinin erişim alanı, bu IPA sunucusunun erişim alanıyla eşleşmiyor"
+
+#, python-format
+msgid ""
+"The search criteria was not specific enough. Expected 1 and found %(found)d."
+msgstr ""
+"Arama ölçütleri yeterince özel değildi. 1 tane bekleniyordu ve %(found)d "
+"tane bulundu."
+
+msgid "The secret used to encrypt data"
+msgstr "Verileri şifrelemek için kullanılan parola"
+
+msgid "The topic or command name."
+msgstr "Konu veya komut adı."
+
+msgid "The total timeout across all retries (in seconds)"
+msgstr "Tüm yeniden denemelerde toplam zaman aşımı (saniye cinsinden)"
+
+msgid "The username attribute on the user object"
+msgstr "Kullanıcı nesnesindeki kullanıcı adı niteliği"
+
+msgid "This command requires root access"
+msgstr "Bu komut root erişimi gerektirir"
+
+msgid "This entry already exists"
+msgstr "Bu girdi zaten var"
+
+msgid "This entry cannot be enabled or disabled"
+msgstr "Bu girdi etkinleştirilemez veya devre dışı bırakılamaz"
+
+msgid "This entry is already a member"
+msgstr "Bu girdi zaten bir üye"
+
+msgid "This entry is already disabled"
+msgstr "Bu girdi zaten devre dışı"
+
+msgid "This entry is already enabled"
+msgstr "Bu girdi zaten etkin"
+
+msgid "This entry is not a member"
+msgstr "Bu girdi bir üye değil"
+
+msgid "This group already allows external members"
+msgstr "Bu grup zaten harici üyelere izin veriyor"
+
+msgid "This group cannot be posix because it is external"
+msgstr "Bu grup harici olduğu için posix olamaz"
+
+msgid "This is already a posix group"
+msgstr "Bu zaten bir posix grubu"
+
+msgid "This is already a posix group and cannot be converted to external one"
+msgstr "Bu zaten bir posix grubudur ve harici bir gruba dönüştürülemez"
+
+msgid "Ticket expired"
+msgstr "Biletin süresi doldu"
+
+msgid "Time Limit"
+msgstr "Zaman Sınırı"
+
+msgid "Time limit of search in seconds (0 is unlimited)"
+msgstr "Saniye cinsinden aramanın zaman sınırı (0 sınırsızdır)"
+
+msgid "Timeout"
+msgstr "Zaman aşımı"
+
+msgid "To get command help, use:"
+msgstr "Komut yardımı almak için şunu kullanın:"
+
+msgid "Topic commands:"
+msgstr "Konu komutları:"
+
+msgid "Topic or Command"
+msgstr "Konu veya Komut"
+
+msgid "Total number of variables env (>= count)"
+msgstr "Toplam ortam değişkeni sayısı (>= count)"
+
+msgid "True if not all results were returned"
+msgstr "Tüm sonuçlar döndürülmediyse True"
+
+msgid "True means the operation was successful"
+msgstr "True, işlemin başarılı olduğu anlamına gelir"
+
+#, python-format
+msgid "Unable to communicate with CMS (status %d)"
+msgstr "CMS ile iletişim kurulamadı (durum %d)"
+
+#, python-format
+msgid "Unable to create private group. A group '%(group)s' already exists."
+msgstr "Özel grup oluşturulamadı. '%(group)s' grubu zaten var."
+
+#, python-format
+msgid "Unknown option: %(option)s"
+msgstr "Bilinmeyen seçenek: %(option)s"
+
+#, python-format
+msgid "Update of system record '%(record)s' failed with error: %(error)s"
+msgstr ""
+"'%(record)s' sistem kaydının güncellenmesi şu hatayla başarısız oldu: "
+"%(error)s"
+
+msgid "User attribute"
+msgstr "Kullanıcı niteliği"
+
+msgid "User category"
+msgstr "Kullanıcı kategorisi"
+
+msgid "User category the rule applies to"
+msgstr "Kuralın geçerli olduğu kullanıcı kategorisi"
+
+msgid "User-friendly description of action performed"
+msgstr "Gerçekleştirilen eylemin kullanıcı dostu açıklaması"
+
+msgid "Whether PKINIT is enabled or disabled"
+msgstr "PKINIT etkin mi devre dışı mı olduğu"
+
+msgid "You must enroll a host in order to create a host service"
+msgstr ""
+"Bir ana makine hizmeti oluşturmak için bir ana makineyi kaydettirmelisiniz"
+
+#, python-format
+msgid ""
+"Your trust to %(domain)s is broken. Please re-create it by running 'ipa "
+"trust-add' again."
+msgstr ""
+"%(domain)s etki alanına güveniniz bozuldu. Lütfen 'ipa trust-add' komutunu "
+"çalıştırarak yeniden oluşturun."
+
+msgid "an internal error has occurred"
+msgstr "dahili bir hata oluştu"
+
+#, python-format
+msgid "an internal error has occurred on server at '%(server)s'"
+msgstr "'%(server)s' konumundaki sunucuda dahili bir hata oluştu"
+
+#, python-format
+msgid ""
+"answer to query '%(owner)s %(rtype)s' is missing DNSSEC signatures (no RRSIG "
+"data)"
+msgstr ""
+"'%(owner)s %(rtype)s' sorgusunun yanıtında DNSSEC imzaları eksik (RRSIG "
+"verisi yok)"
+
+msgid "any of the configured servers"
+msgstr "yapılandırılan sunuculardan herhangi biri"
+
+#, python-format
+msgid "api has no such namespace: '%(name)s'"
+msgstr "api, böyle bir ad uzayına sahip değil: '%(name)s'"
+
+msgid ""
+"at least one value equal to the canonical principal name must be present"
+msgstr "standart yetkili adına eşit en az bir değer bulunmalıdır"
+
+#, python-format
+msgid "can be at most %(maxlength)d bytes"
+msgstr "en fazla %(maxlength)d bayt olabilir"
+
+#, python-format
+msgid "can be at most %(maxlength)d characters"
+msgstr "en fazla %(maxlength)d olabilir"
+
+#, python-format
+msgid "can be at most %(maxvalue)d"
+msgstr "en fazla %(maxvalue)d olabilir"
+
+#, python-format
+msgid "can be at most %(maxvalue)s"
+msgstr "en fazla %(maxvalue)s olabilir"
+
+msgid "cannot be longer that {} characters"
+msgstr "{} karakterden uzun olamaz"
+
+#, python-format
+msgid "cannot connect to '%(uri)s': %(error)s"
+msgstr "'%(uri)s' adresine bağlanamıyor: %(error)s"
+
+msgid "change collided with another change"
+msgstr "değişiklik başka bir değişiklikle çakıştı"
+
+#, python-format
+msgid "command '%(name)s' takes at most %(count)d argument"
+msgid_plural "command '%(name)s' takes at most %(count)d arguments"
+msgstr[0] "'%(name)s' komutu en fazla %(count)d argüman alıyor"
+msgstr[1] "'%(name)s' komutu en fazla %(count)d argüman alıyor"
+
+#, python-format
+msgid "command '%(name)s' takes no arguments"
+msgstr "'%(name)s' komutu argüman almıyor"
+
+msgid "did not receive Kerberos credentials"
+msgstr "Kerberos kimlik bilgileri alınmadı"
+
+msgid "does not match any of accepted formats: "
+msgstr "kabul edilen biçimlerle eşleşmiyor: "
+
+#, python-format
+msgid "domain name '%(domain)s' should be normalized to: %(normalized)s"
+msgstr ""
+"'%(domain)s' etki alanı adı şu şekilde normalleştirilmelidir: %(normalized)s"
+
+msgid "domain name cannot be longer than 255 characters"
+msgstr "etki alanı adı 255 karakterden uzun olamaz"
+
+msgid "empty DNS label"
+msgstr "boş DNS etiketi"
+
+#, python-format
+msgid "error marshalling data for XML-RPC transport: %(error)s"
+msgstr "XML-RPC aktarımı için veri dönüştürürken hata oluştu: %(error)s"
+
+#, python-format
+msgid "error on server '%(server)s': %(error)s"
+msgstr "'%(server)s' sunucusunda hata: %(error)s"
+
+#, python-format
+msgid ""
+"forward zone \"%(fwzone)s\" is not effective because of missing proper NS "
+"delegation in authoritative zone \"%(authzone)s\". Please add NS record "
+"\"%(ns_rec)s\" to parent zone \"%(authzone)s\"."
+msgstr ""
+"\"%(fwzone)s\" ileri bölgesi, \"%(authzone)s\" yetkili bölgesinde uygun NS "
+"temsilcisinin eksik olması nedeniyle etkili değildir. Lütfen "
+"\"%(authzone)s\" üst bölgesine \"%(ns_rec)s\" NS kaydını ekleyin."
+
+msgid "host category cannot be set to 'all' while there are allowed hosts"
+msgstr ""
+"izin verilen ana makineler varken ana makine kategorisi 'all' olarak "
+"ayarlanamaz"
+
+#, python-format
+msgid ""
+"hostgroup with name \"%s\" already exists. Hostgroups and netgroups share a "
+"common namespace"
+msgstr ""
+"\"%s\" adlı bir ana makine grubu zaten var. Ana makine grupları ve ağ "
+"grupları ortak bir ad uzayını paylaşmaktadır"
+
+msgid "hostname contains empty label (consecutive dots)"
+msgstr "ana makine adı boş etiket içeriyor (ardışık noktalar)"
+
+msgid "incomplete time value"
+msgstr "eksik zaman değeri"
+
+msgid "incorrect type"
+msgstr "yanlış tür"
+
+#, python-format
+msgid "invalid '%(name)s': %(error)s"
+msgstr "geçersiz '%(name)s': %(error)s"
+
+msgid "invalid IP address format"
+msgstr "geçersiz IP adresi biçimi"
+
+#, python-format
+msgid "invalid IP address version (is %(value)d, must be %(required_value)d)!"
+msgstr ""
+"geçersiz IP adresi sürümü (olan %(value)d, olması gereken "
+"%(required_value)d)!"
+
+msgid "invalid SSH public key"
+msgstr "geçersiz SSH genel anahtarı"
+
+msgid "invalid attribute name"
+msgstr "geçersiz nitelik adı"
+
+msgid "invalid domain name"
+msgstr "geçersiz etki alanı adı"
+
+#, python-format
+msgid "invalid domain-name: %s"
+msgstr "geçersiz etki alanı adı: %s"
+
+msgid "invalid escape code in domain name"
+msgstr "etki alanı adında geçersiz kaçış kodu"
+
+msgid "invalid hostmask"
+msgstr "geçersiz ana makine maskesi"
+
+msgid "invalid port number"
+msgstr "geçersiz bağlantı noktası numarası"
+
+msgid "limits exceeded for this query"
+msgstr "bu sorgu için sınırlar aşıldı"
+
+msgid "modifying primary key is not allowed"
+msgstr "birincil anahtarın değiştirilmesine izin verilmiyor"
+
+#, python-format
+msgid "must be '%(value)s'"
+msgstr "'%(value)s' olmalı"
+
+msgid "must be DNS name"
+msgstr "DNS adı olmalı"
+
+msgid "must be Kerberos principal"
+msgstr "Kerberos yetkilisi olmalı"
+
+msgid "must be True or False"
+msgstr "True veya False olmalı"
+
+msgid "must be Unicode text"
+msgstr "Unicode metni olmalı"
+
+msgid "must be a certificate"
+msgstr "bir sertifika olmalı"
+
+msgid "must be a certificate signing request"
+msgstr "bir sertifika imzalama isteği olmalı"
+
+msgid "must be a decimal number"
+msgstr "bir ondalık sayı olmalı"
+
+msgid "must be absolute"
+msgstr "mutlak olmalı"
+
+msgid "must be an integer"
+msgstr "bir tam sayı olmalı"
+
+#, python-format
+msgid "must be at least %(minlength)d bytes"
+msgstr "en az %(minlength)d bayt olmalı"
+
+#, python-format
+msgid "must be at least %(minlength)d characters"
+msgstr "en az %(minlength)d karakter olmalı"
+
+#, python-format
+msgid "must be at least %(minvalue)d"
+msgstr "en az %(minvalue)d olmalı"
+
+#, python-format
+msgid "must be at least %(minvalue)s"
+msgstr "en az %(minvalue)s olmalı"
+
+msgid "must be binary data"
+msgstr "ikili veri olmalı"
+
+msgid "must be datetime value"
+msgstr "bir datetime değeri olmalı"
+
+msgid "must be dictionary"
+msgstr "sözlük olmalı"
+
+msgid "must be enclosed in parentheses"
+msgstr "parantez içine alınmalı"
+
+#, python-format
+msgid "must be exactly %(length)d bytes"
+msgstr "tam olarak %(length)d bayt olmalı"
+
+#, python-format
+msgid "must be exactly %(length)d characters"
+msgstr "tam olarak %(length)d karakter olmalı"
+
+#, python-format
+msgid "must be one of %(values)s"
+msgstr "%(values)s değerlerinden biri olmalı"
+
+msgid "must be relative"
+msgstr "göreceli olmalı"
+
+#, python-format
+msgid "must match pattern \"%(pattern)s\""
+msgstr "\"%(pattern)s\" kalıbıyla eşleşmeli"
+
+msgid "netgroup"
+msgstr "ağ grubu"
+
+msgid "netgroups"
+msgstr "ağ grupları"
+
+#, python-format
+msgid "no command nor help topic '%(topic)s'"
+msgstr "komut ya da yardım konusu '%(topic)s' yok"
+
+msgid "no modifications to be performed"
+msgstr "yapılacak değişiklik yok"
+
+msgid "not fully qualified"
+msgstr "tam nitelikli değil"
+
+#, python-format
+msgid ""
+"number class '%(cls)s' is not included in a list of allowed number classes: "
+"%(allowed)s"
+msgstr ""
+"'%(cls)s' sayı sınıfı izin verilen sayı sınıfları listesinde değil: "
+"%(allowed)s"
+
+#, python-format
+msgid "objectclass %s not found"
+msgstr "%s nesne sınıfı bulunamadı"
+
+#, python-format
+msgid ""
+"only letters, numbers, %(chars)s are allowed. DNS label may not start or end "
+"with %(chars2)s"
+msgstr ""
+"sadece harflere, sayılara, %(chars)s karakterlerine izin veriliyor, DNS "
+"etiketi %(chars2)s ile başlayamaz veya bitemez"
+
+msgid "options are not allowed"
+msgstr "seçeneklere izin verilmiyor"
+
+#, python-format
+msgid "overlapping arguments and options: %(names)s"
+msgstr "çakışan argümanlar ve seçenekler: %(names)s"
+
+msgid "permission"
+msgstr "izin"
+
+msgid "permissions"
+msgstr "izinler"
+
+msgid "pkinit"
+msgstr "pkinit"
+
+#, python-format
+msgid "query '%(owner)s %(rtype)s' with EDNS0: %(error)s"
+msgstr "sorgu '%(owner)s %(rtype)s' EDNS0 ile: %(error)s"
+
+#, python-format
+msgid "query '%(owner)s %(rtype)s': %(error)s"
+msgstr "sorgu '%(owner)s %(rtype)s': %(error)s"
+
+msgid "realm or UPN suffix overlaps with trusted domain namespace"
+msgstr ""
+"erişim alanı veya UPN son eki güvenilir etki alanı ad uzayı ile çakışıyor"
+
+#, python-format
+msgid "record '%(owner)s %(rtype)s' failed DNSSEC validation on server %(ip)s"
+msgstr ""
+"%(ip)s sunucusunda '%(owner)s %(rtype)s' kaydının DNSSEC doğrulaması "
+"başarısız oldu"
+
+#, python-format
+msgid "request failed with HTTP status %d"
+msgstr "istek %d HTTP durumuyla başarısız oldu"
+
+msgid ""
+"retrieve and print all attributes from the server. Affects command output."
+msgstr "tüm nitelikleri sunucudan al ve yazdır. Komut çıktısını etkiler."
+
+msgid "search for managed groups"
+msgstr "yönetilen grupları ara"
+
+msgid "self service permission"
+msgstr "self servis izni"
+
+msgid "self service permissions"
+msgstr "self servis izinleri"
+
+msgid "single label {}s are not supported"
+msgstr "tek etiketli {}s desteklenmiyor"
+
+msgid "this option is deprecated"
+msgstr "bu seçenek kullanımdan kaldırıldı"
+
+msgid "too many '@' characters"
+msgstr "çok fazla '@' karakteri"
+
+#, python-format
+msgid "unknown command '%(name)s'"
+msgstr "bilinmeyen komut '%(name)s'"
+
+#, python-format
+msgid "unknown error %(code)d from %(server)s: %(error)s"
+msgstr "%(server)s sunucusundan bilinmeyen hata %(code)d: %(error)s"
+
+msgid "user category cannot be set to 'all' while there are allowed users"
+msgstr ""
+"izin verilen kullanıcılar varken kullanıcı kategorisi 'all' olarak "
+"ayarlanamaz"

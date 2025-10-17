@@ -1,0 +1,867 @@
+# Marco Aurélio Krause <ouesten@me.com>, 2015. #zanata
+# Rafael Fontenelle <rafaelff@gnome.org>, 2020, 2021.
+# Daniel Lara Souza <daniellarasouza@yahoo.com.br>, 2020, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.9.0.dev201908140712+gitc9938e3d8\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2024-02-07 17:36+0000\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
+"projects/freeipa/ipa-4-11/pt_BR/>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 5.3.1\n"
+
+msgid ""
+"\n"
+"    Display information about an automember rule.\n"
+"    "
+msgstr ""
+"\n"
+"    Exibe informações sobre um regra automembro.\n"
+"    "
+
+msgid ""
+"\n"
+"IPA certificate operations\n"
+msgstr ""
+"\n"
+"Operações de certificado IPA\n"
+
+#, python-format
+msgid "%(attr)s does not contain '%(value)s'"
+msgstr "%(attr)s não contém \"%(value)s\""
+
+#, python-format
+msgid "%(attr)s: Invalid syntax."
+msgstr "%(attr)s: Sintaxe inválida."
+
+#, python-format
+msgid "%(attr)s: Only one value allowed."
+msgstr "%(attr)s: Apenas um valor permitido."
+
+#, python-format
+msgid "%(command_name)s: %(oname)s not found"
+msgstr "%(command_name)s: %(oname)s não encontrado"
+
+#, python-format
+msgid "%(count)d Sudo Command matched"
+msgid_plural "%(count)d Sudo Commands matched"
+msgstr[0] "%(count)d comando sudo correspondido"
+msgstr[1] "%(count)d comando sudo correspondidos"
+
+#, python-format
+msgid "%(count)d certificate matched"
+msgid_plural "%(count)d certificates matched"
+msgstr[0] "%(count)d certificado correspondido"
+msgstr[1] "%(count)d certificados correspondidos"
+
+#, python-format
+msgid "%(cver)s client incompatible with %(sver)s server at '%(server)s'"
+msgstr ""
+"Cliente %(cver)s incompatível com o servidor %(sver)s em \"%(server)s\""
+
+#, python-format
+msgid "%(desc)s: %(info)s"
+msgstr "%(desc)s: %(info)s"
+
+#, python-format
+msgid "%(exception)s"
+msgstr "%(exception)s"
+
+#, python-format
+msgid "%(filename)s: file not found"
+msgstr "%(filename)s: arquivo não encontrado"
+
+#, python-format
+msgid "%(info)s"
+msgstr "%(info)s"
+
+#, python-format
+msgid "%(key)s cannot be deleted because %(label)s %(dependent)s requires it"
+msgstr ""
+"%(key)s não pode ser excluído porque %(label)s requer isso %(dependent)s"
+
+#, python-format
+msgid ""
+"%(key)s cannot be deleted or disabled because it is the last member of "
+"%(label)s %(container)s"
+msgstr ""
+"%(key)s não pode ser excluído ou desabilitado porque é o último membro de "
+"%(label)s %(container)s"
+
+#, python-format
+msgid "%(label)s %(key)s cannot be deleted/modified: %(reason)s"
+msgstr "%(label)s %(key)s não pode ser excluído / modificado: %(reason)s"
+
+#, python-format
+msgid "%(metaobject)s: %(oname)s not found"
+msgstr "%(metaobject)s: %(oname)s não encontrado"
+
+#, python-format
+msgid "%(name)s certificate is not valid"
+msgstr "%(name)s certificado não é válido"
+
+#, python-format
+msgid "%(operation)s is not supported for %(principal_type)s principals"
+msgstr "%(operation)s não é suportado para principais %(principal_type)s"
+
+#, python-format
+msgid "%(otype)s \"%(oname)s\" not found"
+msgstr "%(otype)s \"%(oname)s\" não encontrado"
+
+#, python-format
+msgid "%(parent)s: %(oname)s not found"
+msgstr "%(parent)s: %(oname)s não encontrado"
+
+#, python-format
+msgid "%(pkey)s: %(oname)s not found"
+msgstr "%(pkey)s: %(oname)s não encontrado"
+
+#, python-format
+msgid "%(reason)s"
+msgstr "%(reason)s"
+
+#, python-format
+msgid "%(task)s LDAP task timeout, Task DN: '%(task_dn)s'"
+msgstr "%(task)s Tempo limite da tarefa LDAP, DN da tarefa: '%(task_dn)s'"
+
+#, python-format
+msgid "%s: user is already preserved"
+msgstr "%s: o usuário já está preservado"
+
+#, python-format
+msgid "'%(attr)s' already contains one or more values"
+msgstr "\"%(attr)s\" já contém um ou mais valores"
+
+#, python-format
+msgid "'%(entry)s' doesn't have a certificate."
+msgstr "\"%(entry)s\" não tem um certificado."
+
+#, python-format
+msgid "'%(name)s' is required"
+msgstr "\"%(name)s\" é necessário"
+
+#, python-format
+msgid "'%(option)s' option is deprecated. %(additional_info)s"
+msgstr "A opção \"%(option)s\" foi descontinuada. %(additional_info)s"
+
+msgid "A description of this command"
+msgstr "Uma descrição deste comando"
+
+msgid "A group may not be a member of itself"
+msgstr "Um grupo não pode ser um membro de si próprio"
+
+msgid "A group may not be added as a member of itself"
+msgstr "Um grupo não pode ser adicionado como um membro de si próprio"
+
+msgid "A managed group cannot have a password policy."
+msgstr "Um grupo gerenciado não pode ter uma política de senhas."
+
+#, python-format
+msgid ""
+"A problem was encountered when verifying that all members were %(verb)s: "
+"%(exc)s"
+msgstr ""
+"Um problema foi encontrado ao verificar se todos os membros eram %(verb)s: "
+"%(exc)s"
+
+msgid "A string searched in all relevant object attributes"
+msgstr "Uma string buscada em todos os atributos de objeto relevantes"
+
+#, python-format
+msgid "Account disabled: %(disabled)s"
+msgstr "Conta desabilitada: %(disabled)s"
+
+#, python-format
+msgid "Added Sudo Command \"%(value)s\""
+msgstr "Adicionado o comando sudo \"%(value)s\""
+
+msgid "Already registered"
+msgstr "Já registrado"
+
+msgid "Always ask"
+msgstr "Sempre perguntar"
+
+#, python-brace-format
+msgid "An error has occurred (${error})"
+msgstr "Ocorreu um erro interno (${error})"
+
+msgid "Bad format in credentials cache"
+msgstr "Formato inválido no cache de credenciais"
+
+#, python-format
+msgid "Bad search filter %(info)s"
+msgstr "Filtro de pesquisa inválido %(info)s"
+
+#, python-format
+msgid "Base64 decoding failed: %(reason)s"
+msgstr "Decodificação base64 falhou: %(reason)s"
+
+msgid "CLI metavar"
+msgstr "Metavar de CLI"
+
+msgid "CLI name"
+msgstr "Nome de CLI"
+
+#, python-format
+msgid "Cannot decode file '%(filename)s': %(exc)s"
+msgstr "Não foi possível decodificar o arquivo \"%(filename)s\": %(exc)s"
+
+#, python-format
+msgid "Cannot read file '%(filename)s': %(exc)s"
+msgstr "Não foi possível ler \"%(filename)s\": %(exc)s"
+
+msgid "Cannot resolve KDC for requested realm"
+msgstr "Não foi possível resolver KDC para o reino solicitado"
+
+#, python-format
+msgid "Certificate format error: %(error)s"
+msgstr "Erro de formato de certificado: %(error)s"
+
+#, python-format
+msgid "Certificate operation cannot be completed: %(error)s"
+msgstr "A operação do certificado não pode ser concluída: %(error)s"
+
+#, python-format
+msgid "Changed server state of \"%(value)s\"."
+msgstr "Alterado o estado do servidor de \"%(value)s\"."
+
+msgid "Client is not configured. Run ipa-client-install."
+msgstr "O cliente não está configurado. Execute ipa-client-install."
+
+#, python-format
+msgid "Command '%(name)s' has been deprecated"
+msgstr "O comando \"%(name)s\" foi descontinuado"
+
+msgid "Command name"
+msgstr "Nome do comando"
+
+msgid "Command not implemented"
+msgstr "Comando não implementado"
+
+msgid "Configured administrative server limit exceeded"
+msgstr "Limite de servidor administrativo configurado excedido"
+
+msgid "Configured size limit exceeded"
+msgstr "Limite de tamanho configurado excedido"
+
+msgid "Configured time limit exceeded"
+msgstr "Limite de tempo configurado excedido"
+
+msgid "Confirm (password)"
+msgstr "Confirmar (senha)"
+
+#, python-format
+msgid "Could not get %(name)s interactively"
+msgstr "Não foi possível obter %(name)s interativamente"
+
+msgid "Create new Sudo Command."
+msgstr "Cria um novo comando sudo."
+
+msgid "Credentials cache permissions incorrect"
+msgstr "Permissões incorretas de cache de credenciais"
+
+msgid "Debugging output"
+msgstr "Saída de depuração"
+
+msgid "Default"
+msgstr "Padrão"
+
+#, python-format
+msgid "Delete %(name)s '%(value)s'?"
+msgstr "Excluir %(name)s \"%(value)s\"?"
+
+msgid "Delete Sudo Command."
+msgstr "Exclui comando sudo."
+
+#, python-format
+msgid "Deleted Sudo Command \"%(value)s\""
+msgstr "Excluído o comando sudo \"%(value)s\""
+
+msgid "Deleting a managed group is not allowed. It must be detached first."
+msgstr ""
+"A exclusão de um grupo gerenciado não é permitida. Ele deve ser desassociado "
+"primeiro."
+
+msgid "Deprecated options"
+msgstr "Opções obsoletas"
+
+#, python-format
+msgid "Deprecated; use %s"
+msgstr "Descontinuado; use %s"
+
+msgid "Display information about a class."
+msgstr "Exibe informações sobre uma classe."
+
+msgid "Display information about a command."
+msgstr "Exibe informações sobre um comando."
+
+msgid "Display information about a help topic."
+msgstr "Exibe informações sobre um tópico de ajuda."
+
+#, python-format
+msgid "Domain '%(domain)s' is not a root domain for forest '%(forest)s'"
+msgstr ""
+"O domínio \"%(domain)s\" não é um domínio raiz para a floresta \"%(forest)s\""
+
+#, c-format
+msgid "Error storing creds in credential cache: %s.\n"
+msgstr "Erro ao armazenar credenciais no cache de credenciais: %s\n"
+
+#, c-format
+msgid "Failed to open keytab\n"
+msgstr "Falha ao abrir o keytab\n"
+
+#, python-format
+msgid "Failed to remove server %(master)s from server list: %(err)s"
+msgstr "Falha ao remover o servidor %(master)s da lista de servidores: %(err)s"
+
+#, c-format
+msgid "Failed to set cursor '%1$s'\n"
+msgstr "Falha ao definir o cursor '%1$s'\n"
+
+#, python-format
+msgid "Failure decoding Certificate Signing Request: %s"
+msgstr "Falha ao decodificar Certificate Signing Request: %s"
+
+#, python-format
+msgid "File %(file)s not found"
+msgstr "Arquivo %(file)s não encontrado"
+
+#, python-format
+msgid "Insufficient access: %(info)s"
+msgstr "Acesso insuficiente: %(info)s"
+
+#, python-format
+msgid "Invalid JSON-RPC request: %(error)s"
+msgstr "Solicitação JSON-RPC inválida: %(error)s"
+
+#, python-format
+msgid "Invalid domain name '%(domain)s': %(e)s"
+msgstr "Nome de domínio inválido \"%(domain)s\": %(e)s"
+
+#, c-format
+msgid ""
+"JSON-RPC request:\n"
+"%s\n"
+msgstr ""
+"Solicitação JSON-RPC\n"
+"%s\n"
+
+msgid "Kerberos Service Principal Name"
+msgstr "Nome principal do serviço Kerberos"
+
+#, python-format
+msgid "Kerberos error: %(major)s/%(minor)s"
+msgstr "Erro de Kerberos: %(major)s/%(minor)s"
+
+msgid "Leading and trailing spaces are not allowed"
+msgstr "Espaços no início ou fim não são permitidos"
+
+#, python-format
+msgid "Malformed principal: %(error)s"
+msgstr "Principal malformado: %(error)s"
+
+#, python-format
+msgid "Malformed principal: '%(value)s'"
+msgstr "Principal malformado: \"%(value)s\""
+
+#, python-format
+msgid ""
+"Mapping ruleset \"%(ruleset)s\" has more than one rule for the %(helper)s "
+"helper"
+msgstr ""
+"O conjunto de regras de mapeamento \"%(ruleset)s\" tem mais de uma regra "
+"para o auxiliar %(helper)s"
+
+#, python-format
+msgid "Missing or invalid HTTP Referer, %(referer)s"
+msgstr "HTTP Referer faltando ou inválido, %(referer)s"
+
+#, python-format
+msgid "Modify %(name)s '%(value)s'?"
+msgstr "Modificar %(name)s \"%(value)s\"?"
+
+msgid "Modify Sudo Command."
+msgstr "Modifica comando sudo."
+
+msgid "Multi-value"
+msgstr "Multivalor"
+
+msgid "No credentials cache found"
+msgstr "Nenhum cache de credenciais encontrado"
+
+msgid "No file to read"
+msgstr "Nenhum arquivo para ler"
+
+msgid "No matching entries found"
+msgstr "Não foram encontradas entradas coincidentes"
+
+msgid "Not allowed on non-leaf entry"
+msgstr "Não permitido em uma entrada não-folha"
+
+msgid "Not registered yet"
+msgstr "Não registrado ainda"
+
+msgid "Only one value is allowed"
+msgstr "Apenas um valor é permitido"
+
+msgid "Password is too long!\n"
+msgstr "A senha é longa demais!\n"
+
+msgid "Passwords do not match"
+msgstr "As senhas não coincidem"
+
+msgid "Passwords do not match!"
+msgstr "As senhas não coincidem!"
+
+#, c-format
+msgid "Passwords do not match!\n"
+msgstr "As senhas não coincidem!\n"
+
+msgid "Passwords must match"
+msgstr "As senhas devem coincidir"
+
+msgid "Positional arguments"
+msgstr "Argumentos posicionais"
+
+#, python-format
+msgid "Principal %(principal)s cannot be authenticated: %(message)s"
+msgstr "O principal %(principal)s não conseguiu ser autenticado: %(message)s"
+
+#, python-format
+msgid "Principal is not of the form user@REALM: '%(principal)s'"
+msgstr "O principal não é da forma usuário@REINO: \"%(principal)s\""
+
+msgid "Print debugging information"
+msgstr "Imprimir informações de depuração"
+
+#, c-format
+msgid "Removing principal %s\n"
+msgstr "Removendo principal %s\n"
+
+#, python-format
+msgid "Request failed with status %(status)s: %(reason)s"
+msgstr "A solicitação falhou com status %(status)s: %(reason)s"
+
+msgid "Required"
+msgstr "Obrigatório"
+
+msgid "Return command defaults"
+msgstr "Retorna o padrão do comando"
+
+#, python-format
+msgid "SELinux user '%(user)s' is not valid: %(error)s"
+msgstr "O usuário SELinux \"%(user)s\" não é válido: %(error)s"
+
+msgid "SID does not match any trusted domain"
+msgstr "SID não corresponde a nenhum domínio confiável"
+
+msgid "Search for classes."
+msgstr "Pesquisa por classes."
+
+msgid "Search for commands."
+msgstr "Pesquisa por comandos."
+
+msgid "Search for help topics."
+msgstr "Pesquisa por tópicos de ajuda."
+
+#, python-format
+msgid "Server removal aborted: %(reason)s."
+msgstr "Remoção do servidor abortada: %(reason)s."
+
+#, python-format
+msgid "Service '%(service)s' not found in Kerberos database"
+msgstr ""
+"O serviço \"%(service)s\" não foi encontrado no banco de dados de Kerberos"
+
+#, python-format
+msgid ""
+"Service principal is not of the form: service/fully-qualified host name: "
+"%(reason)s"
+msgstr ""
+"O principal do serviço não é da forma: serviço/nome de host totalmente "
+"qualificado: %(reason)s"
+
+msgid "Service principal is required"
+msgstr "O principal do serviço é necessário"
+
+msgid "Session error"
+msgstr "Erro de sessão"
+
+msgid "Sudo Commands"
+msgstr "Comandos sudo"
+
+#, python-format
+msgid ""
+"System encoding must be UTF-8, '%(encoding)s' is not supported. Set "
+"LC_ALL=\"C.UTF-8\", or LC_ALL=\"\" and LC_CTYPE=\"C.UTF-8\"."
+msgstr ""
+"O sistema de codificação deve ser UTF-8, não tendo suporte a "
+"\"%(encoding)s\". Defina LC_ALL=\"C.UTF-8\", ou LC_ALL=\"\" e LC_CTYPE=\"C."
+"UTF-8\"."
+
+#, python-format
+msgid "The certificate for %(ca)s is not available on this server."
+msgstr "O certificado para %(ca)s não está disponível neste servidor."
+
+#, python-format
+msgid "The character %(char)r is not allowed."
+msgstr "O caractere %(char)r não é permitido."
+
+msgid "The default users group cannot be removed"
+msgstr "O grupo de usuários padrão não pode ser removido"
+
+msgid ""
+"The principal to remove from the keytab (ex: ftp/ftp.example.com@EXAMPLE.COM)"
+msgstr ""
+"O principal a ser removido do keytab (ex: ftp/ftp.example.com@EXAMPLE.COM)"
+
+msgid ""
+"The realm for the principal does not match the realm for this IPA server"
+msgstr ""
+"O reino para o principal não corresponde ao reino para este servidor IPA"
+
+#, python-format
+msgid ""
+"The search criteria was not specific enough. Expected 1 and found %(found)d."
+msgstr ""
+"O critério de pesquisa não foi específico o suficiente. Esperava 1 e "
+"encontrou %(found)d."
+
+msgid "The topic or command name."
+msgstr "O nome do tópico ou comando."
+
+msgid "This command requires root access"
+msgstr "Este comando requer acesso de root"
+
+msgid "This entry already exists"
+msgstr "Esta entrada já existe"
+
+msgid "This entry cannot be enabled or disabled"
+msgstr "Esta entrada não pode ser habilitada ou desabilitada"
+
+msgid "This entry is already a member"
+msgstr "Esta entrada já é um membro"
+
+msgid "This entry is already disabled"
+msgstr "Esta entrada já está desabilitada"
+
+msgid "This entry is already enabled"
+msgstr "Esta entrada já está habilitada"
+
+msgid "This entry is not a member"
+msgstr "Esta entrada não é um membro"
+
+msgid "This group already allows external members"
+msgstr "Este grupo já permite membros externos"
+
+msgid "This group cannot be posix because it is external"
+msgstr "Este grupo não pode ser posix porque é externo"
+
+msgid "This is already a posix group"
+msgstr "Este já é um grupo posix"
+
+msgid "This is already a posix group and cannot be converted to external one"
+msgstr "Este já é um grupo posix e não pode ser convertido para um externo"
+
+msgid "Ticket expired"
+msgstr "Tíquete expirado"
+
+msgid "To get command help, use:"
+msgstr "Para obter ajuda do comando, use:"
+
+msgid "Topic commands:"
+msgstr "Comandos do tópico:"
+
+msgid "Topic or Command"
+msgstr "Tópico ou comando"
+
+#, python-format
+msgid "Unable to create private group. A group '%(group)s' already exists."
+msgstr ""
+"Não foi possível criar um grupo privado. Um grupo \"%(group)s\" já existe."
+
+#, c-format
+msgid "Unable to parse principal\n"
+msgstr "Incapaz de analisar o principal\n"
+
+#, c-format
+msgid "Unable to parse principal name\n"
+msgstr "Não foi possível analisar o nome principal\n"
+
+#, c-format
+msgid "Unable to remove entry\n"
+msgstr "Incapaz de remover entrada\n"
+
+msgid "You must enroll a host in order to create a host service"
+msgstr "Você deve registrar um host para criar um serviço de host"
+
+msgid "an internal error has occurred"
+msgstr "ocorreu um erro interno"
+
+#, python-format
+msgid "an internal error has occurred on server at '%(server)s'"
+msgstr "ocorreu um erro interno no servidor em \"%(server)s\""
+
+#, python-format
+msgid "api has no such namespace: '%(name)s'"
+msgstr "a api não possui tal espaço de nomes: \"%(name)s\""
+
+#, python-format
+msgid "attribute \"%(attribute)s\" not allowed"
+msgstr "o atributo \"%(attribute)s\" não é permitido"
+
+#, python-format
+msgid "can be at most %(len)d characters"
+msgstr "pode ser no máximo %(len)d caracteres"
+
+#, python-format
+msgid "can be at most %(maxlength)d bytes"
+msgstr "pode ser no máximo %(maxlength)d bytes"
+
+#, python-format
+msgid "can be at most %(maxlength)d characters"
+msgstr "pode ser no máximo %(maxlength)d caracteres"
+
+#, python-format
+msgid "can be at most %(maxvalue)d"
+msgstr "pode ser no máximo %(maxvalue)d"
+
+#, python-format
+msgid "can be at most %(maxvalue)s"
+msgstr "pode ser no máximo %(maxvalue)s"
+
+#, python-format
+msgid "cannot connect to '%(uri)s': %(error)s"
+msgstr "não foi possível se conectar a \"%(uri)s\": %(error)s"
+
+msgid "change collided with another change"
+msgstr "a alteração colidiu com outra alteração"
+
+msgid "command"
+msgstr "comando"
+
+#, python-format
+msgid "command '%(name)s' takes at most %(count)d argument"
+msgid_plural "command '%(name)s' takes at most %(count)d arguments"
+msgstr[0] "o comando \"%(name)s\" leva no máximo %(count)d argumento"
+msgstr[1] "o comando \"%(name)s\" leva no máximo %(count)d argumentos"
+
+#, python-format
+msgid "command '%(name)s' takes no arguments"
+msgstr "o comando \"%(name)s\" leva nenhum argumento"
+
+msgid "commands"
+msgstr "comandos"
+
+msgid "did not receive Kerberos credentials"
+msgstr "não foram recebidas as credenciais de Kerberos"
+
+msgid "does not match any of accepted formats: "
+msgstr "não corresponde a nenhum dos formatos aceitos: "
+
+#, python-format
+msgid "error marshalling data for XML-RPC transport: %(error)s"
+msgstr "erro ao ordenar dados para transporte XML-RPC: %(error)s"
+
+#, python-format
+msgid "error on server '%(server)s': %(error)s"
+msgstr "erro no servidor \"%(server)s\": %(error)s"
+
+msgid "incomplete time value"
+msgstr "valor de hora incompleto"
+
+msgid "incorrect type"
+msgstr "tipo incorreto"
+
+#, python-format
+msgid "invalid '%(name)s': %(error)s"
+msgstr "\"%(name)s\" inválido: %(error)s"
+
+#, python-format
+msgid "invalid domain-name: %s"
+msgstr "nome de domínio inválido: %s"
+
+#, python-format
+msgid "key %(key)s already exists"
+msgstr "a chave %(key)s já existe"
+
+#, python-format
+msgid "key named %(key)s already exists"
+msgstr "uma chave chamada %(key)s já existe"
+
+#, c-format
+msgid "krb5_kt_get_entry %1$d: %2$s\n"
+msgstr "krb5_kt_get_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_remove_entry %1$d: %2$s\n"
+msgstr "krb5_kt_remove_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_parse_name %1$d: %2$s\n"
+msgstr "krb5_parse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_unparse_name %1$d: %2$s\n"
+msgstr "krb5_unparse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "kvno %d\n"
+msgstr "kvno %d\n"
+
+msgid "limits exceeded for this query"
+msgstr "limites excedidos para esta consulta"
+
+#, python-format
+msgid "map %(map)s already exists"
+msgstr "o mapa %(map)s já existe"
+
+msgid "modifying primary key is not allowed"
+msgstr "a modificação da chave primária não é permitida"
+
+#, python-format
+msgid "must be \"%s\""
+msgstr "deve ser \"%s\""
+
+#, python-format
+msgid "must be '%(value)s'"
+msgstr "deve ser \"%(value)s\""
+
+msgid "must be DNS name"
+msgstr "deve ser um nome de DNS"
+
+msgid "must be Kerberos principal"
+msgstr "deve ser um principal de Kerberos"
+
+msgid "must be True or False"
+msgstr "deve ser True ou False"
+
+msgid "must be Unicode text"
+msgstr "deve ser um texto Unicode"
+
+msgid "must be a certificate"
+msgstr "deve ser um certificado"
+
+msgid "must be a certificate signing request"
+msgstr "deve ser uma solicitação de assinatura de certificado"
+
+msgid "must be a decimal number"
+msgstr "deve ser um número decimal"
+
+msgid "must be absolute"
+msgstr "deve ser absoluto"
+
+msgid "must be an integer"
+msgstr "deve ser um inteiro"
+
+#, python-format
+msgid "must be at least %(minlength)d bytes"
+msgstr "deve ser pelo menos %(minlength)d bytes"
+
+#, python-format
+msgid "must be at least %(minlength)d characters"
+msgstr "deve ser pelo menos %(minlength)d caracteres"
+
+#, python-format
+msgid "must be at least %(minvalue)d"
+msgstr "deve ser pelo menos %(minvalue)d"
+
+#, python-format
+msgid "must be at least %(minvalue)s"
+msgstr "deve ser pelo menos %(minvalue)s"
+
+msgid "must be binary data"
+msgstr "deve ser um dado binário"
+
+msgid "must be datetime value"
+msgstr "deve ser um valor de data e hora"
+
+msgid "must be dictionary"
+msgstr "deve ser um dicionário"
+
+#, python-format
+msgid "must be exactly %(length)d bytes"
+msgstr "deve ser exatamente %(length)d bytes"
+
+#, python-format
+msgid "must be exactly %(length)d characters"
+msgstr "deve ser exatamente %(length)d caracteres"
+
+#, python-format
+msgid "must be one of %(values)s"
+msgstr "deve ser um de %(values)s"
+
+msgid "must be relative"
+msgstr "deve ser relativo"
+
+#, python-format
+msgid "must match pattern \"%(pattern)s\""
+msgstr "deve corresponder ao padrão \"%(pattern)s\""
+
+#, python-format
+msgid "no command nor help topic '%(topic)s'"
+msgstr "Nenhum comando nem tópico de ajuda \"%(topic)s\""
+
+msgid "no modifications to be performed"
+msgstr "nenhuma modificação para ser realizada"
+
+#, python-format
+msgid ""
+"number class '%(cls)s' is not included in a list of allowed number classes: "
+"%(allowed)s"
+msgstr ""
+"classe de número \"%(cls)s\" não está incluído em uma lista de classes de "
+"número: %(allowed)s"
+
+#, python-format
+msgid "overlapping arguments and options: %(names)s"
+msgstr "sobreposição de argumentos e opções: %(names)s"
+
+#, python-format
+msgid "permission \"%(value)s\" already exists"
+msgstr "a permissão \"%(value)s\" já existe"
+
+#, c-format
+msgid "principal not found\n"
+msgstr "Principal não encontrado\n"
+
+#, python-format
+msgid "query '%(owner)s %(rtype)s': %(error)s"
+msgstr "consulta \"%(owner)s %(rtype)s\": %(error)s"
+
+#, c-format
+msgid "realm not found\n"
+msgstr "realm não encontrado\n"
+
+#, python-format
+msgid "request failed with HTTP status %d"
+msgstr "a solicitação falhou com status HTTP %d"
+
+msgid "sudo command"
+msgstr "comando sudo"
+
+msgid "sudo commands"
+msgstr "comandos sudo"
+
+msgid "this option is deprecated"
+msgstr "esta opção foi descontinuada"
+
+#, python-format
+msgid "unknown command '%(name)s'"
+msgstr "comando desconhecido \"%(name)s\""
+
+#, python-format
+msgid "unknown error %(code)d from %(server)s: %(error)s"
+msgstr "erro desconhecido %(code)d de %(server)s: %(error)s"
+
+#, python-format
+msgid "user \"%s\" is already active"
+msgstr "o usuário \"%s\" já está ativo"

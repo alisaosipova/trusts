@@ -1,0 +1,2825 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR FreeIPA Contributors
+# This file is distributed under the same license as the freeipa package.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2021, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.10.0.dev202103310611+git68a5fe822\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2023-05-19 09:57+0200\n"
+"PO-Revision-Date: 2022-07-19 19:18+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/freeipa/"
+"master/fi/>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13\n"
+
+msgid ""
+"\n"
+"DNS server configuration\n"
+msgstr ""
+"\n"
+"DNS-palvelimen kokoonpano\n"
+
+msgid ""
+"\n"
+"IPA locations\n"
+msgstr ""
+"\n"
+"IPA sijainnit\n"
+
+msgid ""
+"\n"
+"IPA server roles\n"
+msgstr ""
+"\n"
+"IPA-palvelinroolit\n"
+
+msgid ""
+"\n"
+"IPA servers\n"
+msgstr ""
+"\n"
+"IPA-palvelimet\n"
+
+msgid ""
+"\n"
+"Managed permissions\n"
+msgstr ""
+"\n"
+"Hallitut käyttöoikeudet\n"
+
+msgid ""
+"\n"
+"OTP Tokens\n"
+msgstr ""
+"\n"
+"OTP-tunnukset\n"
+
+msgid ""
+"\n"
+"Permissions\n"
+msgstr ""
+"\n"
+"Käyttöoikeudet\n"
+
+msgid ""
+"\n"
+"Sudo Rules\n"
+msgstr ""
+"\n"
+"Sudo-säännöt\n"
+
+msgid ""
+"\n"
+"YubiKey Tokens\n"
+msgstr ""
+"\n"
+"YubiKey Tokenit\n"
+
+#, python-format
+msgid "%(count)d SELinux User Map matched"
+msgid_plural "%(count)d SELinux User Maps matched"
+msgstr[0] "%(count)d SELinux-käyttäjäkartta löytyi"
+msgstr[1] "%(count)d SELinux-käyttäjäkarttoja löytyi"
+
+#, python-format
+msgid "%(count)d subordinate id matched"
+msgid_plural "%(count)d subordinate ids matched"
+msgstr[0] "%(count)d alisteinen tunnus löytyi"
+msgstr[1] "%(count)d alisteista tunnusta löytyi"
+
+#, python-format
+msgid "%(exception)s"
+msgstr "%(exception)s"
+
+#, python-format
+msgid "%(host)s failed"
+msgstr "%(host)s epäonnistui"
+
+#, python-format
+msgid "%(reason)s"
+msgstr "%(reason)s"
+
+#, python-format
+msgid "%(value)s"
+msgstr "%(value)s"
+
+#, python-format
+msgid "%i service added."
+msgstr "%i palvelu lisätty."
+
+#, python-format
+msgid "%i services added."
+msgstr "%i palvelua lisätty."
+
+#, python-format
+msgid "%s"
+msgstr "%s"
+
+#, python-format
+msgid "%s Record"
+msgstr "%s Tietue"
+
+#, python-format
+msgid "%s record"
+msgstr "%s tietue"
+
+#, python-format
+msgid "%s: group not found"
+msgstr "%s: ryhmää ei löydy"
+
+msgid "A IP Address"
+msgstr "IP-osoite"
+
+msgid "A record"
+msgstr "Tietue"
+
+msgid "A6 record"
+msgstr "A6-tietue"
+
+msgid "AAAA IP Address"
+msgstr "AAAA:n IP-osoite"
+
+msgid "AFSDB Hostname"
+msgstr "AFSDB-isäntänimi"
+
+msgid "APL record"
+msgstr "APL-tietue"
+
+msgid "About"
+msgstr "Tietoja"
+
+msgid "Access Denied"
+msgstr "Pääsy evätty"
+
+#, python-format
+msgid "Access granted: %s"
+msgstr "Käyttöoikeus myönnetty: %s"
+
+msgid "Account"
+msgstr "Tili"
+
+msgid "Account Settings"
+msgstr "Tilin asetukset"
+
+msgid "Actions"
+msgstr "Toimet"
+
+msgid "Activate"
+msgstr "Aktivoi"
+
+msgid "Active zone"
+msgstr "Aktiivinen vyöhyke"
+
+msgid "Add"
+msgstr "Lisää"
+
+msgid "Add OTP token"
+msgstr "Lisää OTP-tunnus"
+
+msgid "Add a new HBAC service."
+msgstr "Lisää uusi HBAC-palvelu."
+
+msgid "Add a new ID View."
+msgstr "Lisää uusi tunnusnäkymä."
+
+msgid "Add a new IPA new service."
+msgstr "Lisää uusi IPA-palvelu."
+
+msgid "Add a new IPA service."
+msgstr "Lisää uusi IPA-palvelu."
+
+msgid "Add a new OTP token."
+msgstr "Lisää uusi OTP-tunnus."
+
+msgid "Add a new SMB service."
+msgstr "Lisää uusi SMB-palvelu."
+
+msgid "Add a new YubiKey OTP token."
+msgstr "Lisää uusi YubiKey:n OTP-token."
+
+msgid "Add a new delegation."
+msgstr "Lisää uusi valtuuskunta."
+
+msgid "Add a new host."
+msgstr "Lisää uusi isäntä."
+
+msgid "Add a new hostgroup."
+msgstr "Lisää uusi isäntäryhmä."
+
+msgid "Add a new netgroup."
+msgstr "Lisää uusi verkkoryhmä."
+
+msgid "Add a vault."
+msgstr "Lisää holvi."
+
+msgid "Add and Close"
+msgstr "Lisää ja sulje"
+
+msgid "Add host"
+msgstr "Lisää isäntä"
+
+msgid "Add role"
+msgstr "Lisää rooli"
+
+msgid "Add rule"
+msgstr "Lisää sääntö"
+
+msgid "Add service"
+msgstr "Lisää palvelu"
+
+msgid "Add services to a CA ACL."
+msgstr "Lisää palveluita CA ACL:ään."
+
+msgid "Add user"
+msgstr "Lisää käyttäjä"
+
+#, python-format
+msgid "Added CA ACL \"%(value)s\""
+msgstr "Lisätty CA ACL \"%(value)s\""
+
+#, python-format
+msgid "Added HBAC rule \"%(value)s\""
+msgstr "Lisätty HBAC sääntö \"%(value)s\""
+
+#, python-format
+msgid "Added HBAC service \"%(value)s\""
+msgstr "Lisätty HBAC palvelu \"%(value)s\""
+
+#, python-format
+msgid "Added HBAC service group \"%(value)s\""
+msgstr "Lisätty HBAC palveluryhmä \"%(value)s\""
+
+#, python-format
+msgid "Added OTP token \"%(value)s\""
+msgstr "Lisätty OTP-tunnus \"%(value)s\""
+
+#, python-format
+msgid "Added SELinux User Map \"%(value)s\""
+msgstr "Lisätty SELinux-käyttäjäkartta \"%(value)s\""
+
+#, python-format
+msgid "Added Sudo Rule \"%(value)s\""
+msgstr "Lisätty sudosääntö \"%(value)s\""
+
+#, python-format
+msgid "Added group \"%(value)s\""
+msgstr "Lisätty ryhmä \"%(value)s\""
+
+#, python-format
+msgid "Added host \"%(value)s\""
+msgstr "Lisätty isäntäkone \"%(value)s\""
+
+#, python-format
+msgid "Added hostgroup \"%(value)s\""
+msgstr "Lisätty isäntäryhmä \"%(value)s\""
+
+#, python-format
+msgid "Added netgroup \"%(value)s\""
+msgstr "Lisätty verkkoryhmä \"%(value)s\""
+
+#, python-format
+msgid "Added privilege \"%(value)s\""
+msgstr "Lisätty oikeus \"%(value)s\""
+
+#, python-format
+msgid "Added role \"%(value)s\""
+msgstr "Lisätty rooli \"%(value)s\""
+
+#, python-format
+msgid "Added segment \"%(value)s\""
+msgstr "Lisätty segmentti \"%(value)s\""
+
+#, python-format
+msgid "Added selfservice \"%(value)s\""
+msgstr "Lisätty itsepalvelu \"%(value)s\""
+
+#, python-format
+msgid "Added service \"%(value)s\""
+msgstr "Lisätty palvelu \"%(value)s\""
+
+#, python-format
+msgid "Added stage user \"%(value)s\""
+msgstr "Lisätty stagen käyttäjä \"%(value)s\""
+
+#, python-format
+msgid "Added subordinate id \"%(value)s\""
+msgstr "Lisätty alisteinen tunnus \"%(value)s\""
+
+#, python-format
+msgid "Added user \"%(value)s\""
+msgstr "Lisätty käyttäjä \"%(value)s\""
+
+#, python-format
+msgid "Added vault \"%(value)s\""
+msgstr "Lisätty holvi \"%(value)s\""
+
+msgid "Administrative account"
+msgstr "Hallinnollinen tili"
+
+msgid "All"
+msgstr "Kaikki"
+
+msgid "Allowed to create keytab"
+msgstr "Keytabin luominen sallittu"
+
+msgid "Any Service"
+msgstr "Mikä tahansa palvelu"
+
+msgid "Apply"
+msgstr "Toteuta"
+
+msgid "Attribute"
+msgstr "Attribuutti"
+
+msgid "Attributes"
+msgstr "Attribuutit"
+
+msgid "Audit"
+msgstr "Auditointi"
+
+msgid "Authenticating"
+msgstr "Tunnistaudutaan"
+
+msgid "Authentication"
+msgstr "Tunnistatuminen"
+
+msgid "Available"
+msgstr "Saatavilla"
+
+msgid "Back"
+msgstr "Takaisin"
+
+msgid "Bad format in credentials cache"
+msgstr "Virheellinen muoto valtuustietojen välimuistissa"
+
+msgid "Bad or unsupported salt type.\n"
+msgstr "Huono tai ei-tuettu suolatyyppi.\n"
+
+msgid "CERT record"
+msgstr "CERT-tietue"
+
+msgid "CNAME Hostname"
+msgstr "CNAME-isäntänimi"
+
+msgid "Cancel"
+msgstr "Peru"
+
+#, c-format
+msgid "Cannot get host's FQDN!\n"
+msgstr "Ei voida saada koneen FQDN:ia!\n"
+
+msgid "Change password"
+msgstr "Vaihda salasana"
+
+#, python-format
+msgid "Changed password for \"%(value)s\""
+msgstr "Vaihdettu salasana kohteelle \"%(value)s\""
+
+msgid "City"
+msgstr "Kaupunki"
+
+msgid "Class"
+msgstr "Luokka"
+
+msgid "Clear"
+msgstr "Tyhjennä"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "Commands"
+msgstr "Komennot"
+
+msgid "Configuration"
+msgstr "Asetukset"
+
+msgid "Confirm (password)"
+msgstr "Vahvista (salasana)"
+
+msgid "Confirmation"
+msgstr "Vahvistus"
+
+msgid "Continue"
+msgstr "Jatka"
+
+msgid "Create a new SELinux User Map."
+msgstr "Luo uusi SELinux-käyttäjäkartta."
+
+#, python-format
+msgid "Created ACI \"%(value)s\""
+msgstr "Luodut ACI \"%(value)s\""
+
+#, python-format
+msgid "Created CA \"%(value)s\""
+msgstr "Luotu CA \"%(value)s\""
+
+msgid "Current Password"
+msgstr "Nykyinen salasana"
+
+msgid "DLV record"
+msgstr "DLV-tietue"
+
+msgid "DN to bind as if not using kerberos"
+msgstr "Yhdistettävä DN kuin et käyttäisi Kerberosia"
+
+msgid "DNAME Target"
+msgstr "DNAME kohde"
+
+msgid "DNS"
+msgstr "DNS"
+
+msgid "DNS label cannot be longer than 63 characters"
+msgstr "DNS-nimi voi sisältää enintään 63 merkkiä"
+
+msgid "DNS label cannot be longer that 63 characters"
+msgstr "DNS-nimi voi sisältää enintään 63 merkkiä"
+
+msgid "DS record"
+msgstr "DS-tietue"
+
+msgid "Data"
+msgstr "Tiedot"
+
+msgid "Default"
+msgstr "Oletus"
+
+msgid "Default SELinux user"
+msgstr "SELinux-oletuskäyttäjä"
+
+msgid "Default from"
+msgstr "Oletusarvo kohteesta"
+
+msgid "Default shell"
+msgstr "Oletuskomentorivitulkki"
+
+msgid "Default types of supported user authentication"
+msgstr "Tuetun käyttäjän todennuksen oletustyypit"
+
+msgid "Default user authentication types"
+msgstr "Käyttäjän todennustyyppien oletukset"
+
+msgid "Delegation"
+msgstr "Valtuutus"
+
+msgid "Delegation name"
+msgstr "Valtuuskunnan nimi"
+
+msgid "Delegations"
+msgstr "Valtuutukset"
+
+msgid "Delete"
+msgstr "Poista"
+
+msgid "Delete ACI."
+msgstr "Poista ACI."
+
+msgid "Delete IPA server."
+msgstr "Poista IPA-palvelin."
+
+msgid "Delete Sudo Rule."
+msgstr "Poista Sudo-sääntö."
+
+msgid "Delete a CA ACL."
+msgstr "Poista CA ACL."
+
+msgid "Delete a SELinux User Map."
+msgstr "Poista SELinux-käyttäjäkartta."
+
+msgid "Delete a delegation."
+msgstr "Poista valtuuskunta."
+
+msgid "Delete a host."
+msgstr "Poista isäntä."
+
+msgid "Delete a hostgroup."
+msgstr "Poista isäntäryhmä."
+
+msgid "Delete a netgroup."
+msgstr "Poista verkkoryhmä."
+
+msgid "Delete a permission."
+msgstr "Poista lupa."
+
+msgid "Delete a privilege."
+msgstr "Poista etuoikeus."
+
+msgid "Delete a role."
+msgstr "Poista rooli."
+
+msgid "Delete a segment."
+msgstr "Poista segmentti."
+
+msgid "Delete a stage user."
+msgstr "Poista stagen käyttäjä."
+
+msgid "Delete a subordinate id."
+msgstr "Poista alisteinen tunnus."
+
+msgid "Delete a trust."
+msgstr "Poista luottamus."
+
+msgid "Delete a user"
+msgstr "Poista käyttäjä"
+
+msgid "Delete a user."
+msgstr "Poista käyttäjä."
+
+msgid "Delete a vault container."
+msgstr "Poista holvikontti."
+
+msgid "Delete a vault."
+msgstr "Poista holvi."
+
+msgid "Delete all?"
+msgstr "Poista kaikki?"
+
+msgid "Delete an Group ID override."
+msgstr "Poista ryhmätunnuksen ohitus."
+
+msgid "Delete an HBAC rule."
+msgstr "Poista HBAC-sääntö."
+
+msgid "Delete an ID View."
+msgstr "Poista tunnusnäkymä."
+
+msgid "Delete an ID override."
+msgstr "Poista tunnuksen ohitus."
+
+msgid "Delete an ID range."
+msgstr "Poista tunnusalue."
+
+msgid "Delete an IPA service."
+msgstr "Poista IPA-palvelu."
+
+msgid "Delete an User ID override."
+msgstr "Poista ryhmätunnuksen ohitus."
+
+msgid "Delete an automember rule."
+msgstr "Poista automember-sääntö."
+
+msgid "Delete domain"
+msgstr "Poista toimialue"
+
+msgid "Delete group."
+msgstr "Poista ryhmä."
+
+msgid "Delete mode"
+msgstr "Poista moodi"
+
+#, python-format
+msgid "Deleted ACI \"%(value)s\""
+msgstr "Poistettu ACI \"%(value)s\""
+
+#, python-format
+msgid "Deleted CA \"%(value)s\""
+msgstr "Poistettu CA \"%(value)s\""
+
+#, python-format
+msgid "Deleted CA ACL \"%(value)s\""
+msgstr "Poistettu CA ACL \"%(value)s\""
+
+#, python-format
+msgid "Deleted HBAC rule \"%(value)s\""
+msgstr "Poistettu HBAC sääntö \"%(value)s\""
+
+#, python-format
+msgid "Deleted HBAC service \"%(value)s\""
+msgstr "Poistettu HBAC palvelu \"%(value)s\""
+
+#, python-format
+msgid "Deleted HBAC service group \"%(value)s\""
+msgstr "Poistettu HBAC palveluryhmä \"%(value)s\""
+
+#, python-format
+msgid "Deleted IPA server \"%(value)s\""
+msgstr "Poistettu IPA palvelin \"%(value)s\""
+
+#, python-format
+msgid "Deleted OTP token \"%(value)s\""
+msgstr "Poistettu OTP-tunnus \"%(value)s\""
+
+#, python-format
+msgid "Deleted SELinux User Map \"%(value)s\""
+msgstr "Poistettu SELinux-käyttäjäkartta \"%(value)s\""
+
+#, python-format
+msgid "Deleted group \"%(value)s\""
+msgstr "Poistettu ryhmä \"%(value)s\""
+
+#, python-format
+msgid "Deleted host \"%(value)s\""
+msgstr "Poistettu isäntäkone \"%(value)s\""
+
+#, python-format
+msgid "Deleted hostgroup \"%(value)s\""
+msgstr "Poistettu isäntäryhmä \"%(value)s\""
+
+#, python-format
+msgid "Deleted netgroup \"%(value)s\""
+msgstr "Poistettu verkkoryhmä \"%(value)s\""
+
+#, python-format
+msgid "Deleted privilege \"%(value)s\""
+msgstr "Poistettu oikeus \"%(value)s\""
+
+#, python-format
+msgid "Deleted profile \"%(value)s\""
+msgstr "Poistettu profiili \"%(value)s\""
+
+#, python-format
+msgid "Deleted record \"%(value)s\""
+msgstr "Poistettu tietue \"%(value)s\""
+
+#, python-format
+msgid "Deleted role \"%(value)s\""
+msgstr "Poistettu rooli \"%(value)s\""
+
+#, python-format
+msgid "Deleted segment \"%(value)s\""
+msgstr "Poistettu segmentti \"%(value)s\""
+
+#, python-format
+msgid "Deleted selfservice \"%(value)s\""
+msgstr "Poistettu itsepalvelu \"%(value)s\""
+
+#, python-format
+msgid "Deleted service \"%(value)s\""
+msgstr "Poistettu palvelu \"%(value)s\""
+
+#, python-format
+msgid "Deleted stage user \"%(value)s\""
+msgstr "Poistettu stagen käyttäjä \"%(value)s\""
+
+#, python-format
+msgid "Deleted subordinate id \"%(value)s\""
+msgstr "Poistettu alisteinen tunnus \"%(value)s\""
+
+#, python-format
+msgid "Deleted trust \"%(value)s\""
+msgstr "Poistettu luottamus \"%(value)s\""
+
+#, python-format
+msgid "Deleted user \"%(value)s\""
+msgstr "Poistettu käyttäjä \"%(value)s\""
+
+#, python-format
+msgid "Deleted vault \"%(value)s\""
+msgstr "Poistettu holvi \"%(value)s\""
+
+msgid "Deleted vault container"
+msgstr "Poistettu holvikontti"
+
+msgid "Description"
+msgstr "Kuvaus"
+
+msgid "Digest"
+msgstr "Tarkistussumma"
+
+msgid "Direct"
+msgstr "Suora"
+
+msgid "Disable"
+msgstr "Poista käytöstä"
+
+msgid "Disable a CA."
+msgstr "Poista CA käytöstä."
+
+msgid "Disable an SELinux User Map rule."
+msgstr "Poista SELinux-käyttäjäkartan sääntö käytöstä."
+
+msgid "Disabled"
+msgstr "Ei käytössä"
+
+#, python-format
+msgid "Disabled CA \"%(value)s\""
+msgstr "Poistettu CA \"%(value)s\" käytöstä"
+
+#, python-format
+msgid "Disabled CA ACL \"%(value)s\""
+msgstr "Poistettu CA ACL \"%(value)s\" käytöstä"
+
+#, python-format
+msgid "Disabled HBAC rule \"%(value)s\""
+msgstr "Poistettu HBAC sääntö \"%(value)s\" käytöstä"
+
+#, python-format
+msgid "Disabled SELinux User Map \"%(value)s\""
+msgstr "Poistettu SELinux-käyttäjäkartta \"%(value)s\" käytöstä"
+
+#, python-format
+msgid "Disabled host \"%(value)s\""
+msgstr "Poistettu isäntäkone \"%(value)s\" käytöstä"
+
+#, python-format
+msgid "Disabled service \"%(value)s\""
+msgstr "Poistettu palvelu \"%(value)s\" käytöstä"
+
+msgid "Display Sudo Rule."
+msgstr "Näytä Sudo-sääntö."
+
+msgid "Display a segment."
+msgstr "Näytä segmentti."
+
+msgid "Display an automount key."
+msgstr "Näytä automount-avain."
+
+msgid "Display an automount map."
+msgstr "Näytä automount-kartta."
+
+msgid "Display name"
+msgstr "Näyttönimi"
+
+msgid "Documentation"
+msgstr "Dokumentaatio"
+
+msgid "Domain"
+msgstr "Toimialue"
+
+msgid "Domain name"
+msgstr "Toimialueen nimi"
+
+msgid "Download"
+msgstr "Lataa"
+
+msgid "Edit"
+msgstr "Muokkaa"
+
+#, python-brace-format
+msgid "Edit ${entity}"
+msgstr "Muokkaa ${entity}"
+
+msgid "Email address"
+msgstr "Sähköpostiosoite"
+
+msgid "Enable"
+msgstr "Ota käyttöön"
+
+msgid "Enable a CA."
+msgstr "Ota CA käyttöön."
+
+msgid "Enable an SELinux User Map rule."
+msgstr "Ota SELinux-käyttäjäkartan sääntö käyttöön."
+
+msgid "Enabled"
+msgstr "Käytössä"
+
+#, python-format
+msgid "Enabled CA \"%(value)s\""
+msgstr "Otettu CA \"%(value)s\" käyttöön"
+
+#, python-format
+msgid "Enabled CA ACL \"%(value)s\""
+msgstr "Otettu CA ACL \"%(value)s\" käyttöön"
+
+#, python-format
+msgid "Enabled HBAC rule \"%(value)s\""
+msgstr "Otettu HBAC sääntö \"%(value)s\" käyttöön"
+
+#, python-format
+msgid "Enabled SELinux User Map \"%(value)s\""
+msgstr "Otettu SELinux-käyttäjäkartta \"%(value)s\" käyttöön"
+
+msgid "Enrollment"
+msgstr "Rekisteröinti"
+
+#, c-format
+msgid "Enrollment failed. %s\n"
+msgstr "Rekisteröinti epäonnistui. %s\n"
+
+msgid "Enter LDAP password"
+msgstr "Anna LDAP salasana"
+
+msgid "Entry"
+msgstr "Tietue"
+
+#, python-format
+msgid "Entry %s not found"
+msgstr "Kohtaa %s ei löydy"
+
+msgid "Error"
+msgstr "Virhe"
+
+#, c-format
+msgid "Error getting default Kerberos realm: %s.\n"
+msgstr "Kerberos-oletusalueen hakemisessa tapahtui virhe: %s\n"
+
+#, c-format
+msgid "Error obtaining initial credentials: %s.\n"
+msgstr "Virhe ensimmäisten tunnistetietojen hankinnassa: %s\n"
+
+#, c-format
+msgid "Error parsing \"%1$s\": %2$s.\n"
+msgstr "Virhe jäsennettäessä \"%1$s\": %2$s.\n"
+
+#, c-format
+msgid "Error resolving keytab: %s.\n"
+msgstr "Virhe keytabin selvittämisessä: %s\n"
+
+#, c-format
+msgid "Error storing creds in credential cache: %s.\n"
+msgstr ""
+"Virhe tallennettaessa valtuustietoja kirjautumistietojen välimuistiin: %s\n"
+
+msgid "Excluded attributes"
+msgstr "Laajennetut määreet"
+
+msgid "Exclusive"
+msgstr "Poissulkeva"
+
+#, c-format
+msgid "Expanding buffer in jsonrpc_handle_response failed"
+msgstr "jsonrpc_handle_response puskurin laajennus epäonnistui"
+
+msgid "External"
+msgstr "Ulkoinen"
+
+msgid "External host"
+msgstr "Ulkoinen isäntä"
+
+#, c-format
+msgid "Extracting the data from the JSON-RPC response failed: %s\n"
+msgstr "Tiedon purkaminen JSON-RPC-vastauksesta epäonnistui: %s\n"
+
+#, c-format
+msgid "Extracting the error from the JSON-RPC response failed: %s\n"
+msgstr "Virheen purkaminen JSON-RPC-vastauksesta epäonnistui: %s\n"
+
+msgid "Failed allowed to create keytab"
+msgstr "Avainvälilehden luominen epäonnistui"
+
+msgid "Failed allowed to retrieve keytab"
+msgstr "Avaintaulun haun sallinta epäonnistui"
+
+msgid "Failed profiles"
+msgstr "Epäonnistuneet profiilit"
+
+msgid "Failed targets"
+msgstr "Epäonnistuneita kohteita"
+
+msgid "Failed to call DBus"
+msgstr "DBusin kutsuminen epäonnistui"
+
+#, c-format
+msgid "Failed to close the keytab\n"
+msgstr "Keytabin sulkeminen epäonnistui!\n"
+
+#, c-format
+msgid "Failed to create control!\n"
+msgstr "Tarkistuksen luominen epäonnistui!\n"
+
+#, c-format
+msgid "Failed to create key material\n"
+msgstr "Avainmateriaalin luominen epäonnistui\n"
+
+msgid "Failed to decode control reply!\n"
+msgstr "Tarkistusvastauksen purkaminen epäonnistui!\n"
+
+#, c-format
+msgid "Failed to get keytab\n"
+msgstr "Keytabin saaminen epäonnistui\n"
+
+#, c-format
+msgid "Failed to get keytab!\n"
+msgstr "Keytabin saaminen epäonnistui!\n"
+
+#, c-format
+msgid "Failed to get result: %s\n"
+msgstr "Tuloksen saaminen epäonnistui: %s\n"
+
+#, c-format
+msgid "Failed to open Keytab\n"
+msgstr "Keytabin avaaminen epäonnistui\n"
+
+#, c-format
+msgid "Failed to open config file %s\n"
+msgstr "Kokoonpanotiedoston %s avaaminen epäonnistui\n"
+
+#, c-format
+msgid "Failed to open keytab\n"
+msgstr "Avaintaulun avaaminen epäonnistui\n"
+
+#, c-format
+msgid "Failed to open keytab '%1$s': %2$s\n"
+msgstr "Näppäinvälilehden '%1$s' avaaminen epäonnistui: %2$s\n"
+
+#, c-format
+msgid "Failed to parse config file %s\n"
+msgstr "Asetustiedoston %s jäsentäminen epäonnistui\n"
+
+#, c-format
+msgid "Failed to parse extended result: %s\n"
+msgstr "Laajennetun tuloksen jäsentäminen epäonnistui: %s\n"
+
+#, c-format
+msgid "Failed to parse result: %s\n"
+msgstr "Tuloksen jäsentäminen epäonnistui: %s\n"
+
+msgid "Failed to remove"
+msgstr "Poistaminen epäonnistui"
+
+#, c-format
+msgid "Failed to retrieve any keys"
+msgstr "Yhtään avainta ei saatu"
+
+#, c-format
+msgid "Failed to retrieve encryption type %1$s (#%2$d)\n"
+msgstr "Salaustyypin %1$s hakeminen ei onnistunut (#%2$d)\n"
+
+#, c-format
+msgid "Failed to retrieve encryption type type #%d\n"
+msgstr "Salaustyypin #%d hakeminen ei onnistunut\n"
+
+#, c-format
+msgid "Failed to set cursor '%1$s'\n"
+msgstr "Kohdistimen '%1$s' asettaminen epäonnistui\n"
+
+msgid "False"
+msgstr "Epätosi"
+
+msgid "Filter"
+msgstr "Suodin"
+
+msgid "Find"
+msgstr "Etsi"
+
+msgid "Fingerprint"
+msgstr "Sormenjälki"
+
+msgid "Fingerprint Type"
+msgstr "Sormenjälkityyppi"
+
+msgid "Fingerprints"
+msgstr "Sormenjäljet"
+
+msgid "First Code"
+msgstr "Ensimmäinen koodi"
+
+msgid "First OTP"
+msgstr "Ensimmäinen OTP"
+
+msgid "First name"
+msgstr "Etunimi"
+
+msgid "Force the host join. Rejoin even if already joined."
+msgstr "Pakota kone liittymään. Liity uudelleen, vaikka olisit jo liittynyt."
+
+msgid "Full name"
+msgstr "Koko nimi"
+
+msgid "General"
+msgstr "Yleinen"
+
+msgid "Group"
+msgstr "Ryhmä"
+
+#, python-format
+msgid "Group '%s' does not exist"
+msgstr "Ryhmää '%s' ei ole olemassa"
+
+msgid "Group ID Number"
+msgstr "Ryhmän tunnusnumero"
+
+msgid "Group container"
+msgstr "Ryhmäkontti"
+
+msgid "Group name"
+msgstr "Ryhmän nimi"
+
+msgid "Groups"
+msgstr "Ryhmät"
+
+msgid "Groups allowed to create keytab"
+msgstr "Ryhmät joiden sallitaan luoda avaintaulu"
+
+msgid "Groups allowed to retrieve keytab"
+msgstr "Ryhmät, joilla on oikeus noutaa avaintaulu"
+
+msgid "HBAC Rule"
+msgstr "HBAC-sääntö"
+
+msgid "HBAC Rules"
+msgstr "HBAC-säännöt"
+
+msgid "HBAC Service"
+msgstr "HBAC-palvelu"
+
+msgid "HBAC Services"
+msgstr "HBAC-palvelut"
+
+msgid "HBAC rule"
+msgstr "HBAC-sääntö"
+
+msgid "HBAC rules"
+msgstr "HBAC-säännöt"
+
+msgid "HBAC service"
+msgstr "HBAC-palvelu"
+
+msgid "HBAC service description"
+msgstr "HBAC-palvelun kuvaus"
+
+msgid "HBAC service group description"
+msgstr "HBAC-palveluryhmän kuvaus"
+
+msgid "HBAC services"
+msgstr "HBAC-palvelut"
+
+msgid "HIP record"
+msgstr "HIP-tietue"
+
+msgid "HOTP Authentication Window"
+msgstr "HOTP-tunnistautumisikkuna"
+
+msgid "Hide"
+msgstr "Piilota"
+
+msgid "Home directory"
+msgstr "Kotihakemisto"
+
+msgid "Home directory base"
+msgstr "Kotihakemistopohja"
+
+msgid "Host"
+msgstr "Kone"
+
+msgid "Host Group"
+msgstr "Isäntäryhmä"
+
+msgid "Host Groups"
+msgstr "Isäntäryhmät"
+
+msgid "Host Groups allowed to create keytab"
+msgstr "Isäntälaitteiden ryhmät joiden sallitaan luoda avaintaulu"
+
+msgid "Host Groups allowed to retrieve keytab"
+msgstr "Ryhmät, joilla on oikeus noutaa avaintaulu"
+
+msgid "Host Name"
+msgstr "Koneen nimi"
+
+msgid "Host category"
+msgstr "Isäntäluokka"
+
+#, c-format
+msgid "Host is already joined.\n"
+msgstr "Kone on jo liittynyt.\n"
+
+msgid "Host name"
+msgstr "Koneen nimi"
+
+msgid "Host-group"
+msgstr "Isäntäryhmä"
+
+msgid "Hostname"
+msgstr "Koneen nimi"
+
+msgid "Hostname of this server"
+msgstr "Palvelimen isäntänimi"
+
+msgid "Hosts"
+msgstr "Koneet"
+
+msgid "Hosts allowed to create keytab"
+msgstr "Isännät joiden sallitaan luoda avaintaulu"
+
+msgid "Hosts allowed to retrieve keytab"
+msgstr "Isäntälaitteet, joilla on oikeus noutaa avaintaulu"
+
+msgid "IP Address"
+msgstr "IP-osoite"
+
+msgid "IPA CA servers"
+msgstr "IPA:n CA-palvelimet"
+
+msgid "IPA DNS servers"
+msgstr "IPA:n DNS-palvelimet"
+
+msgid "IPA KRA servers"
+msgstr "IPA:n KRA-palvelimet"
+
+msgid "IPA Location"
+msgstr "IPA-sijainti"
+
+msgid "IPA Locations"
+msgstr "IPA sijainnit"
+
+msgid "IPA Server to use"
+msgstr "Käytettävä IPA-palvelin"
+
+#, c-format
+msgid "IPA namingContext not found\n"
+msgstr "IPA-nimeämiskontekstia ei löytynyt\n"
+
+msgid "IPA role name"
+msgstr "IPA-roolin nimi"
+
+msgid "Identity"
+msgstr "Identiteetti"
+
+msgid "Identity provider details"
+msgstr "Identiteetin tarjoajan tiedot"
+
+#, python-format
+msgid "Imported profile \"%(value)s\""
+msgstr "Tuotu profiili \"%(value)s\""
+
+msgid "Included attributes"
+msgstr "Sisälletyt attribuutit"
+
+msgid "Indirect"
+msgstr "Epäsuora"
+
+msgid "Input file"
+msgstr "Syötetiedosto"
+
+msgid "Input filename"
+msgstr "Syötetiedoston nimi"
+
+msgid "Internal Error"
+msgstr "Sisäinen virhe"
+
+#, python-format
+msgid "Invalid JSON-RPC request: %(error)s"
+msgstr "Virheellinen JSON-RPC-pyyntö: %(error)s"
+
+msgid "Invalid credentials"
+msgstr "Virheelliset tunnistautumistiedot"
+
+msgid "Invalid number of parts!"
+msgstr "Virheellinen osien lukumäärä!"
+
+#, c-format
+msgid "JSON-RPC call failed with status code: %li\n"
+msgstr "JSON-RPC kutsu epäonnistui statuskoodilla: %li\n"
+
+#, c-format
+msgid "JSON-RPC call failed: %s\n"
+msgstr "JSON-RPC kutsu epäonnistui: %s\n"
+
+#, c-format
+msgid "JSON-RPC call was unauthorized. Check your credentials.\n"
+msgstr "JSON-RPC kutsu oli käyttöoikeudeton. Tarkista valtuustietosi .\n"
+
+#, c-format
+msgid ""
+"JSON-RPC request:\n"
+"%s\n"
+msgstr ""
+"JSON-RPC pyyntö:\n"
+"%s\n"
+
+#, c-format
+msgid ""
+"JSON-RPC response:\n"
+"%s\n"
+msgstr ""
+"JSON-RPC vastaus:\n"
+"%s\n"
+
+msgid "KEY record"
+msgstr "KEY-tietue"
+
+msgid "KX Preference"
+msgstr "KX etusija"
+
+msgid "KX record"
+msgstr "KX-tietue"
+
+#, c-format
+msgid "Kerberos context initialization failed\n"
+msgstr "Kerberos-kontekstin alustus epäonnistui\n"
+
+#, c-format
+msgid "Kerberos context initialization failed: %1$s (%2$d)\n"
+msgstr "Kerberos-kontekstin alustus epäonnistui: %1$s (%2$d)\n"
+
+msgid "Key"
+msgstr "Avain"
+
+msgid "LDAP basedn"
+msgstr "LDAP:in BaseDN"
+
+msgid "LDAP password"
+msgstr "LDAP salasana"
+
+msgid "LDAP password (if not using Kerberos)"
+msgstr "LDAP-salasana (jos et käytä Kerberosia)"
+
+msgid "LDAP schema"
+msgstr "LDAP:in skeema"
+
+msgid "LOC Size"
+msgstr "LOC:n koko"
+
+msgid "Label"
+msgstr "Nimiö"
+
+msgid "Labels"
+msgstr "Nimiöt"
+
+msgid "Last name"
+msgstr "Sukunimi"
+
+msgid "Level"
+msgstr "Taso"
+
+msgid "Locality"
+msgstr "Sijainti"
+
+msgid "Location"
+msgstr "Sijainti"
+
+msgid "Log in"
+msgstr "Kirjaudu sisään"
+
+msgid "Log out"
+msgstr "Kirjaudu ulos"
+
+msgid "MAC address"
+msgstr "MAC-osoite"
+
+msgid "MX Preference"
+msgstr "MX etusija"
+
+msgid "MX record"
+msgstr "MX-tietue"
+
+msgid "Member Group"
+msgstr "Jäsenryhmä"
+
+msgid "Member HBAC service"
+msgstr "Jäsen HBAC-palvelu"
+
+msgid "Member Host"
+msgstr "Jäsenisännät"
+
+msgid "Member Hostgroup"
+msgstr "Jäsenisäntäryhmät"
+
+msgid "Member User"
+msgstr "Jäsenkäyttäjä"
+
+msgid "Member groups"
+msgstr "Jäsenryhmät"
+
+msgid "Member host-groups"
+msgstr "Jäsenisäntäryhmät"
+
+msgid "Member hosts"
+msgstr "Jäsenisännät"
+
+msgid "Member netgroups"
+msgstr "Jäsen verkkoryhmät"
+
+msgid "Member of"
+msgstr "Tämän jäsen"
+
+msgid "Member of a group"
+msgstr "Ryhmän jäsen"
+
+msgid "Member of group"
+msgstr "Ryhmän jäsen"
+
+msgid "Member of groups"
+msgstr "Jäsen ryhmissä"
+
+msgid "Member of host-groups"
+msgstr "Jäsen isäntäryhmissä"
+
+msgid "Member of netgroups"
+msgstr "Jäsen verkkoryhmissä"
+
+msgid "Member users"
+msgstr "Jäsenkäyttäjät"
+
+msgid "Members"
+msgstr "Jäsenet"
+
+msgid "Migrate"
+msgstr "Suorita migraatio"
+
+msgid "Migrating"
+msgstr "Suoritetaan migraatiota"
+
+msgid "Minimum length of password"
+msgstr "salasanan vähimmäispituus"
+
+#, c-format
+msgid "Missing reply control list!\n"
+msgstr "Puuttuu vastausten tarkistusluettelo!\n"
+
+#, c-format
+msgid "Missing reply control!\n"
+msgstr "Puuttuu vastausten tarkistus!\n"
+
+msgid "Model"
+msgstr "Malli"
+
+#, python-format
+msgid "Modified ACI \"%(value)s\""
+msgstr "Muokattu ACI:ta \"%(value)s\""
+
+#, python-format
+msgid "Modified CA \"%(value)s\""
+msgstr "Muokattu CA:ta \"%(value)s\""
+
+#, python-format
+msgid "Modified CA ACL \"%(value)s\""
+msgstr "Muokattu CA ACL:ää \"%(value)s\""
+
+#, python-format
+msgid "Modified DNS server \"%(value)s\""
+msgstr "Muokattu DNS palvelinta \"%(value)s\""
+
+#, python-format
+msgid "Modified HBAC rule \"%(value)s\""
+msgstr "Muokattu HBAC sääntöä \"%(value)s\""
+
+#, python-format
+msgid "Modified HBAC service \"%(value)s\""
+msgstr "Muokattu HBAC palvelua \"%(value)s\""
+
+#, python-format
+msgid "Modified HBAC service group \"%(value)s\""
+msgstr "Muokattu HBAC palveluryhmää \"%(value)s\""
+
+#, python-format
+msgid "Modified IPA server \"%(value)s\""
+msgstr "Muokattu IPA palvelinta \"%(value)s\""
+
+#, python-format
+msgid "Modified OTP token \"%(value)s\""
+msgstr "Muokattu OTP-tunnus \"%(value)s\""
+
+#, python-format
+msgid "Modified SELinux User Map \"%(value)s\""
+msgstr "Muokattu SELinux-käyttäjäkarttaa \"%(value)s\""
+
+#, python-format
+msgid "Modified Sudo Rule \"%(value)s\""
+msgstr "Muokattu sudosääntöä \"%(value)s\""
+
+#, python-format
+msgid "Modified group \"%(value)s\""
+msgstr "Muokattu ryhmää \"%(value)s\""
+
+#, python-format
+msgid "Modified host \"%(value)s\""
+msgstr "Muokattu isäntää \"%(value)s\""
+
+#, python-format
+msgid "Modified hostgroup \"%(value)s\""
+msgstr "Muokattu isäntäryhmää \"%(value)s\""
+
+#, python-format
+msgid "Modified netgroup \"%(value)s\""
+msgstr "Muokattu verkkoryhmää \"%(value)s\""
+
+#, python-format
+msgid "Modified privilege \"%(value)s\""
+msgstr "Muokattu oikeutta \"%(value)s\""
+
+#, python-format
+msgid "Modified role \"%(value)s\""
+msgstr "Muokattu roolia \"%(value)s\""
+
+#, python-format
+msgid "Modified segment \"%(value)s\""
+msgstr "Muokattu segmenttiä \"%(value)s\""
+
+#, python-format
+msgid "Modified selfservice \"%(value)s\""
+msgstr "Muokattu itsepalvelua \"%(value)s\""
+
+#, python-format
+msgid "Modified service \"%(value)s\""
+msgstr "Muokattu palvelua \"%(value)s\""
+
+#, python-format
+msgid "Modified stage user \"%(value)s\""
+msgstr "Muokattu stagen käyttäjää \"%(value)s\""
+
+#, python-format
+msgid "Modified subordinate id \"%(value)s\""
+msgstr "Muokattu alisteista tunnusta \"%(value)s\""
+
+#, python-format
+msgid "Modified user \"%(value)s\""
+msgstr "Muokattu käyttäjää \"%(value)s\""
+
+#, python-format
+msgid "Modified vault \"%(value)s\""
+msgstr "Muokattu holvia \"%(value)s\""
+
+msgid "Modify ACI."
+msgstr "Muokkaa ACI:ta."
+
+msgid "Modify CA configuration."
+msgstr "Muokkaa CA-asetuksia."
+
+msgid "Modify ID range."
+msgstr "Muokkaa ID-aluetta."
+
+msgid ""
+"Modify ID range.\n"
+"\n"
+msgstr ""
+"Muokkaa ID-aluetta.\n"
+"\n"
+
+msgid "Modify OTP configuration options."
+msgstr "Muokkaa kertakäyttöisen salasanan määrityksiä."
+
+msgid "Modify a OTP token."
+msgstr "Muokkaa OTP-tunnusta."
+
+msgid "Modify a SELinux User Map."
+msgstr "Muokkaa SELinux-käyttäjäkarttaa."
+
+msgid "Modify a delegation."
+msgstr "Muokkaa valtuuskuntaa."
+
+msgid "Modify a group."
+msgstr "Muokkaa ryhmää."
+
+msgid "Modify a hostgroup."
+msgstr "Muokkaa isäntäryhmää."
+
+msgid "Modify a netgroup."
+msgstr "Muokkaa verkkoryhmää."
+
+msgid "Modify a vault."
+msgstr "Muokkaa holvia."
+
+msgid "Modify an Group ID override."
+msgstr "Muokkaa ryhmätunnuksen ohitusta."
+
+msgid "Modify an HBAC rule."
+msgstr "Muokkaa HBAC-sääntöä."
+
+msgid "Modify an HBAC service group."
+msgstr "Muokkaa HBAC-palveluryhmää."
+
+msgid "Modify an ID View."
+msgstr "Muokkaa tunnusnäkymää."
+
+msgid "Modify an ID override."
+msgstr "Muokkaa tunnuksen ohitusta."
+
+msgid "Modify an User ID override."
+msgstr "Muokkaa ryhmätunnuksen ohitusta."
+
+msgid "Modify an automount key."
+msgstr "Muokkaa automount-avainta."
+
+msgid "Modify an automount map."
+msgstr "Muokkaa automaattisesti liitettävän karttaa."
+
+msgid "Modify configuration options."
+msgstr "Muokkaa asetuksia."
+
+msgid "Mount information"
+msgstr "Tietoja liitoksesta"
+
+msgid "Mount point"
+msgstr "Liitospiste"
+
+msgid "Must be a positive number"
+msgstr "Tulee olla positiivinen numero"
+
+msgid "NAPTR Order"
+msgstr "NAPTR :n järjestys"
+
+msgid "NAPTR Preference"
+msgstr "NAPTR etusija"
+
+msgid "NAPTR Service"
+msgstr "NAPTR-palvelu"
+
+msgid "NAPTR record"
+msgstr "NAPTR-tietue"
+
+msgid "NIS domain name"
+msgstr "NIS-toimialueen nimi"
+
+msgid "NS Hostname"
+msgstr "NS-isäntänimi"
+
+msgid "NS record"
+msgstr "NS-tietue"
+
+msgid "NSEC record"
+msgstr "NSEC-tietue"
+
+msgid "NSEC3 record"
+msgstr "NSEC3-tietue"
+
+msgid "Name"
+msgstr "Nimi"
+
+msgid "Netgroup"
+msgstr "Verkkoryhmä"
+
+msgid "Netgroup description"
+msgstr "Verkkoryhmän kuvaus"
+
+msgid "Netgroup name"
+msgstr "Verkkoryhmän nimi"
+
+msgid "Netgroups"
+msgstr "Verkkoryhmät"
+
+msgid "Network Services"
+msgstr "Verkon palvelut"
+
+msgid "New Password"
+msgstr "Uusi salasana"
+
+msgid "New Principal Password"
+msgstr "Uusi pääsalasana"
+
+msgid "New mount information"
+msgstr "Uudet liitostiedot"
+
+msgid "New vault password"
+msgstr "Uusi holvin salasana"
+
+msgid "Next"
+msgstr "Seuraava"
+
+msgid "No entries."
+msgstr "Ei merkintöjä."
+
+#, c-format
+msgid "No keys accepted by KDC\n"
+msgstr "KDC ei hyväksy avaimia\n"
+
+msgid "No matching entries found"
+msgstr "Vastaavia tietueita ei löytynyt"
+
+#, c-format
+msgid "No permission to join this host to the IPA domain.\n"
+msgstr "Ei lupaa liittää tätä isäntää IPA toimialueeseen.\n"
+
+msgid "No response"
+msgstr "Ei vastausta"
+
+#, c-format
+msgid "No values for %s"
+msgstr "Ei arvoja kohteelle %s"
+
+#, c-format
+msgid "No write permissions on keytab file '%s'\n"
+msgstr "Ei kirjoitusoikeuksia keytab-tiedostoon '%s'\n"
+
+msgid "Note"
+msgstr "Huomautus"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "OTP"
+msgstr "Kertakäyttöinen salasana"
+
+msgid "OTP Configuration"
+msgstr "Kertakäyttöisen salasanan määritykset"
+
+msgid "OTP Token"
+msgstr "OTP-tunnus"
+
+msgid "OTP Tokens"
+msgstr "OTP-tunnukset"
+
+msgid "OTP token"
+msgstr "OTP-tunnus"
+
+msgid "OTP tokens"
+msgstr "OTP-tunnukset"
+
+msgid "Old vault password"
+msgstr "Vanha holvin salasana"
+
+msgid "One Time Password"
+msgstr "Kertakäyttöinen salasana"
+
+msgid "One-Time Password"
+msgstr "Kertakäyttöinen salasana"
+
+msgid "Operating system"
+msgstr "Käyttöjärjestelmä"
+
+#, c-format
+msgid "Operation failed: %s\n"
+msgstr "Toimenpide epäonnistui: %s\n"
+
+msgid "Options"
+msgstr "Valinnat"
+
+msgid "Order"
+msgstr "Järjestys"
+
+msgid "Organization"
+msgstr "Organisaatio"
+
+#, c-format
+msgid "Out of Memory!\n"
+msgstr "Muisti loppui!\n"
+
+msgid "Out of memory\n"
+msgstr "Muisti loppui\n"
+
+#, c-format
+msgid "Out of memory \n"
+msgstr "Muisti loppui \n"
+
+#, c-format
+msgid "Out of memory!"
+msgstr "Muisti loppui!"
+
+#, c-format
+msgid "Out of memory!\n"
+msgstr "Muisti loppui!\n"
+
+msgid "Out of memory!?\n"
+msgstr "Muisti loppui!?\n"
+
+msgid "Output filename"
+msgstr "Vientitiedoston nimi"
+
+msgid "Owner"
+msgstr "Omistaja"
+
+#, python-format
+msgid "Owner %s"
+msgstr "Omistaja %s"
+
+msgid "Owner groups"
+msgstr "Omistajaryhmät"
+
+msgid "Owner services"
+msgstr "Omistajapalvelut"
+
+msgid "Owners"
+msgstr "Omistajat"
+
+msgid "PTR Hostname"
+msgstr "PTR-isäntänimi"
+
+msgid "PTR record"
+msgstr "PTR-tietue"
+
+msgid "Parse error"
+msgstr "Jäsennysvirhe"
+
+#, c-format
+msgid "Parsing JSON-RPC response failed: %s\n"
+msgstr "JSON-RPC-vastauksen jäsentäminen epäonnistui: %s\n"
+
+#, c-format
+msgid "Parsing JSON-RPC response failed: no 'result' value found.\n"
+msgstr ""
+"JSON-RPC-vastauksen jäsentäminen epäonnistui: \"Tulos\"arvoa ei löytynyt.\n"
+
+msgid "Password"
+msgstr "Salasana"
+
+msgid "Password Expiration Notification (days)"
+msgstr "Ilmoitus salasanan vanhenemisesta (päiviä)"
+
+msgid "Password expiration"
+msgstr "Salasanan vanheneminen"
+
+msgid "Password or Password+One-Time Password"
+msgstr "Salasana tai salasana + Kertakäyttöinen salasana (eng. OTP)"
+
+msgid "Password plugin features"
+msgstr "Salasanalaajennuksen ominaisuudet"
+
+msgid "Passwords do not match"
+msgstr "Salasanat eivät täsmää"
+
+msgid "Passwords do not match!"
+msgstr "Salasanat eivät täsmää!"
+
+#, c-format
+msgid "Passwords do not match!\n"
+msgstr "Salasanat eivät täsmää!\n"
+
+msgid "Passwords must match"
+msgstr "Salasanojen täytyy täsmätä"
+
+msgid "Permission"
+msgstr "Käyttöoikeus"
+
+msgid "Permission flags"
+msgstr "Käyttöoikeusmerkinnät"
+
+msgid "Permission name"
+msgstr "Käyttöoikeuden nimi"
+
+msgid "Permission type"
+msgstr "Käyttöoikeuden tyyppi"
+
+msgid "Permission value"
+msgstr "Käyttöoikeuden arvo"
+
+msgid "Permissions"
+msgstr "Käyttöoikeudet"
+
+msgid "Platform"
+msgstr "Alusta"
+
+msgid "Port"
+msgstr "Portti"
+
+msgid "Positional arguments"
+msgstr "Sijainnilliset parametrit"
+
+msgid "Preference"
+msgstr "Etusija"
+
+msgid "Principal name"
+msgstr "Ensisijaisen nimi"
+
+msgid "Print debugging information"
+msgstr "Tulosta virheenkorjaustiedot"
+
+msgid "Print the raw XML-RPC output in GSSAPI mode"
+msgstr "Tulosta XML-RPC-raaka-tuloste GSSAPI-tilassa"
+
+msgid "Priority"
+msgstr "Prioriteetti"
+
+msgid "Profile"
+msgstr "Profiili"
+
+msgid "Profile ID"
+msgstr "Profiilin tunnus"
+
+msgid "Profile description"
+msgstr "Profiilin kuvaus"
+
+msgid "Profiles"
+msgstr "Profiilit"
+
+msgid "Protocol"
+msgstr "Protokolla"
+
+msgid "Public Key"
+msgstr "Julkinen avain"
+
+msgid "Public key"
+msgstr "Julkinen avain"
+
+msgid "Public key:"
+msgstr "Julkinen avain:"
+
+msgid "Quiet mode. Only errors are displayed."
+msgstr "Hiljainen tila. Vain virheet näytetään."
+
+msgid "RP record"
+msgstr "RP-tietue"
+
+msgid "RRSIG record"
+msgstr "RRSIG-tietue"
+
+msgid "Random password"
+msgstr "Satunnainen salasana"
+
+#, python-format
+msgid "Raw %s records"
+msgstr "Raaka %s tietueet"
+
+msgid "Raw A records"
+msgstr "Raw A -tietueet"
+
+msgid "Raw A6 records"
+msgstr "Raw A6 -tietueet"
+
+msgid "Raw AAAA records"
+msgstr "Raw AAAA -tietueet"
+
+msgid "Raw APL records"
+msgstr "Raw APL -tietueet"
+
+msgid "Raw CERT records"
+msgstr "Raw CERT -tietueet"
+
+msgid "Raw DHCID records"
+msgstr "Raw DHCID -tietueet"
+
+msgid "Raw DLV records"
+msgstr "Raw DLV -tietueet"
+
+msgid "Raw DNSKEY records"
+msgstr "Raw DNSKEY -tietueet"
+
+msgid "Raw DS records"
+msgstr "Raw DS -tietueet"
+
+msgid "Raw HIP records"
+msgstr "Raw HIP -tietueet"
+
+msgid "Raw IPSECKEY records"
+msgstr "Raw IPSECKEY -tietueet"
+
+msgid "Raw KEY records"
+msgstr "Raw KEY -tietueet"
+
+msgid "Raw KX records"
+msgstr "Raw KX -tietueet"
+
+msgid "Raw LOC records"
+msgstr "Raw LOC -tietueet"
+
+msgid "Raw MX records"
+msgstr "Raw MX -tietueet"
+
+msgid "Raw NAPTR records"
+msgstr "Raw NAPTR -tietueet"
+
+msgid "Raw NS records"
+msgstr "Raw NS -tietueet"
+
+msgid "Raw NSEC records"
+msgstr "Raw NSEC -tietueet"
+
+msgid "Raw NSEC3 records"
+msgstr "Raw NSEC3 -tietueet"
+
+msgid "Raw PTR records"
+msgstr "Raw PTR -tietueet"
+
+msgid "Raw RP records"
+msgstr "Raw RP -tietueet"
+
+msgid "Raw RRSIG records"
+msgstr "Raw RRSIG -tietueet"
+
+msgid "Raw SIG records"
+msgstr "Raw SIG -tietueet"
+
+msgid "Raw SPF records"
+msgstr "Raw SPF -tietueet"
+
+msgid "Raw SRV records"
+msgstr "Raw SRV -tietueet"
+
+msgid "Raw SSHFP records"
+msgstr "Raw SSHFP -tietueet"
+
+msgid "Raw TA records"
+msgstr "Raw TA -tietueet"
+
+msgid "Raw TKEY records"
+msgstr "Raw TKEY -tietueet"
+
+msgid "Raw TLSA records"
+msgstr "Raw TLSA -tietueet"
+
+msgid "Raw TSIG records"
+msgstr "Raw TSIG -tietueet"
+
+msgid "Raw TXT records"
+msgstr "Raw TXT -tietueet"
+
+msgid "Realm name"
+msgstr "Alueen nimi"
+
+msgid "Reason"
+msgstr "Syy"
+
+msgid "Record Type"
+msgstr "Tietueen tyyppi"
+
+msgid "Record creation failed."
+msgstr "Tietueen luominen epäonnistui."
+
+msgid "Record data"
+msgstr "Tietueen tiedot"
+
+msgid "Record name"
+msgstr "Tietueen nimi"
+
+msgid "Record not found."
+msgstr "Tietuetta ei löydy."
+
+msgid "Record type"
+msgstr "Tietueen tyyppi"
+
+msgid "Records"
+msgstr "Merkinnät"
+
+msgid "Redirection"
+msgstr "Uudelleenohjeus"
+
+msgid "Refresh"
+msgstr "Päivitä"
+
+msgid "Remove"
+msgstr "Poista"
+
+msgid "Remove Kerberos Alias"
+msgstr "Poista Kerberos-alias"
+
+msgid "Remove entries from DNS"
+msgstr "Poista tietueet DNS:stä"
+
+msgid "Remove hold"
+msgstr "Poista pito"
+
+msgid "Remove hosts"
+msgstr "Poista isännät"
+
+msgid "Remove profiles from a CA ACL."
+msgstr "Poista profiileita CA ACL:stä."
+
+msgid "Remove roles"
+msgstr "Poista rooleja"
+
+msgid "Remove services"
+msgstr "Poista palveluita"
+
+msgid "Remove services from a CA ACL."
+msgstr "Poista palveluita CA ACL:stä."
+
+msgid "Remove users"
+msgstr "Poista käyttäjiä"
+
+msgid "Remove vaults"
+msgstr "Poista holveja"
+
+#, c-format
+msgid "Removing principal %s\n"
+msgstr "Poistetaan ensisijaista %s\n"
+
+msgid "Rename"
+msgstr "Nimeä uudelleen"
+
+msgid "Rename an ACI."
+msgstr "Nimeä uudelleen ACI."
+
+msgid "Required"
+msgstr "Vaaditaan"
+
+msgid "Requires pre-authentication"
+msgstr "Vaatii ennakkotunnistautumisen"
+
+msgid "Reset"
+msgstr "Nollaa"
+
+msgid "Reset your password."
+msgstr "Nollaa salasanasi."
+
+msgid "Restore"
+msgstr "Palauta"
+
+msgid "Retries"
+msgstr "Uudelleenyritykset"
+
+msgid "Retry"
+msgstr "Yritä uudelleen"
+
+msgid "Revert"
+msgstr "Palaa takaisin"
+
+msgid "Rights"
+msgstr "Oikeudet"
+
+msgid "Role"
+msgstr "Rooli"
+
+msgid "Roles"
+msgstr "Roolit"
+
+msgid "Rule name"
+msgstr "Säännön nimi"
+
+msgid "Rules"
+msgstr "Säännöt"
+
+msgid "RunAs Users"
+msgstr "Suorita käyttäjinä"
+
+msgid "SASL Bind failed\n"
+msgstr "SASL-sidonta epäonnistui\n"
+
+msgid "SELinux User"
+msgstr "SELinux-käyttäjä"
+
+msgid "SELinux User Map"
+msgstr "SELinux-käyttäjäkartta"
+
+msgid "SELinux User Maps"
+msgstr "SELinux-käyttäjäkartat"
+
+msgid "SELinux user map order"
+msgstr "SELinux käyttäjäkarttajärjestys"
+
+msgid "SHA1 Fingerprint"
+msgstr "SHA1-sormenjälki"
+
+msgid "SHA256 Fingerprint"
+msgstr "SHA256-sormenjälki"
+
+msgid "SIG record"
+msgstr "SIG-tietue"
+
+msgid "SMB Home Directory Drive"
+msgstr "SMB-kotihakemisto-osio"
+
+msgid "SOA record serial number"
+msgstr "SOA-tietueen sarjanumero"
+
+msgid "SOA refresh"
+msgstr "SOA-virkistys"
+
+msgid "SOA serial"
+msgstr "SOA-sarjanumero"
+
+msgid "SPF record"
+msgstr "SPF-tietue"
+
+msgid "SRV Port"
+msgstr "SRV-portti"
+
+msgid "SRV Priority"
+msgstr "SRV-etusija"
+
+msgid "SRV Target"
+msgstr "SRV-kohde"
+
+msgid "SRV Weight"
+msgstr "SRV-paino"
+
+msgid "SRV record"
+msgstr "SRV-tietue"
+
+msgid "SSH public key"
+msgstr "Julkinen SSH-avain"
+
+msgid "SSH public key fingerprint"
+msgstr "SSH julkisen avaimen sormenjälki"
+
+msgid "SSH public key:"
+msgstr "Julkinen SSH-avain:"
+
+msgid "SSH public keys"
+msgstr "Julkisia SSH-avaimia"
+
+msgid "SSHFP Fingerprint"
+msgstr "SSHFP-sormenjälki"
+
+msgid "SSHFP Fingerprint Type"
+msgstr "SSHFP-sormenjälkityyppi"
+
+msgid "Save"
+msgstr "Tallenna"
+
+msgid "Search"
+msgstr "Haku"
+
+#, c-format
+msgid "Search for %1$s on rootdse failed with error %2$d\n"
+msgstr "%1$s:n haku rootdse:stä epäonnistui virheellä %2$d\n"
+
+#, c-format
+msgid "Search for IPA namingContext failed with error %d\n"
+msgstr "IPA-nimeämiskontekstin haku epäonnistui virheellä %d\n"
+
+msgid "Search for SELinux User Maps."
+msgstr "Etsi SELinux-käyttäjäkarttoja."
+
+msgid "Search for groups."
+msgstr "Etsi ryhmiä."
+
+msgid "Search for hostgroups."
+msgstr "Etsi isäntäryhmiä."
+
+msgid "Second Code"
+msgstr "Toinen koodi"
+
+msgid "Second OTP"
+msgstr "Toinen OTP"
+
+msgid "Secret"
+msgstr "Salainen"
+
+msgid "Select All"
+msgstr "Valitse kaikki"
+
+msgid "Selector"
+msgstr "Valitsin"
+
+msgid "Serial"
+msgstr "Sarjanumero"
+
+msgid "Serial Number"
+msgstr "Sarjanumero"
+
+msgid "Serial Number (hex)"
+msgstr "Sarjanumero (hex)"
+
+msgid "Serial number"
+msgstr "Sarjanumero"
+
+msgid "Serial number (hex)"
+msgstr "Sarjanumero (hex)"
+
+msgid "Server"
+msgstr "Palvelin"
+
+msgid "Server Name"
+msgstr "Palvelimen nimi"
+
+msgid "Server Role"
+msgstr "Palvelimen rooli"
+
+msgid "Server Roles"
+msgstr "Palvelinrooleja"
+
+msgid "Server name"
+msgstr "Palvelimen nimi"
+
+msgid "Servers"
+msgstr "Palvelimet"
+
+msgid "Servers details:"
+msgstr "Palvelimen yksityiskohdat:"
+
+msgid "Service"
+msgstr "Palvelu"
+
+msgid "Service Groups"
+msgstr "Palveluryhmät"
+
+msgid "Service Options"
+msgstr "Palveluvalinnat"
+
+msgid "Service Settings"
+msgstr "Palvelun asetukset"
+
+msgid "Service category"
+msgstr "Palveluluokka"
+
+msgid "Service delegation rules"
+msgstr "Palveluvalinnat"
+
+msgid "Service group name"
+msgstr "Palveluryhmän nimi"
+
+msgid "Service name"
+msgstr "Palvelun nimi"
+
+msgid "Services"
+msgstr "Palvelut"
+
+msgid "Set"
+msgstr "Aseta"
+
+msgid "Set a user's password."
+msgstr "Aseta käyttäjän salasana."
+
+msgid "Settings"
+msgstr "Asetukset"
+
+msgid "Shared"
+msgstr "Jaettu"
+
+msgid "Shared Vaults"
+msgstr "Jaetut holvit"
+
+msgid "Shared vault"
+msgstr "Jaettu holvi"
+
+msgid "Show"
+msgstr "Näytä"
+
+msgid "Show the current OTP configuration."
+msgstr "Näytä nykyiset kertakäyttöisen salasanan määritykset."
+
+msgid "Show the current configuration."
+msgstr "Näytä nykyiset määritykset."
+
+msgid "Show vault configuration."
+msgstr "Näytä holvin asetukset."
+
+msgid "Signature"
+msgstr "Allekirjoitus"
+
+msgid "Simple bind failed\n"
+msgstr "Yksinkertainen sidonta epäonnistui\n"
+
+msgid "Size"
+msgstr "Koko"
+
+msgid "Some operations failed."
+msgstr "Jotkut toiminnot epäonnistuivat."
+
+msgid "Source Hosts"
+msgstr "Lähde koneet"
+
+msgid "Source host"
+msgstr "Lähde kone"
+
+msgid "Specifies where to store keytab information."
+msgstr "Määrittää, mihin keytab tiedot tallennetaan."
+
+msgid "Stage"
+msgstr "Vaihe"
+
+msgid "Standard"
+msgstr "Tavallinen"
+
+msgid "State"
+msgstr "Tila"
+
+msgid "Status"
+msgstr "Tila"
+
+msgid "Subject"
+msgstr "Aihe"
+
+msgid "Subject OID"
+msgstr "Aihe OID"
+
+msgid "Success"
+msgstr "Onnistui"
+
+msgid "Sudo Deny Commands"
+msgstr "Sudo Deny -komennot"
+
+msgid "Sudo Rule"
+msgstr "Sudo-sääntö"
+
+msgid "Sudo Rules"
+msgstr "sudo-säännöt"
+
+#, c-format
+msgid "Supported encryption types:\n"
+msgstr "Tuetut salaustyypit:\n"
+
+msgid "Sync OTP Token"
+msgstr "Synkronointi-OTP-tunnus"
+
+msgid "Synchronize an OTP token."
+msgstr "Synkronoi OTP-tunnus."
+
+msgid "Synchronizing"
+msgstr "Synkronoidaan"
+
+msgid "TA record"
+msgstr "TA-tietue"
+
+msgid "TKEY record"
+msgstr "TKEY-tietue"
+
+msgid "TLSA record"
+msgstr "TLSA-tietue"
+
+msgid "TOTP authentication Window"
+msgstr "TOTP-tunnistautumisikkuna"
+
+msgid "TSIG record"
+msgstr "TSIG-tietue"
+
+msgid "TXT record"
+msgstr "TXT-tietue"
+
+msgid "Target"
+msgstr "Kohde"
+
+msgid "Target group"
+msgstr "Kohderyhmä"
+
+#, c-format
+msgid "The hostname must be fully-qualified: %s\n"
+msgstr "Koneen nimen on oltava täysin määritelty: %s\n"
+
+#, c-format
+msgid "The hostname must not be: %s\n"
+msgstr "Koneen nimi ei voi olla: %s\n"
+
+msgid "The hostname to register as"
+msgstr "Isäntänimi rekisteröitäväksi"
+
+msgid "This entry is already disabled"
+msgstr "Tämä merkintä on jo poistettu käytöstä"
+
+msgid "This entry is already enabled"
+msgstr "Tämä merkintä on jo käytössä"
+
+msgid "Timeout"
+msgstr "Aikakatkaisu"
+
+#, c-format
+msgid "Timeout exceeded."
+msgstr "Aikakatkaisu ylitetty."
+
+msgid "Token ID"
+msgstr "Token-tunniste"
+
+msgid "Topic commands:"
+msgstr "Aiheen komennot:"
+
+msgid "Topology"
+msgstr "Topologia"
+
+msgid "Topology suffix"
+msgstr "Topologian pääte"
+
+msgid "Topology suffixes"
+msgstr "Topologian pääteitä"
+
+msgid "Type"
+msgstr "Tyyppi"
+
+msgid "Types of supported user authentication"
+msgstr "Tuetut käyttäjän todennuksen tyypit"
+
+msgid "UID"
+msgstr "UID"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "Unable to communicate with CMS"
+msgstr "Kommunikaatio CMS:n kanssa epäonnistui"
+
+#, python-format
+msgid "Unable to communicate with CMS (status %d)"
+msgstr "Kommunikaatio CMS:n kanssa epäonnistui (tila %d)"
+
+#, c-format
+msgid "Unable to determine IPA server from %s\n"
+msgstr "IPA-palvelinta ei voida määrittää kohteesta %s\n"
+
+#, c-format
+msgid "Unable to determine root DN of %s\n"
+msgstr "%s: root DN:ää ei voida määrittää\n"
+
+#, c-format
+msgid "Unable to enable SSL in LDAP\n"
+msgstr "SSL:n ottaminen käyttöön LDAP:ssa ei onnistu\n"
+
+#, c-format
+msgid "Unable to generate Kerberos Credential Cache\n"
+msgstr "Kerberos-kirjautumistietovälimuistia ei voi luoda\n"
+
+#, c-format
+msgid "Unable to initialize connection to ldap server %1$s: %2$s\n"
+msgstr "Yhteyttä LDAP-palvelimeen %1$s ei voi alustaa: %2$s\n"
+
+#, c-format
+msgid "Unable to initialize ldap library!\n"
+msgstr "LDAP-kirjaston alustaminen epäonnistui!\n"
+
+#, c-format
+msgid "Unable to join host: Kerberos Credential Cache not found\n"
+msgstr ""
+"Ei voida liittyä isäntään: Kerberos-kirjautumistietovälimuistia ei löydy\n"
+
+#, c-format
+msgid ""
+"Unable to join host: Kerberos User Principal not found and host password not "
+"provided.\n"
+msgstr ""
+"Ei voida liittyä isäntään: Kerberos User Principalia ei löydy ja "
+"isäntäsalasanaa ei annettu.\n"
+
+#, c-format
+msgid "Unable to join host: Kerberos context initialization failed\n"
+msgstr "Ei voida liittyä isäntään: Kerberos-kontekstin alustus epäonnistui\n"
+
+#, c-format
+msgid "Unable to parse principal\n"
+msgstr "Ensisijaista ei voi jäsentää\n"
+
+#, c-format
+msgid "Unable to parse principal name\n"
+msgstr "Prinsipaalinimen jäsentäminen ei onnistu\n"
+
+#, c-format
+msgid "Unable to parse principal: %1$s (%2$d)\n"
+msgstr "Prinsipaalin jäsentäminen ei onnistu: %1$s (%2$d)\n"
+
+#, c-format
+msgid "Unable to remove entry\n"
+msgstr "Merkintää ei voi poistaa\n"
+
+msgid "Unenroll this host from IPA server"
+msgstr "Poista tämän koneen rekisteröinti IPA-palvelimelta"
+
+#, c-format
+msgid "Unenrollment failed.\n"
+msgstr "Rekisteröinnin purkaminen epäonnistui.\n"
+
+#, c-format
+msgid "Unenrollment successful.\n"
+msgstr "Rekisteröinnin purkaminen onnistui.\n"
+
+msgid "Unknown"
+msgstr "Tuntematon"
+
+msgid "Unknown Error"
+msgstr "Tuntematon virhe"
+
+msgid "Unlock"
+msgstr "Avaa"
+
+msgid "Unspecified"
+msgstr "Määrittämätön"
+
+msgid "Unsupported value"
+msgstr "Ei tuettu arvo"
+
+msgid "Update"
+msgstr "Päivitä"
+
+msgid "User"
+msgstr "Käyttäjä"
+
+msgid "User Group"
+msgstr "Käyttäjäryhmä"
+
+msgid "User Groups"
+msgstr "Käyttäjäryhmät"
+
+msgid "User ID"
+msgstr "Käyttäjä ID"
+
+msgid "User ID Number"
+msgstr "Käyttäjän tunnusnumero"
+
+msgid "User Login"
+msgstr "Käyttäjän kirjautuminen"
+
+msgid "User categories"
+msgstr "Käyttäjäluokkia"
+
+msgid "User category"
+msgstr "Käyttäjäluokka"
+
+msgid "User container"
+msgstr "Käyttäjän kontti"
+
+msgid "User group"
+msgstr "Käyttäjäryhmä"
+
+msgid "User login"
+msgstr "Käyttäjän kirjautuminen"
+
+msgid "User logins"
+msgstr "Käyttäjän kirjautumiset"
+
+msgid "User name"
+msgstr "Käyttäjätunnus"
+
+msgid "User password"
+msgstr "Käyttäjän salasana"
+
+msgid "Username"
+msgstr "Käyttäjätunnus"
+
+msgid "Users"
+msgstr "Käyttäjät"
+
+msgid "Users allowed to create keytab"
+msgstr "Käyttäjät joiden sallitaan luoda avaintaulu"
+
+msgid "Users allowed to retrieve keytab"
+msgstr "Käyttäjät, joilla on oikeus noutaa avaintaulu"
+
+msgid "Validity"
+msgstr "Oikeellisuus"
+
+msgid "Vendor"
+msgstr "Toimittaja"
+
+msgid "Version"
+msgstr "Versio"
+
+msgid "View"
+msgstr "Näytä"
+
+msgid "Warning"
+msgstr "Varoitus"
+
+msgid "Weight"
+msgstr "Paino"
+
+msgid "Working"
+msgstr "Toimii"
+
+msgid "Your session has expired. Please log in again."
+msgstr "Istuntosi on vahventunut. Ole hyvä ja kirjaudu uudelleen sisään."
+
+msgid "Zone name"
+msgstr "Vyöhykkeen nimi"
+
+#, c-format
+msgid "access() on %1$s failed: errno = %2$d\n"
+msgstr "pääsy() kohteeseen %1$s epäonnistui: virhenro = %2$d\n"
+
+#, python-format
+msgid "authentication indicators not allowed in service \"%s\""
+msgstr "Tunnistautumisviitteet eivät ole sallittuja palvelussa \"%s\""
+
+msgid "basedn"
+msgstr "BaseDN"
+
+msgid "bind password"
+msgstr "sido salasana"
+
+#, python-format
+msgid "can be at most %(len)d characters"
+msgstr "voi sisältää enintään %(len)d merkkiä"
+
+#, python-format
+msgid "can be at most %(maxlength)d bytes"
+msgstr "voi sisältää enintään %(maxlength)d tavua"
+
+#, python-format
+msgid "can be at most %(maxlength)d characters"
+msgstr "voi sisältää enintään %(maxlength)d merkkiä"
+
+msgid "cannot be longer that {} characters"
+msgstr "voi sisältää enintään {} merkkiä"
+
+#, c-format
+msgid "cannot open configuration file %s\n"
+msgstr "asetustiedostoa %s ei voi avata\n"
+
+#, c-format
+msgid "cannot stat() configuration file %s\n"
+msgstr "ei voi stat()-määritystiedostoa %s\n"
+
+#, c-format
+msgid "child exited with %d\n"
+msgstr "lapsi poistui viestillä %d\n"
+
+msgid "command"
+msgstr "komento"
+
+msgid "commands"
+msgstr "komennot"
+
+#, c-format
+msgid "curl_easy_init() failed\n"
+msgstr "curl_easy_init() epäonnistui\n"
+
+#, c-format
+msgid "curl_easy_setopt() failed\n"
+msgstr "curl_easy_setopt() epäonnistui\n"
+
+#, c-format
+msgid "curl_global_init() failed\n"
+msgstr "curl_global_init() epäonnistui\n"
+
+#, c-format
+msgid "curl_slist_append() failed for value: '%s'\n"
+msgstr "curl_slist_append() epäonnistui arvolle: '%s'\n"
+
+msgid "delegation"
+msgstr "valtuutukset"
+
+msgid "delegations"
+msgstr "valtuutukset"
+
+msgid "delete"
+msgstr "poista"
+
+msgid "description"
+msgstr "kuvaus"
+
+msgid "did not receive Kerberos credentials"
+msgstr "ei saanut Kerberos-tunnuksia"
+
+msgid "domain"
+msgstr "toimialue"
+
+msgid "domain is not trusted"
+msgstr "toimialueseen ei luoteta"
+
+msgid "entries"
+msgstr "tietueet"
+
+msgid "entry"
+msgstr "tietue"
+
+#, c-format
+msgid "executing ipa-getkeytab failed, errno %d\n"
+msgstr "ipa-getkeytabin suorittaminen epäonnistui, virhe %d\n"
+
+msgid "filename"
+msgstr "tiedostonimi"
+
+#, c-format
+msgid "fork() failed\n"
+msgstr "fork() epäonnistui\n"
+
+msgid "group"
+msgstr "ryhmä"
+
+msgid "groups"
+msgstr "ryhmät"
+
+msgid "groups to add"
+msgstr "lisättävät ryhmät"
+
+msgid "host"
+msgstr "kone"
+
+msgid "host group"
+msgstr "isäntäryhmä"
+
+msgid "host groups"
+msgstr "isäntäryhmät"
+
+msgid "hostgroup"
+msgstr "isäntäryhmä"
+
+msgid "hostgroups"
+msgstr "isäntäryhmät"
+
+msgid "hostname"
+msgstr "koneen nimi"
+
+msgid "hosts"
+msgstr "koneet"
+
+msgid "invalid port number"
+msgstr "virheellinen porttinumero"
+
+#, c-format
+msgid "ipa-getkeytab has bad permissions?\n"
+msgstr "ipa-getkeytabilla on väärät käyttöoikeudet?\n"
+
+#, c-format
+msgid "ipa-getkeytab not found\n"
+msgstr "ipa-getkeytabia ei löydy\n"
+
+#, c-format
+msgid "json_dumps() failed\n"
+msgstr "json_dumps() epäonnistui\n"
+
+#, c-format
+msgid "json_pack_ex() failed: %s\n"
+msgstr "json_pack_ex() epäonnistui: %s\n"
+
+#, c-format
+msgid "krb5_parse_name %1$d: %2$s\n"
+msgstr "krb5_parse_name %1$d: %2$s\n"
+
+msgid "location"
+msgstr "sijainti"
+
+#, python-format
+msgid "member %s"
+msgstr "jäsen %s"
+
+msgid "member HBAC service"
+msgstr "jäsen HBAC-palvelu"
+
+msgid "member group"
+msgstr "jäsenryhmä"
+
+msgid "member host"
+msgstr "isäntäjäsen"
+
+msgid "member host group"
+msgstr "Jäsenisäntäryhmä"
+
+msgid "member netgroup"
+msgstr "jäsen verkkoryhmä"
+
+msgid "member user"
+msgstr "jäsenkäyttäjä"
+
+msgid "netgroup"
+msgstr "verkkoryhmä"
+
+msgid "netgroups"
+msgstr "verkkoryhmät"
+
+msgid "netgroups to add"
+msgstr "lisättävät verkkoryhmät"
+
+msgid "not found"
+msgstr "ei löytynyt"
+
+msgid "operation not defined"
+msgstr "toimintoa ei ole määritelty"
+
+#, c-format
+msgid "out of memory\n"
+msgstr "muisti lopussa\n"
+
+#, python-format
+msgid "owner %s"
+msgstr "omistaja %s"
+
+msgid "owner service"
+msgstr "Omistajapalvelut"
+
+msgid "password"
+msgstr "salasana"
+
+msgid "password to use if not using kerberos"
+msgstr "käytettävä salasana, jos ei käytetä kerberosia"
+
+msgid "permission"
+msgstr "käyttöoikeus"
+
+msgid "permissions"
+msgstr "käyttöoikeudet"
+
+msgid "preserve"
+msgstr "säilytä"
+
+#, c-format
+msgid "principal not found\n"
+msgstr "toimeksiantajaa ei löydy\n"
+
+#, c-format
+msgid "principal not found in XML-RPC response\n"
+msgstr "toimeksiantajaa ei löydy XML-RPC-vastauksesta\n"
+
+#, c-format
+msgid "read error\n"
+msgstr "lukuvirhe\n"
+
+#, c-format
+msgid "realm not found\n"
+msgstr "aluetta ei löydy\n"
+
+#, c-format
+msgid "result not found in XML-RPC response\n"
+msgstr "tulosta ei löydy XML-RPC-vastauksesta\n"
+
+msgid "role"
+msgstr "rooli"
+
+msgid "roles"
+msgstr "roolit"
+
+msgid "runAs user"
+msgstr "suorita käyttäjänä"
+
+msgid "runAs users"
+msgstr "suorita käyttäjinä"
+
+msgid "seconds"
+msgstr "sekuntia"
+
+msgid "server"
+msgstr "palvelin"
+
+msgid "server role"
+msgstr "palvelinrooli"
+
+msgid "server roles"
+msgstr "Palvelinrooleja"
+
+msgid "servers"
+msgstr "palvelimet"
+
+msgid "service"
+msgstr "palvelu"
+
+msgid "services"
+msgstr "palvelut"
+
+msgid "sudo rule"
+msgstr "sudo-sääntö"
+
+msgid "sudo rules"
+msgstr "sudo-säännöt"
+
+msgid "unsupported functional level"
+msgstr "luottamustyyppi, jota ei tueta"
+
+msgid "unsupported trust type"
+msgstr "luottamustyyppi, jota ei tueta"
+
+msgid "user"
+msgstr "käyttäjä"
+
+msgid "users"
+msgstr "käyttäjät"
+
+msgid "value"
+msgstr "arvo"
+
+#~ msgid "Search for Identity Provider servers."
+#~ msgstr "Etsi Identity Provider -palvelimia."

@@ -1,0 +1,5 @@
+etc/krb5kdc
+usr/lib/${DEB_HOST_MULTIARCH}/krb5/plugins/kdb
+usr/share/doc/krb5-kdc/examples
+usr/share/krb5-kdc
+var/lib/krb5kdc

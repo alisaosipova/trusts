@@ -1,0 +1,1215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Red Hat
+# This file is distributed under the same license as the freeipa package.
+# Andika Triwidada <andika@gmail.com>, 2020, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.9.0.dev201908140712+gitc9938e3d8\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2022-02-26 11:16+0000\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: Indonesian <https://translate.fedoraproject.org/projects/"
+"freeipa/master/id/>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.11\n"
+
+msgid ""
+"\n"
+"http://www.ietf.org/rfc/rfc5280.txt\n"
+"\n"
+msgstr ""
+"\n"
+"http://www.ietf.org/rfc/rfc5280.txt\n"
+"\n"
+
+msgid "    * 1 - keyCompromise\n"
+msgstr "    * 1 - keyCompromise\n"
+
+msgid "    * 10 - aACompromise\n"
+msgstr "    * 10 - aACompromise\n"
+
+msgid "    * 2 - cACompromise\n"
+msgstr "    * 2 - cACompromise\n"
+
+msgid "    * 6 - certificateHold\n"
+msgstr "    * 6 - certificateHold\n"
+
+msgid "    * 9 - privilegeWithdrawn\n"
+msgstr "    * 9 - privilegeWithdrawn\n"
+
+#, python-brace-format
+msgid "${count} user(s) activated"
+msgstr "${count} pengguna diaktifkan"
+
+#, python-brace-format
+msgid "${count} users(s) staged"
+msgstr "${count} pengguna digelar"
+
+#, python-format
+msgid "%(attr)s: Only one value allowed."
+msgstr "%(attr)s: Hanya satu nilai yang diperbolehkan."
+
+#, python-format
+msgid "%(count)d ACI matched"
+msgid_plural "%(count)d ACIs matched"
+msgstr[0] "%(count)d ACI cocok"
+
+#, python-format
+msgid "%(count)d CA matched"
+msgid_plural "%(count)d CAs matched"
+msgstr[0] "%(count)d CA cocok"
+
+#, python-format
+msgid "%(count)d OTP token matched"
+msgid_plural "%(count)d OTP tokens matched"
+msgstr[0] "%(count)d token OTP cocok"
+
+#, python-format
+msgid "%(count)d group matched"
+msgid_plural "%(count)d groups matched"
+msgstr[0] "%(count)d grup cocok"
+
+#, python-format
+msgid "%(count)d host matched"
+msgid_plural "%(count)d hosts matched"
+msgstr[0] "%(count)d host sesuai"
+
+#, python-format
+msgid "%(count)d hostgroup matched"
+msgid_plural "%(count)d hostgroups matched"
+msgstr[0] "%(count)d hostgroup cocok"
+
+#, python-format
+msgid "%(count)d plugin loaded"
+msgid_plural "%(count)d plugins loaded"
+msgstr[0] "%(count)d pengaya telah dimuat"
+
+#, python-format
+msgid "%(count)d user matched"
+msgid_plural "%(count)d users matched"
+msgstr[0] "%(count)d pengguna cocok"
+
+#, python-format
+msgid "%(count)d variables"
+msgstr "%(count)d variabel"
+
+#, python-format
+msgid "%(count)s server matched"
+msgid_plural "%(count)s servers matched"
+msgstr[0] "%(count)s server cocok"
+
+#, python-format
+msgid "%(count)s server role matched"
+msgid_plural "%(count)s server roles matched"
+msgstr[0] "%(count)s peran server cocok"
+
+#, python-format
+msgid "%(count)s user matched"
+msgid_plural "%(count)s users matched"
+msgstr[0] "%(count)s pengguna cocok"
+
+#, python-format
+msgid "%(desc)s: %(info)s"
+msgstr "%(desc)s: %(info)s"
+
+#, python-format
+msgid "%(exception)s"
+msgstr "%(exception)s"
+
+#, python-format
+msgid "%(info)s"
+msgstr "%(info)s"
+
+#, python-format
+msgid "%(otype)s \"%(oname)s\" not found"
+msgstr "%(otype)s \"%(oname)s\" tidak ditemukan"
+
+#, python-format
+msgid "%(reason)s"
+msgstr "%(reason)s"
+
+#, python-format
+msgid "%i host or hostgroup added."
+msgstr "%i host atau hostgroup ditambahkan."
+
+#, python-format
+msgid "%i host or hostgroup removed."
+msgstr "%i host atau hostgroup dibuang."
+
+#, python-format
+msgid "%i hosts or hostgroups added."
+msgstr "%i hosts atau hostgroups ditambahkan."
+
+msgid "A description of this command"
+msgstr "Suatu penjelasan atas perintah ini"
+
+msgid "A group may not be a member of itself"
+msgstr "Sebuah grup tidak mungkin menjadi anggota grup itu sendiri"
+
+#, python-format
+msgid "ACI with name \"%s\" not found"
+msgstr "ACI dengan nama \"%s\" tidak ditemukan"
+
+msgid "Account disabled"
+msgstr "Akun dinonaktifkan"
+
+msgid "Active Directory domain"
+msgstr "Domain Active Directory"
+
+msgid "Add host group"
+msgstr "Tambah grup host"
+
+#, python-format
+msgid "Added %(map)s"
+msgstr "Ditambahkan %(map)s"
+
+#, python-format
+msgid "Added OTP token \"%(value)s\""
+msgstr "Menambah token OTP \"%(value)s\""
+
+#, python-format
+msgid "Added group \"%(value)s\""
+msgstr "Grup \"%(value)s\" ditambahkan"
+
+#, python-format
+msgid "Added host \"%(value)s\""
+msgstr "Host \"%(value)s\" ditambahkan"
+
+#, python-format
+msgid "Added hostgroup \"%(value)s\""
+msgstr "Hostgroup \"%(value)s\" ditambahkan"
+
+#, python-format
+msgid "Added segment \"%(value)s\""
+msgstr "Segmen \"%(value)s\" ditambahkan"
+
+#, python-format
+msgid "Added user \"%(value)s\""
+msgstr "Pengguna \"%(value)s\" ditambahkan"
+
+msgid "Allow query"
+msgstr "Izinkan kuiri"
+
+#, python-brace-format
+msgid "An error has occurred (${error})"
+msgstr "Terjadi kesalahan internal (${error})"
+
+msgid "Asks for a non-random password to use for the principal"
+msgstr "Meminta kata sandi non-acak untuk digunakan bagi prinsipal"
+
+msgid "Audit"
+msgstr "Audit"
+
+#, python-format
+msgid "Auto member rule: %s not found!"
+msgstr "Aturan anggota otomatis: %s tidak ditemukan!"
+
+#, python-format
+msgid "Base64 decoding failed: %(reason)s"
+msgstr "Penguraian Base64 gagal: %(reason)s"
+
+msgid "Bind rule type"
+msgstr "Tipe aturan bind"
+
+msgid "CSR"
+msgstr "CSR"
+
+#, python-format
+msgid "Certificate operation cannot be completed: %(error)s"
+msgstr "Operasi sertifikat tidak dapat diselesaikan: %(error)s"
+
+#, python-format
+msgid "Changed server state of \"%(value)s\"."
+msgstr "Mengubah keadaan server \"%(value)s\"."
+
+#, python-brace-format
+msgid "Click to ${action}"
+msgstr "Klik untuk ${action}"
+
+#, c-format
+msgid "Closing keytab failed\n"
+msgstr "Menutup keytab gagal\n"
+
+msgid "Comma separated encryption types list"
+msgstr "Daftar tipe enkripsi yang dipisahkan koma"
+
+msgid "Command name"
+msgstr "Nama perintah"
+
+msgid "Command not implemented"
+msgstr "Perintah tidak diimplementasikan"
+
+msgid "Confirm (password)"
+msgstr "Konfirmasi (kata sandi)"
+
+msgid "Consume an entitlement."
+msgstr "Mengkonsumsi suatu hak."
+
+#, python-format
+msgid "Created ACI \"%(value)s\""
+msgstr "ACI \"%(value)s\" telah dibuat"
+
+#, python-format
+msgid "Created CA \"%(value)s\""
+msgstr "CA \"%(value)s\" dibuat"
+
+msgid "DLV Digest"
+msgstr "Digest DLV"
+
+msgid "DNAME Target"
+msgstr "Target DNAME"
+
+msgid "DNS Server name"
+msgstr "Nama Server DNS"
+
+#, python-format
+msgid "DNS server %(server)s: %(error)s."
+msgstr "Server DNS %(server)s: %(error)s."
+
+msgid "DS Digest"
+msgstr "Digest DS"
+
+msgid "Debugging output"
+msgstr "Keluaran awakutu"
+
+#, python-format
+msgid "Delete %(name)s '%(value)s'?"
+msgstr "Hapus '%(value)s' %(name)s?"
+
+msgid "Delete a hostgroup."
+msgstr "Menghapus suatu hostgroup."
+
+msgid "Delete all?"
+msgstr "Hapus semua?"
+
+msgid "Delete group."
+msgstr "Menghapus grup."
+
+#, python-format
+msgid "Deleted ACI \"%(value)s\""
+msgstr "ACI \"%(value)s\" telah dihapus"
+
+#, python-format
+msgid "Deleted CA \"%(value)s\""
+msgstr "CA \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deleted OTP token \"%(value)s\""
+msgstr "Menghapus token OTP \"%(value)s\""
+
+#, python-format
+msgid "Deleted group \"%(value)s\""
+msgstr "Grup \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deleted host \"%(value)s\""
+msgstr "Host \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deleted hostgroup \"%(value)s\""
+msgstr "Hostgroup \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deleted segment \"%(value)s\""
+msgstr "Segmen \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deleted user \"%(value)s\""
+msgstr "Pengguna \"%(value)s\" dihapus"
+
+#, python-format
+msgid "Deprecated; use %s"
+msgstr "Usang; gunakan %s"
+
+#, python-format
+msgid "Disabled CA \"%(value)s\""
+msgstr "CA \"%(value)s\" dinonaktifkan"
+
+msgid "Domain"
+msgstr "Domain"
+
+msgid "Domain GUID"
+msgstr "GUID Domain"
+
+msgid "Domain SID"
+msgstr "SID Domain"
+
+#, python-brace-format
+msgid "Edit ${entity}"
+msgstr "Sunting ${entity}"
+
+#, python-format
+msgid "Enabled CA \"%(value)s\""
+msgstr "CA \"%(value)s\" difungsikan"
+
+msgid "Encryption types to request"
+msgstr "Tipe enkripsi yang akan diminta"
+
+msgid "Enrollment UUID (not implemented)"
+msgstr "UUID pendaftaran (tidak diimplementasikan)"
+
+#, c-format
+msgid "Enrollment failed. %s\n"
+msgstr "Pendaftaran gagal. %s\n"
+
+#, python-format
+msgid "Enter %(label)s again to verify: "
+msgstr "Masukkan %(label)s lagi untuk verifikasi: "
+
+#, python-format
+msgid "Entry %s does not exist"
+msgstr "Entri %s tidak ada"
+
+#, python-format
+msgid "Entry %s not found"
+msgstr "Entri %s tidak ditemukan"
+
+#, c-format
+msgid "Error getting default Kerberos realm: %s.\n"
+msgstr "Galat saat mendapatkan ranah Kerberos default: %s.\n"
+
+#, c-format
+msgid "Error obtaining initial credentials: %s.\n"
+msgstr "Galat saat memperoleh kredensial awal: %s.\n"
+
+#, c-format
+msgid "Error parsing \"%1$s\": %2$s.\n"
+msgstr "Galat saat mengurai \"%1$s\": %2$s.\n"
+
+#, c-format
+msgid "Error resolving keytab: %s.\n"
+msgstr "Galat saat me-resolve keytab: %s.\n"
+
+#, c-format
+msgid "Error storing creds in credential cache: %s.\n"
+msgstr "Galat saat menyimpan kredensial dalam singgahan kredensial: %s.\n"
+
+#, c-format
+msgid "Expanding buffer in jsonrpc_handle_response failed"
+msgstr "Memperluas penyangga dalam jsonrpc_handle_response gagal"
+
+msgid "Expires On"
+msgstr "Kedaluwarsa Pada"
+
+#, c-format
+msgid "Extracting the data from the JSON-RPC response failed: %s\n"
+msgstr "Gagal mengekstrak data dari respons JSON-RPC: %s\n"
+
+#, c-format
+msgid "Extracting the error from the JSON-RPC response failed: %s\n"
+msgstr "Gagal mengekstrak kesalahan dari respons JSON-RPC: %s\n"
+
+msgid "Failed service/service groups"
+msgstr "Grup layanan/layanan gagal"
+
+#, c-format
+msgid "Failed to bind to server!\n"
+msgstr "Gagal mengikat ke server!\n"
+
+#, c-format
+msgid "Failed to create control!\n"
+msgstr "Gagal membuat kontrol!\n"
+
+msgid "Failed to decode control reply!\n"
+msgstr "Gagal mendekode balasan kontrol!\n"
+
+#, c-format
+msgid "Failed to get keytab!\n"
+msgstr "Gagal memperoleh keytab\n"
+
+#, c-format
+msgid "Failed to get result: %s\n"
+msgstr "Gagal mendapatkan hasil: %s\n"
+
+#, c-format
+msgid "Failed to open config file %s\n"
+msgstr "Gagal membuka berkas konfigurasi %s\n"
+
+#, c-format
+msgid "Failed to open keytab\n"
+msgstr "Gagal membuka keytab\n"
+
+#, c-format
+msgid "Failed to open keytab '%1$s': %2$s\n"
+msgstr "Gagal membuka keytab '%1$s': %2$s\n"
+
+#, c-format
+msgid "Failed to parse config file %s\n"
+msgstr "Gagal mengurai berkas konfig %s\n"
+
+#, c-format
+msgid "Failed to parse extended result: %s\n"
+msgstr "Gagal mengurai hasil yang diperluas: %s\n"
+
+#, c-format
+msgid "Failed to parse result: %s\n"
+msgstr "Gagal mengurai hasil: %s\n"
+
+msgid "Failed to resolve symlink to keytab.\n"
+msgstr "Gagal mengurai symlink ke keytab\n"
+
+#, c-format
+msgid "Failed to retrieve any keys"
+msgstr "Gagal mengambil kunci apapun"
+
+#, c-format
+msgid "Failed to retrieve encryption type %1$s (#%2$d)\n"
+msgstr "Gagal mengambil tipe enkripsi %1$s (#%2$d)\n"
+
+#, c-format
+msgid "Failed to retrieve encryption type type #%d\n"
+msgstr "Gagal mengambil tipe enkripsi #%d\n"
+
+#, python-format
+msgid "Failure decoding Certificate Signing Request: %s"
+msgstr "Gagal mengurai Permintaan Penandatanganan Sertifikat: %s"
+
+msgid "Force the host join. Rejoin even if already joined."
+msgstr "Paksa host bergabung. Bergabung kembali bahkan jika sudah bergabung."
+
+msgid "Forwarders"
+msgstr "Forwarder"
+
+#, python-format
+msgid "Group '%s' does not exist"
+msgstr "Grup '%s' tidak ada"
+
+#, python-format
+msgid "HBAC rule %(rule)s not found"
+msgstr "Aturan HBAC %(rule)s tidak ditemukan"
+
+#, c-format
+msgid "Host is already joined.\n"
+msgstr "Host sudah bergabung.\n"
+
+msgid "Hostname of this server"
+msgstr "Nama host peladen ini"
+
+msgid "IPA Server to use"
+msgstr "Server IPA yang akan digunakan"
+
+#, c-format
+msgid "IPA namingContext not found\n"
+msgstr "IPA namingContext tidak ditemukan\n"
+
+#, python-format
+msgid "Insufficient access: %(info)s"
+msgstr "Hak akses tidak mencukupi: %(info)s"
+
+#, python-format
+msgid "Invalid JSON-RPC request: %(error)s"
+msgstr "Permintaan JSON-RPC tidak valid: %(error)s"
+
+#, c-format
+msgid "JSON-RPC call failed with status code: %li\n"
+msgstr "Panggilan JSON-RPC gagal dengan kode status: %li\n"
+
+#, c-format
+msgid "JSON-RPC call failed: %s\n"
+msgstr "Panggilan JSON-RPC gagal: %s\n"
+
+#, c-format
+msgid "JSON-RPC call was unauthorized. Check your credentials.\n"
+msgstr "Panggilan JSON-RPC tanpa otorisasi. Periksa kredensial Anda.\n"
+
+#, c-format
+msgid ""
+"JSON-RPC request:\n"
+"%s\n"
+msgstr ""
+"Permintaan JSON-RPC:\n"
+"%s\n"
+
+#, c-format
+msgid ""
+"JSON-RPC response:\n"
+"%s\n"
+msgstr ""
+"Respon JSON-RPC:\n"
+"%s\n"
+
+msgid "Kerberos Service Principal Name"
+msgstr "Nama Prisipal Layanan Kerberos"
+
+#, c-format
+msgid "Kerberos context initialization failed\n"
+msgstr "Inisialisasi konteks Kerberos gagal\n"
+
+#, c-format
+msgid "Kerberos context initialization failed: %1$s (%2$d)\n"
+msgstr "Inisialisasi konteks Kerberos gagal: %1$s (%2$d)\n"
+
+#, python-format
+msgid "Kerberos error: %(major)s/%(minor)s"
+msgstr "Kesalahan kerberos: %(major)s/%(minor)s"
+
+msgid "Keytab File Name"
+msgstr "Nama Berkas Keytab"
+
+msgid "LDAP DN"
+msgstr "DN LDAP"
+
+msgid "LDAP URI"
+msgstr "URI LDAP"
+
+msgid "LDAP basedn"
+msgstr "basedn LDAP"
+
+msgid "LDAP password (if not using Kerberos)"
+msgstr "Kata sandi LDAP (jika tidak menggunakan Kerberos)"
+
+msgid "Mailing Address"
+msgstr "Alamat Surat"
+
+msgid "Master file"
+msgstr "Berkas induk"
+
+msgid "Maximum serial number"
+msgstr "Nomor seri maksimum"
+
+msgid "Minimum serial number"
+msgstr "Nomor seri minimum"
+
+#, c-format
+msgid "Missing reply control list!\n"
+msgstr "Kurang daftar kontrol balasan!\n"
+
+#, c-format
+msgid "Missing reply control!\n"
+msgstr "Kehilangan kontrol balasan!\n"
+
+#, python-format
+msgid "Modified ACI \"%(value)s\""
+msgstr "ACI \"%(value)s\" telah dimodifikasi"
+
+#, python-format
+msgid "Modified CA \"%(value)s\""
+msgstr "CA \"%(value)s\" diubah"
+
+#, python-format
+msgid "Modified OTP token \"%(value)s\""
+msgstr "Mengubah token OTP \"%(value)s\""
+
+#, python-format
+msgid "Modified group \"%(value)s\""
+msgstr "Grup \"%(value)s\" dimodifikasi"
+
+#, python-format
+msgid "Modified host \"%(value)s\""
+msgstr "Host \"%(value)s\" dimodifikasi"
+
+#, python-format
+msgid "Modified hostgroup \"%(value)s\""
+msgstr "Hostgroup \"%(value)s\" dimodifikasi"
+
+#, python-format
+msgid "Modified segment \"%(value)s\""
+msgstr "Segmen \"%(value)s\" dimodifikasi"
+
+#, python-format
+msgid "Modified user \"%(value)s\""
+msgstr "Pengguna \"%(value)s\" dimodifikasi"
+
+#, python-format
+msgid "Modify %(name)s '%(value)s'?"
+msgstr "Ubah '%(value)s' %(name)s?"
+
+msgid "Modify a hostgroup."
+msgstr "Memodifikasi suatu hostgroup."
+
+msgid "Must be a decimal number"
+msgstr "Harus angka desimal"
+
+msgid "Must be a positive number"
+msgstr "Harus angka positif"
+
+msgid "Must be an integer"
+msgstr "Harus bilangan bulat"
+
+msgid "Must be disabled first"
+msgstr "Harus dinon-fungsikan terlebih dahulu"
+
+#, c-format
+msgid "No keys accepted by KDC\n"
+msgstr "Tidak ada kunci yang diterima oleh KDC\n"
+
+#, c-format
+msgid "No permission to join this host to the IPA domain.\n"
+msgstr "Tidak ada izin bagi bergabungnya host ini ke domain IPA.\n"
+
+#, c-format
+msgid "No values for %s"
+msgstr "Tidak ada nilai bagi %s"
+
+#, c-format
+msgid "No write permissions on keytab file '%s'\n"
+msgstr "Tidak ada izin tulis pada berkas keytab '%s'\n"
+
+msgid "Non-POSIX"
+msgstr "Non-POSIX"
+
+msgid "Nonce"
+msgstr "Nonce"
+
+msgid "Number of plugins loaded"
+msgstr "Cacah pengaya yang dimuat"
+
+msgid "OTP Token"
+msgstr "Token OTP"
+
+msgid "Only one value is allowed"
+msgstr "Hanya satu nilai yang diperbolehkan"
+
+#, c-format
+msgid "Operation failed: %s\n"
+msgstr "Operasi gagal: %s\n"
+
+#, c-format
+msgid "Out of Memory!\n"
+msgstr "Kehabisan Memori!\n"
+
+#, c-format
+msgid "Out of memory \n"
+msgstr "Kehabisan memori \n"
+
+#, c-format
+msgid "Out of memory!"
+msgstr "Kehabisan memori!"
+
+#, c-format
+msgid "Out of memory!\n"
+msgstr "Kehabisan memori!\n"
+
+msgid "Output only on errors"
+msgstr "Keluaran hanya pada kesalahan"
+
+#, c-format
+msgid "Parsing JSON-RPC response failed: %s\n"
+msgstr "Penguraian respons JSON-RPC gagal: %s\n"
+
+#, c-format
+msgid "Parsing JSON-RPC response failed: no 'result' value found.\n"
+msgstr ""
+"Penguraian respons JSON-RPC gagal: tidak ada nilai 'hasil' yang ditemukan.\n"
+
+msgid "Password cannot be set on enrolled host."
+msgstr "Kata sandi tidak dapat ditata pada host yang didaftarkan."
+
+msgid "Password is too long!\n"
+msgstr "Kata sandi terlalu panjang!\n"
+
+msgid "Passwords do not match"
+msgstr "Kata sandi tidak cocok"
+
+msgid "Passwords do not match!"
+msgstr "Kata sandi tidak cocok!"
+
+#, c-format
+msgid "Passwords do not match!\n"
+msgstr "Kata sandi tidak cocok!\n"
+
+msgid "Passwords must match"
+msgstr "Kata sandi harus cocok"
+
+msgid "Permitted Encryption Types"
+msgstr "Tipe Enkripsi yang Diizinkan"
+
+msgid "Print as little as possible"
+msgstr "Mencetak sesedikat mungkin"
+
+msgid "Print debugging information"
+msgstr "Cetak informasi awakutu"
+
+msgid "Print the raw XML-RPC output in GSSAPI mode"
+msgstr "Mencetak keluaran XML-RPC mentah dalam mode GSSAPI"
+
+msgid "Public key:"
+msgstr "Kunci publik:"
+
+msgid "Quiet mode. Only errors are displayed."
+msgstr "Mode senyap. Hanya galat yang ditampilkan."
+
+msgid "Realm name"
+msgstr "Nama realm"
+
+msgid "Reason"
+msgstr "Alasan"
+
+msgid "Record type"
+msgstr "Tipe record"
+
+msgid "Remove all principals in this realm"
+msgstr "Hapus semua prinsipal di realm ini"
+
+#, c-format
+msgid "Removing principal %s\n"
+msgstr "Menghapus prinsipal %s\n"
+
+msgid "Reset OTP"
+msgstr "OTP Reset"
+
+msgid "Results are truncated, try a more specific search"
+msgstr "Hasil yang terpotong, coba cari dengan lebih spesifik"
+
+msgid "SASL Bind failed\n"
+msgstr "Bind SASL gagal\n"
+
+msgid "SRV Target"
+msgstr "Target SRV"
+
+msgid "SSH public key:"
+msgstr "Kunci publik SSH:"
+
+#, c-format
+msgid "Search for %1$s on rootdse failed with error %2$d\n"
+msgstr "Mencari %1$s pada rootdse gagal dengan galat %2$d\n"
+
+#, c-format
+msgid "Search for IPA namingContext failed with error %d\n"
+msgstr "Mencari namingContext IPA gagal dengan galat %d\n"
+
+msgid "Serial"
+msgstr "Serial"
+
+msgid "Server Name"
+msgstr "Nama Peladen"
+
+msgid "Service Options"
+msgstr "Opsi Layanan"
+
+msgid "Show the list of permitted encryption types and exit"
+msgstr "Tampilkan daftar tipe enkripsi yang diizinkan dan keluar"
+
+msgid "Simple bind failed\n"
+msgstr "Bind sederhana gagal\n"
+
+msgid "Specifies where to store keytab information."
+msgstr "Menentukan tempat menyimpan informasi keytab."
+
+msgid "Subject Distinguished Name"
+msgstr "Distinguished Name Subjek"
+
+msgid "Submit a certificate signing request."
+msgstr "Mengirim sebuah permintan penandatanganan sertifikat."
+
+msgid "Sudo"
+msgstr "Sudo"
+
+msgid "Target"
+msgstr "Target"
+
+msgid "Target DN"
+msgstr "DN Target"
+
+#, c-format
+msgid "The hostname must be fully-qualified: %s\n"
+msgstr "Nama host harus fully-qualified: %s\n"
+
+#, c-format
+msgid "The hostname must not be: %s\n"
+msgstr "Nama host tidak boleh: %s\n"
+
+msgid "The keytab file to remove the principcal(s) from"
+msgstr "Berkas keytab yang akan dihapus prinsipalnya"
+
+msgid ""
+"The principal to remove from the keytab (ex: ftp/ftp.example.com@EXAMPLE.COM)"
+msgstr ""
+"Prinsipal yang akan dihapus dari keytab (misalnya: ftp/ftp.example."
+"com@EXAMPLE.COM)"
+
+msgid "This command requires root access"
+msgstr "Perintah ini memerlukan akses root"
+
+msgid "This entry already exists"
+msgstr "Entri ini sudah ada"
+
+msgid "This is already a posix group"
+msgstr "Ini sudah merupakan grup posix"
+
+msgid "Ticket expired"
+msgstr "Tiket kedaluwarsa"
+
+#, c-format
+msgid "Timeout exceeded."
+msgstr "Tenggat waktu terlampaui."
+
+#, c-format
+msgid "Unable to determine IPA server from %s\n"
+msgstr "Tak bisa menentukan peladen IPA dari %s\n"
+
+#, c-format
+msgid "Unable to determine root DN of %s\n"
+msgstr "Tak bisa menentukan root DN dari %s\n"
+
+#, c-format
+msgid "Unable to enable SSL in LDAP\n"
+msgstr "Tidak bisa memfungsikan SSL dalam LDAP\n"
+
+#, c-format
+msgid "Unable to generate Kerberos Credential Cache\n"
+msgstr "Tidak dapat menghasilkan Kerberos Credential Cache\n"
+
+#, c-format
+msgid "Unable to initialize ldap library!\n"
+msgstr "Tak bisa menginisialisasi pustaka ldap!\n"
+
+#, c-format
+msgid "Unable to join host: Kerberos Credential Cache not found\n"
+msgstr ""
+"Tidak dapat bergabung dengan host: Kerberos Credential Cache tidak "
+"ditemukan\n"
+
+#, c-format
+msgid ""
+"Unable to join host: Kerberos User Principal not found and host password not "
+"provided.\n"
+msgstr ""
+"Tidak dapat bergabung dengan host: Kerberos User Principal tidak ditemukan "
+"dan kata sandi host tidak disediakan.\n"
+
+#, c-format
+msgid "Unable to join host: Kerberos context initialization failed\n"
+msgstr ""
+"Tidak dapat bergabung dengan host: Inisialisasi konteks Kerberos gagal\n"
+
+#, c-format
+msgid "Unable to parse principal\n"
+msgstr "Tidak dapat mengurai prinsipal\n"
+
+#, c-format
+msgid "Unable to parse principal name\n"
+msgstr "Tidak dapat mengurai nama prinsipal\n"
+
+#, c-format
+msgid "Unable to parse principal: %1$s (%2$d)\n"
+msgstr "Tidak dapat mengurai prinsipal: %1$s (%2$d)\n"
+
+#, c-format
+msgid "Unable to remove entry\n"
+msgstr "Tak bisa menghapus entri\n"
+
+msgid "Undo"
+msgstr "Tak Jadi"
+
+msgid "You must enroll a host in order to create a host service"
+msgstr "Anda harus mendaftarkan sebuah host untuk membuat layanan host"
+
+#, c-format
+msgid "access() on %1$s failed: errno = %2$d\n"
+msgstr "access() pada %1$s gagal: errno = %2$d\n"
+
+msgid "an internal error has occurred"
+msgstr "terjadi kesalahan internal"
+
+#, python-format
+msgid "an internal error has occurred on server at '%(server)s'"
+msgstr "terjadi kesalahan internal pada server di '%(server)s'"
+
+msgid ""
+"at least one of: type, filter, subtree, targetgroup, attrs or memberof are "
+"required"
+msgstr ""
+"setidaknya diperlukan salah satu dari: type, filter, subtree, targetgroup, "
+"attrs atau memberof"
+
+msgid "basedn"
+msgstr "basedn"
+
+#, c-format
+msgid "ber_init() failed, Invalid control ?!\n"
+msgstr "ber_init() gagal, Kontrol tidak valid ?!\n"
+
+#, c-format
+msgid "ber_scanf() failed, unable to find kvno ?!\n"
+msgstr "ber_scanf() gagal, tidak dapat menemukan kvno ?!\n"
+
+#, python-format
+msgid "can be at most %(len)d characters"
+msgstr "boleh maksimum %(len)d karakter"
+
+#, python-format
+msgid "can be at most %(maxlength)d bytes"
+msgstr "panjang maksimum yang diperbolehkan %(maxlength)d byte"
+
+#, python-format
+msgid "can be at most %(maxlength)d characters"
+msgstr "panjang maksimum yang diperbolehkan %(maxlength)d karakter"
+
+#, python-format
+msgid "can be at most %(maxvalue)d"
+msgstr "nilai maksimum yang diperbolehkan %(maxvalue)d"
+
+#, python-format
+msgid "can be at most %(maxvalue)s"
+msgstr "boleh maksimum %(maxvalue)s"
+
+#, c-format
+msgid "cannot open configuration file %s\n"
+msgstr "tidak dapat membuka berkas konfigurasi %s\n"
+
+#, c-format
+msgid "cannot stat() configuration file %s\n"
+msgstr "tidak dapat melakukan stat() berkas konfigurasi %s\n"
+
+msgid "change collided with another change"
+msgstr "perubahan bertabrakan dengan perubahan lain"
+
+#, c-format
+msgid "child exited with %d\n"
+msgstr "anak keluar dengan %d\n"
+
+#, c-format
+msgid "curl_easy_init() failed\n"
+msgstr "curl_easy_init() gagal\n"
+
+#, c-format
+msgid "curl_easy_setopt() failed\n"
+msgstr "curl_easy_setopt() gagal\n"
+
+#, c-format
+msgid "curl_global_init() failed\n"
+msgstr "curl_global_init() gagal\n"
+
+#, c-format
+msgid "curl_slist_append() failed for value: '%s'\n"
+msgstr "curl_slist_append() gagal untuk nilai: '%s'\n"
+
+#, python-format
+msgid "error on server '%(server)s': %(error)s"
+msgstr "galat pada server '%(server)s': %(error)s"
+
+#, c-format
+msgid "executing ipa-getkeytab failed, errno %d\n"
+msgstr "mengeksekusi ipa-getkeytab gagal, errno %d\n"
+
+msgid "filename"
+msgstr "namaberkas"
+
+#, c-format
+msgid "fork() failed\n"
+msgstr "fork() gagal\n"
+
+msgid "hostname"
+msgstr "namahost"
+
+msgid "incorrect type"
+msgstr "tipe salah"
+
+#, python-format
+msgid "invalid '%(name)s': %(error)s"
+msgstr "'%(name)s' tidak valid: %(error)s"
+
+#, c-format
+msgid "ipa-getkeytab has bad permissions?\n"
+msgstr "ipa-getkeytab memiliki izin yang buruk?\n"
+
+#, c-format
+msgid "ipa-getkeytab not found\n"
+msgstr "ipa-getkeytab tidak ditemukan\n"
+
+#, c-format
+msgid "json_dumps() failed\n"
+msgstr "json_dumps() gagal\n"
+
+#, c-format
+msgid "json_pack_ex() failed: %s\n"
+msgstr "json_pack_ex() gagal: %s\n"
+
+#, python-format
+msgid "key %(key)s already exists"
+msgstr "kunci %(key)s sudah ada"
+
+#, python-format
+msgid "key named %(key)s already exists"
+msgstr "kunci bernama %(key)s sudah ada"
+
+#, c-format
+msgid "krb5_kt_close %1$d: %2$s\n"
+msgstr "krb5_kt_close %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_get_entry %1$d: %2$s\n"
+msgstr "krb5_kt_get_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_remove_entry %1$d: %2$s\n"
+msgstr "krb5_kt_remove_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_parse_name %1$d: %2$s\n"
+msgstr "krb5_parse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_unparse_name %1$d: %2$s\n"
+msgstr "krb5_unparse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "kvno %d\n"
+msgstr "kvno %d\n"
+
+msgid "limits exceeded for this query"
+msgstr "query ini telah melampaui batas"
+
+#, python-format
+msgid "map %(map)s already exists"
+msgstr "peta %(map)s sudah ada"
+
+msgid "maximum serial number"
+msgstr "nomor seri maksimum"
+
+msgid "minimum serial number"
+msgstr "nomor seri minimum"
+
+#, python-format
+msgid "must be '%(value)s'"
+msgstr "harus '%(value)s'"
+
+msgid "must be DNS name"
+msgstr "harus berupa nama DNS"
+
+msgid "must be TRUE or FALSE"
+msgstr "harus TRUE atau FALSE"
+
+msgid "must be True or False"
+msgstr "harus True atau False"
+
+msgid "must be Unicode text"
+msgstr "harus teks Unicode"
+
+msgid "must be a certificate"
+msgstr "harus merupakan sebuah sertifikat"
+
+msgid "must be a certificate signing request"
+msgstr "harus berupa sebuah permintaan penandatanganan sertifikat"
+
+msgid "must be a decimal number"
+msgstr "harus merupakan angka desimal"
+
+msgid "must be absolute"
+msgstr "harus absolut"
+
+msgid "must be an integer"
+msgstr "harus merupakan bilangan bulat"
+
+#, python-format
+msgid "must be at least %(minlength)d bytes"
+msgstr "panjang minimum yang diperbolehkan %(minlength)d byte"
+
+#, python-format
+msgid "must be at least %(minlength)d characters"
+msgstr "setidaknya minimum harus %(minlength)d karakter"
+
+#, python-format
+msgid "must be at least %(minvalue)d"
+msgstr "setidaknya harus %(minvalue)d"
+
+#, python-format
+msgid "must be at least %(minvalue)s"
+msgstr "setidaknya harus %(minvalue)s"
+
+msgid "must be at least 1"
+msgstr "setidaknya harus 1"
+
+msgid "must be binary data"
+msgstr "harus merupakan data biner"
+
+msgid "must be datetime value"
+msgstr "harus berupa nilai datetime"
+
+msgid "must be dictionary"
+msgstr "harus berupa kamus"
+
+msgid "must be enclosed in parentheses"
+msgstr "mesti diapit kurung"
+
+#, python-format
+msgid "must be exactly %(length)d bytes"
+msgstr "harus tepat %(length)d byte"
+
+#, python-format
+msgid "must be exactly %(length)d characters"
+msgstr "harus tepat %(length)d karakter"
+
+#, python-format
+msgid "must be one of %(values)s"
+msgstr "harus satu dari %(values)s"
+
+msgid "must be relative"
+msgstr "harus relatif"
+
+#, python-format
+msgid "must match pattern \"%(pattern)s\""
+msgstr "harus cocok dengan pola \"%(pattern)s\""
+
+msgid "no modifications to be performed"
+msgstr "tidak ada modifikasi yang harus dilakukan"
+
+#, c-format
+msgid "out of memory\n"
+msgstr "kehabisan memori!\n"
+
+msgid "password"
+msgstr "kata sandi"
+
+#, python-format
+msgid "permission \"%(value)s\" already exists"
+msgstr "izin \"%(value)s\" sudah ada"
+
+msgid "pkinit"
+msgstr "pkinit"
+
+#, c-format
+msgid "principal not found\n"
+msgstr "prinsipal tidak ditemukan\n"
+
+#, c-format
+msgid "principal not found in XML-RPC response\n"
+msgstr "prinsipal tidak ditemukan dalam respons XML-RPC\n"
+
+msgid "priority cannot be set on global policy"
+msgstr "prioritas tidak dapat ditetapkan pada kebijakan global"
+
+#, python-format
+msgid "query '%(owner)s %(rtype)s': %(error)s"
+msgstr "kuiri '%(owner)s %(rtype)s': %(error)s"
+
+#, c-format
+msgid "read error\n"
+msgstr "galat baca\n"
+
+#, c-format
+msgid "realm not found\n"
+msgstr "realm tidak ditemukan\n"
+
+#, c-format
+msgid "result not found in XML-RPC response\n"
+msgstr "hasil tidak ditemukan dalam respons XML-RPC\n"
+
+msgid "segment"
+msgstr "segmen"
+
+msgid "sidgen_was_run"
+msgstr "sidgen_was_run"
+
+#, python-format
+msgid "unknown error %(code)d from %(server)s: %(error)s"
+msgstr "kesalahan %(code)d tidak dikenal dari %(server)s: %(error)s"
+
+msgid "users"
+msgstr "pengguna"
+
+msgid "vaultcontainer"
+msgstr "vaultcontainer"
+
+msgid "vaultcontainers"
+msgstr "vaultcontainers"
+
+#, python-brace-format
+msgid "{attr}: no such attribute"
+msgstr "{attr}: tidak ada atribut seperti itu"

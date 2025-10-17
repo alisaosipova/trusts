@@ -1,0 +1,492 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR FreeIPA Contributors
+# This file is distributed under the same license as the freeipa package.
+# 김인수 <simmon@nplob.com>, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.10.0.dev202206291425+git9a97f9b40\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2023-12-18 14:35+0000\n"
+"Last-Translator: 김인수 <simmon@nplob.com>\n"
+"Language-Team: Korean <https://translate.fedoraproject.org/projects/freeipa/"
+"ipa-4-11/ko/>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.3\n"
+
+msgid "Add a new YubiKey OTP token."
+msgstr "신규 Yubikey OTP 토큰 추가."
+
+msgid "Add a new self-service permission."
+msgstr "신규 자체-서비스 권한을 추가합니다."
+
+msgid "Add members to a hostgroup."
+msgstr "구성원을 호스트그룹에 추가."
+
+#, python-format
+msgid "Added automount location \"%(value)s\""
+msgstr "추가된 자동적재 위치 \"%(value)s\""
+
+msgid "Administrator e-mail address"
+msgstr "관리자 전자우편 주소"
+
+msgid "Algorithm"
+msgstr "알고리즘"
+
+msgid "Asks for a non-random password to use for the principal"
+msgstr "보안 주체에 사용 할 임의적이지 않은 비밀번호를 요청합니다"
+
+msgid "Available"
+msgstr "사용 가능한"
+
+msgid "Base-64 encoded server certificate"
+msgstr "Base-64로 인코딩된 서버 인증서"
+
+msgid "CNAME Hostname"
+msgstr "CNAME 호스트이름"
+
+#, c-format
+msgid "Closing keytab failed\n"
+msgstr "키탭을 닫는데 실패함\n"
+
+msgid "Comma separated encryption types list"
+msgstr "쉼표로 구분된 암호화 유형 목록"
+
+msgid ""
+"Comma-separated list of attributes to be ignored for group entries in DS"
+msgstr "DS에서 그룹 항목을 위해 무시되는 속성의 쉼표로-구분된 목록"
+
+msgid "Comma-separated list of raw NAPTR records"
+msgstr "단순 NAPTR 레코드의 쉼표로-구분된 목록"
+
+msgid "Confirmation"
+msgstr "확인"
+
+msgid "Contact this specific KDC Server"
+msgstr "이와 같은 지정된 KDC 서버와 연락합니다"
+
+msgid "DN to bind as if not using kerberos"
+msgstr "만약 커버러스를 사용하지 않는 것같이 바인드하는 DN"
+
+msgid "Data"
+msgstr "자료"
+
+msgid "Debugging output"
+msgstr "디버깅 출력"
+
+msgid "Degrees Longitude"
+msgstr "도 위도"
+
+msgid "Delete a self-service permission."
+msgstr "자체-서비스 권한을 삭제합니다."
+
+msgid "Delete an HBAC rule."
+msgstr "HBAC 규칙을 삭제합니다."
+
+msgid "Disabled"
+msgstr "사용불가"
+
+msgid "Display information about a help topic."
+msgstr "도움말 주제에 대한 정보를 표시합니다."
+
+msgid "Display information about an ID override."
+msgstr "ID 재정의에 대한 정보를 표시합니다."
+
+msgid "Encryption types to request"
+msgstr "요청하는 암호화 유형"
+
+msgid "Extra hashes to generate in password plug-in"
+msgstr "비밀번호 플러그-인에서 생성 할 추가 해쉬"
+
+#, c-format
+msgid "Failed to bind to server!\n"
+msgstr "서버로 바인드 하는데 실패함!\n"
+
+#, c-format
+msgid "Failed to create control!\n"
+msgstr "제어를 생성하는데 실패함!\n"
+
+msgid "Failed to decode control reply!\n"
+msgstr "제어 응답을 디코드 하는데 실패함\n"
+
+#, c-format
+msgid "Failed to get keytab!\n"
+msgstr "키탭을 가져오는데 실패함!\n"
+
+#, c-format
+msgid "Failed to get result: %s\n"
+msgstr "결과를 가져오는데 실패함: %s\n"
+
+#, c-format
+msgid "Failed to open config file %s\n"
+msgstr "구성 파일 %s를 여는데 실패함\n"
+
+#, c-format
+msgid "Failed to open keytab\n"
+msgstr "키탭을 가져오는데 실패함\n"
+
+#, c-format
+msgid "Failed to open keytab '%1$s': %2$s\n"
+msgstr "키탭을 여는데 실패함 '%1$s': %2$s\n"
+
+#, c-format
+msgid "Failed to parse config file %s\n"
+msgstr "구성 파일 %s를 구문 분석하는데 실패함\n"
+
+#, c-format
+msgid "Failed to parse extended result: %s\n"
+msgstr "확장된 결과를 구문 분석하는데 실패함: %s\n"
+
+#, c-format
+msgid "Failed to parse result: %s\n"
+msgstr "결과를 구문 분석하는데 실패함: %s\n"
+
+msgid "Failed to resolve symlink to keytab.\n"
+msgstr "심볼릭링크를 키탭으로 결정 하는데 실패함\n"
+
+#, c-format
+msgid "Failed to retrieve any keys"
+msgstr "키를 검색하는데 실패함"
+
+#, c-format
+msgid "Failed to retrieve encryption type %1$s (#%2$d)\n"
+msgstr "암호화 유형 %1$s (#%2$d)를 검색하는데 실패함\n"
+
+#, c-format
+msgid "Failed to retrieve encryption type type #%d\n"
+msgstr "암호화 형태 유형 #%d를 검색하는데 실패함\n"
+
+#, c-format
+msgid "Failed to set cursor '%1$s'\n"
+msgstr "커서 '%1$s' 설정에 실패함\n"
+
+msgid "Hosts allowed to create keytab"
+msgstr "키탭을 생성하는데 허용된 호스트"
+
+msgid "IPA CA certificate"
+msgstr "IPA CA 인증서"
+
+msgid "IPA role name"
+msgstr "IPA 역할 이름"
+
+msgid "KEY Algorithm"
+msgstr "키 알고리즘"
+
+msgid "Kerberos Service Principal Name"
+msgstr "커버러스 서비스 주체 이름"
+
+#, c-format
+msgid "Kerberos context initialization failed\n"
+msgstr "커버러스 문맥 초기화에 실패함\n"
+
+#, c-format
+msgid "Kerberos context initialization failed: %1$s (%2$d)\n"
+msgstr "커버러스 문맥을 초기화 하는데 실패함: %1$s (%2$d)\n"
+
+msgid "Keytab File Name"
+msgstr "키탭 파일 이름"
+
+msgid "LDAP DN"
+msgstr "LDAP DN"
+
+msgid "LDAP SASL bind mechanism if no bindd/bindpw"
+msgstr "만약 bindd/bindpw가 없는 경우 LDAP SASL 바인드 동작원리"
+
+msgid "LDAP uri to connect to. Mutually exclusive with --server"
+msgstr "연결 할 LDAP URI입니다. --server와 상호 배타적"
+
+msgid "LOC Minutes Longitude"
+msgstr "LOC 분 위도"
+
+msgid "Left node"
+msgstr "왼쪽 노드"
+
+msgid "Length of TOTP token code validity"
+msgstr "TOTP 토큰 코드 유효성의 길이"
+
+msgid "Match cn attribute in subject"
+msgstr "주제에서 cn 속성이 일치합니다"
+
+#, c-format
+msgid "Missing reply control list!\n"
+msgstr "응답 제어 목록이 누락됨!\n"
+
+#, c-format
+msgid "Missing reply control!\n"
+msgstr "응답 제어 누락!\n"
+
+msgid "Modify an automount key."
+msgstr "자동 적재된 키를 수정합니다."
+
+msgid "Modify global trust configuration."
+msgstr "전역 신뢰 구성을 수정합니다."
+
+msgid "New vault password"
+msgstr "신규 저장소 비밀번호"
+
+#, c-format
+msgid "No keys accepted by KDC\n"
+msgstr "KDC에 의해 허용하는 키가 없습니다\n"
+
+#, c-format
+msgid "No permission to join this host to the IPA domain.\n"
+msgstr "이 호스트를 IPA 도메인으로 가입 할 수 있는 권한이 없습니다.\n"
+
+msgid "Number of hosts the ID View was applied to:"
+msgstr "호스트 ID 보기의 수는 다음과 같이 적용됩니다:"
+
+msgid "OTP"
+msgstr "OTP"
+
+msgid "Operating system"
+msgstr "운영 체제"
+
+#, c-format
+msgid "Operation failed: %s\n"
+msgstr "작업 실패: %s\n"
+
+#, c-format
+msgid "Out of Memory!\n"
+msgstr "메모리 부족!\n"
+
+#, c-format
+msgid "Out of memory \n"
+msgstr "메모리 부족 \n"
+
+#, c-format
+msgid "Out of memory!\n"
+msgstr "메모리 부족!\n"
+
+msgid "Output only on errors"
+msgstr "오류에서만 출력"
+
+msgid "Owner"
+msgstr "소유자"
+
+msgid "Password migration was not successful"
+msgstr "비밀번호 이전이 성공하지 못했습니다"
+
+#, c-format
+msgid "Passwords do not match!\n"
+msgstr "비밀번호가 일치하지 않습니다!\n"
+
+msgid "Path to the IPA CA certificate"
+msgstr "IPA CA 인증서 경로"
+
+msgid "Permitted Encryption Types"
+msgstr "허용되는 암호화 유형"
+
+msgid "Preference given to this exchanger. Lower values are more preferred"
+msgstr "이와 같은 교환기에 주어진 우선권. 낮은 값이 더 선호됩니다"
+
+msgid "Print as little as possible"
+msgstr "가능한 작게 출력합니다"
+
+msgid "Print debugging information"
+msgstr "디버깅 정보 인쇄"
+
+msgid "Prompt for LDAP password"
+msgstr "LDAP 비밀번호를 위한 프롬프트"
+
+msgid "RRSIG Type Covered"
+msgstr "RRSIG 유형 적용"
+
+msgid "Raw APL records"
+msgstr "단순 APL 레코드"
+
+msgid "Realm name"
+msgstr "영역 이름"
+
+msgid "Remove all principals in this realm"
+msgstr "이와 같은 영역에서 모든 주체를 제거합니다"
+
+msgid "Remove vaults"
+msgstr "저장소 제거"
+
+#, c-format
+msgid "Removing principal %s\n"
+msgstr "주체 %s를 제거하기\n"
+
+msgid "Reset your password."
+msgstr "자신의 비밀번호를 초기화합니다."
+
+msgid "SASL Bind failed\n"
+msgstr "SASL 바인드가 실패했습니다\n"
+
+msgid "SSH public key fingerprint"
+msgstr "SSH 공유 키 지문"
+
+msgid "Search for DNS zones (SOA records)."
+msgstr "DNS 존을 위한 검사 (SOA 레코드)."
+
+msgid "Search for classes."
+msgstr "등급 검색."
+
+msgid "Search for hosts with these member of roles."
+msgstr "역할의 이들 구성원과 함께 호스트를 위한 검색."
+
+msgid "Search for netgroups without these member groups."
+msgstr "이들 구성원 그룹이 없이 넷그룹를 위한 검색."
+
+msgid "Search for stage users without these member of HBAC rules."
+msgstr "HBAC 규칙의 이들 구성원이 없이 스테이지 사용자를 검색합니다."
+
+msgid "Serial number (hex)"
+msgstr "일련 번호 (16 진수)"
+
+msgid "Server Name"
+msgstr "서버 이름"
+
+msgid "Set SSH key"
+msgstr "SSH 키 설정"
+
+msgid "Shared Vaults"
+msgstr "공유 저장소"
+
+msgid "Show the list of permitted encryption types and exit"
+msgstr "허용된 암호화 유형의 목록을 표시하고 종료"
+
+msgid "Simple bind failed\n"
+msgstr "단순 바인드에 실패함\n"
+
+msgid "Split DNS record to parts"
+msgstr "DNS 레코드를 부분으로 분할"
+
+msgid "Subject OID"
+msgstr "대상 OID"
+
+msgid ""
+"The keytab file to append the new key to (will be created if it does not "
+"exist)."
+msgstr "신규 키를 (만약 존재 한다면 생성 될 것임)로 확장하는 키탭 파일."
+
+msgid "The keytab file to remove the principcal(s) from"
+msgstr "주체를 제거하는 키탭 파일"
+
+msgid "The principal to get a keytab for (ex: ftp/ftp.example.com@EXAMPLE.COM)"
+msgstr "(예제: ftp/ftp.example.com@EXAMPLE.COM)를 위해 키탭에서 가져올 주체"
+
+msgid ""
+"The principal to remove from the keytab (ex: ftp/ftp.example.com@EXAMPLE.COM)"
+msgstr "keytab에서 제거 할 주체 (예제: ftp/ftp.example.com@EXAMPLE.COM)"
+
+#, c-format
+msgid "Timeout exceeded."
+msgstr "제한시간이 초과 되었습니다."
+
+#, c-format
+msgid "Unable to initialize ldap library!\n"
+msgstr "ldap 라이브러리를 초기화 할 수 없습니다\n"
+
+#, c-format
+msgid "Unable to parse principal\n"
+msgstr "주체를 구문 분석 할 수 없습니다\n"
+
+#, c-format
+msgid "Unable to parse principal name\n"
+msgstr "주요 이름을 구문 분석 할 수 없습니다\n"
+
+#, c-format
+msgid "Unable to parse principal: %1$s (%2$d)\n"
+msgstr "주체를 구문 분석 할 수 없음: %1$s (%2$d)\n"
+
+#, c-format
+msgid "Unable to remove entry\n"
+msgstr "항목을 제거 할 수 없음\n"
+
+#, c-format
+msgid "Unenrollment successful.\n"
+msgstr "등록 취소 성공.\n"
+
+msgid "Unspecified"
+msgstr "지정되지 않음"
+
+msgid "User-friendly description of action performed"
+msgstr "수행된 동작에 대한 사용자 친화적인 설명"
+
+#, c-format
+msgid "ber_init() failed, Invalid control ?!\n"
+msgstr "ber_init() 실패하고, 잘못된 제어 ?!\n"
+
+#, c-format
+msgid "ber_scanf() failed, unable to find kvno ?!\n"
+msgstr "ber_scanf() 실패하고, kvno 찾을 수 없음 ?!\n"
+
+#, c-format
+msgid "cannot open configuration file %s\n"
+msgstr "구성 파일 %s를 열 수 없습니다\n"
+
+#, c-format
+msgid "cannot stat() configuration file %s\n"
+msgstr "구성 파일 %s을 stat() 할 수 없습니다\n"
+
+msgid "comma-separated list of hosts to remove"
+msgstr "제거하려는 호스트의 쉼표로-구분된 목록"
+
+msgid "keytab is a dangling symlink and owned by another user.\n"
+msgstr "키탭은 매달린 심볼릭 링크와 다른 사용자에 의해 소유됩니다\n"
+
+#, c-format
+msgid "krb5_kt_close %1$d: %2$s\n"
+msgstr "krb5_kt_close %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_get_entry %1$d: %2$s\n"
+msgstr "krb5_kt_get_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_kt_remove_entry %1$d: %2$s\n"
+msgstr "krb5_kt_remove_entry %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_parse_name %1$d: %2$s\n"
+msgstr "krb5_parse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "krb5_unparse_name %1$d: %2$s\n"
+msgstr "krb5_unparse_name %1$d: %2$s\n"
+
+#, c-format
+msgid "kvno %d\n"
+msgstr "kvno %d\n"
+
+msgid "member Certificate Profile"
+msgstr "구성원 인증서 프로파일"
+
+msgid "netgroups to add"
+msgstr "추가하려는 넷그룹"
+
+#, c-format
+msgid "out of memory\n"
+msgstr "메모리 부족\n"
+
+msgid "password to use if not using kerberos"
+msgstr "만약 커버러스를 사용하지 않는 것을 사용하려는 비밀번호"
+
+#, c-format
+msgid "principal not found\n"
+msgstr "주체를 찾을 수 없음\n"
+
+#, c-format
+msgid "read error\n"
+msgstr "읽기 오류\n"
+
+#, c-format
+msgid "realm not found\n"
+msgstr "realm을 찾을 수 없음\n"
+
+msgid "runAs user"
+msgstr "runAs 사용자"
+
+msgid "runAs users"
+msgstr "runAs 사용자"
+
+msgid "server roles"
+msgstr "서버 역할"
+
+msgid "url"
+msgstr "url"

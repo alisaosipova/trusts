@@ -1,0 +1,84 @@
+From: Rafael David Tinoco <rafaeldtinoco@gmail.com>
+Subject: fix nfs related service names
+
+Upstream defines nfs related service names based on the Linux
+distribution. This patch fixes the names for Debian and derivatives.
+
+Update by Andreas Hasenack <andreas@canonical.com> (LP: #1961840):
+Use nfsconf(8) if it's available, instead of parsing the old config
+files in /etc/default/nfs-*
+
+Bug-Debian: https://bugs.debian.org/929931
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/722201
+Last-Update: 2024-07-30
+
+diff --git a/ctdb/config/events/legacy/60.nfs.script b/ctdb/config/events/legacy/60.nfs.script
+index 246a856bca8..e9bf697a43a 100755
+--- a/ctdb/config/events/legacy/60.nfs.script
++++ b/ctdb/config/events/legacy/60.nfs.script
+@@ -6,9 +6,11 @@
+ 
+ . "${CTDB_BASE}/functions"
+ 
+-service_name="nfs"
++service_name="nfs-kernel-server"
+ 
+-load_system_config "nfs"
++if ! type nfsconf > /dev/null 2>&1; then
++    load_system_config "nfs-kernel-server"
++fi
+ 
+ load_script_options
+ 
+diff --git a/ctdb/config/nfs-linux-kernel-callout b/ctdb/config/nfs-linux-kernel-callout
+index cbc0482d73f..cb37e79861e 100755
+--- a/ctdb/config/nfs-linux-kernel-callout
++++ b/ctdb/config/nfs-linux-kernel-callout
+@@ -11,7 +11,7 @@ nfs_exports_file="${CTDB_NFS_EXPORTS_FILE:-/var/lib/nfs/etab}"
+ # Do not set CTDB_NFS_DISTRO_STYLE - it isn't a configuration
+ # variable, just a hook for testing.  To change the style, edit the
+ # default value below.
+-nfs_distro_style="${CTDB_NFS_DISTRO_STYLE:-systemd-redhat}"
++nfs_distro_style="${CTDB_NFS_DISTRO_STYLE:-systemd-debian}"
+ 
+ # As above, edit the default value below.  CTDB_SYS_ETCDIR is a
+ # test variable only.
+@@ -39,7 +39,22 @@ systemd-*)
+ 		: # Defaults only
+ 		;;
+ 	*-debian)
+-		nfs_rquotad_service="quotarpc"
++		# XXX
++		# Undefine nfs_rquotad_services because the quotarpc service won't
++		# start unless there are specific "quota" mount options in /etc/fstab.
++		# In this way, we let ctdb start it up manually once the
++		# /etc/ctdb/nfs-checks.d/50.rquotad.check detects rpc.rquotad isn't
++		# running.
++		# Users who really don't want rpc.rquotad running should then move
++		# the 50.rquotad.check script away.
++		nfs_rquotad_service=""
++		nfs_service="nfs-kernel-server"
++		if type nfsconf >/dev/null 2>&1; then
++			nfs_config=""
++		else
++			nfs_config="/etc/default/nfs-kernel-server"
++		fi
++		nfs_rquotad_config="/etc/default/quota"
+ 		;;
+ 	*)
+ 		echo "Internal error"
+diff --git a/ctdb/tools/statd_callout_helper b/ctdb/tools/statd_callout_helper
+index a17b57c3de7..b4ad8ae68f7 100755
+--- a/ctdb/tools/statd_callout_helper
++++ b/ctdb/tools/statd_callout_helper
+@@ -29,7 +29,9 @@ die()
+ }
+ 
+ # Try different variables to find config file for NFS_HOSTNAME
+-load_system_config "nfs" "nfs-common"
++if ! type nfsconf > /dev/null 2>&1; then
++    load_system_config "nfs" "nfs-common"
++fi
+ 
+ # If NFS_HOSTNAME not set then try to pull it out of /etc/nfs.conf
+ if [ -z "$NFS_HOSTNAME" ]; then

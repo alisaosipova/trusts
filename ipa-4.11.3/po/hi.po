@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Red Hat
+# This file is distributed under the same license as the freeipa package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: freeipa 4.9.0.dev201908140712+gitc9938e3d8\n"
+"Report-Msgid-Bugs-To: https://pagure.io/freeipa/new_issue\n"
+"POT-Creation-Date: 2022-06-29 16:26+0200\n"
+"PO-Revision-Date: 2019-11-11 10:25+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Hindi\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Zanata 4.6.2\n"
+
+msgid "A group may not be a member of itself"
+msgstr "एक समूह खुद के ही सदस्य नहीं हो सकता"
+
+msgid "A list of LDAP entries"
+msgstr "LDAP प्रविष्टियों की सूची"
+
+msgid "All commands should at least have a result"
+msgstr "सभी आदेशों का कम से कम परिणाम होना चाहिए"
+
+msgid "Bad format in credentials cache"
+msgstr "क्रेडेंशियल्स कैश में बुरा प्रारूप"
+
+#, python-format
+msgid "Base64 decoding failed: %(reason)s"
+msgstr "बेस६४ डिकोडिंग विफल: %(reason)s"
+
+msgid "Cannot resolve KDC for requested realm"
+msgstr "अनुरोधित दायरे के लिए KDC हल नहीं कर सकता"
+
+msgid "Credentials cache permissions incorrect"
+msgstr "क्रेडेंशियल्स कैश अनुमतियाँ गलत"
+
+#, python-format
+msgid "Enter %(label)s again to verify: "
+msgstr "सत्यापित करने के लिए फिर से %(label)s दर्ज करें:"
+
+msgid "No credentials cache found"
+msgstr "कैश क्रेडेंशियल्स नहीं मिली"
+
+msgid "Only one value is allowed"
+msgstr "केवल एक मान की अनुमति है"
+
+msgid "Passwords do not match"
+msgstr "पासवर्ड मेल नहीं खाते"
+
+msgid "Passwords do not match!"
+msgstr "पासवर्ड मेल नहीं खाते"
+
+msgid "This command requires root access"
+msgstr "इस आदेश को रूट मूल अभिगम की आवश्यकता है"
+
+msgid "This is already a posix group"
+msgstr "यह पहले से ही एक पोसिक्स समूह है"
+
+msgid "Ticket expired"
+msgstr "टिकट समाप्त"
+
+msgid "an internal error has occurred"
+msgstr "एक आंतरिक त्रुटि हुई है"
+
+msgid "did not receive Kerberos credentials"
+msgstr "कर्बेरॉस क्रेडेंशियल्स प्राप्त नहीं हुआ"
+
+msgid "incorrect type"
+msgstr "गलत प्रकार"
+
+msgid "must be True or False"
+msgstr "सही या गलत होना चाहिए"
