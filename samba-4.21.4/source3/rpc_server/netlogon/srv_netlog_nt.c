@@ -53,6 +53,9 @@
 #include "source3/lib/substitute.h"
 #include "librpc/rpc/server/netlogon/schannel_util.h"
 #include "lib/util/uuid.h"
+#ifdef HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_RPC_SRV
@@ -2478,6 +2481,50 @@ static WERROR netlogon_append_local_domain(struct netr_DomainTrustList *trusts)
         return WERR_OK;
 }
 
+#ifdef HAVE_DLFCN_H
+typedef WERROR (*ipasam_enum_trusts_fn)(TALLOC_CTX *mem_ctx,
+                                        uint32_t trust_flags,
+                                        struct netr_DomainTrustList *trusts);
+#endif
+
+static bool netlogon_backend_is_ipasam(void)
+{
+        const char *backend = lp_passdb_backend();
+
+        if (backend == NULL) {
+                return false;
+        }
+
+        return strstr(backend, "ipasam") != NULL;
+}
+
+static WERROR netlogon_collect_trusts_ipasam(struct pipes_struct *p,
+                                             uint32_t trust_flags,
+                                             struct netr_DomainTrustList *trusts)
+{
+#ifndef HAVE_DLFCN_H
+        return WERR_NOT_SUPPORTED;
+#else
+        static ipasam_enum_trusts_fn ipa_enum_trusts = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_enum_trusts = (ipasam_enum_trusts_fn)dlsym(RTLD_DEFAULT,
+                                "ipasam_netlogon_enum_trusts");
+                if (ipa_enum_trusts == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_enum_trusts not available\n");
+                }
+        }
+
+        if (ipa_enum_trusts == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        return ipa_enum_trusts(p->mem_ctx, trust_flags, trusts);
+#endif
+}
+
 static WERROR netlogon_collect_trusts(struct pipes_struct *p,
                                      const char *server_name,
                                      uint32_t trust_flags,
@@ -2908,6 +2955,17 @@ WERROR _netr_DsrGetDcSiteCoverageW(struct pipes_struct *p,
 WERROR _netr_DsrEnumerateDomainTrusts(struct pipes_struct *p,
                                       struct netr_DsrEnumerateDomainTrusts *r)
 {
+        if (netlogon_backend_is_ipasam()) {
+                WERROR ipa_werr;
+
+                ipa_werr = netlogon_collect_trusts_ipasam(p,
+                                                         r->in.trust_flags,
+                                                         r->out.trusts);
+                if (!W_ERROR_EQUAL(ipa_werr, WERR_NOT_SUPPORTED)) {
+                        return ipa_werr;
+                }
+        }
+
         return netlogon_collect_trusts(p,
                                        r->in.server_name,
                                        r->in.trust_flags,
