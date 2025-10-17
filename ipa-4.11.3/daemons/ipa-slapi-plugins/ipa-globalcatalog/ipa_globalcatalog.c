@@ -55,16 +55,26 @@
 #define IPA_GC_ATTR_SAMACCOUNTNAME "sAMAccountName"
 #define IPA_GC_ATTR_UPN "userPrincipalName"
 #define IPA_GC_ATTR_OBJECTSID "objectSid"
+#define IPA_GC_ATTR_OBJECTCLASS "objectClass"
+#define IPA_GC_ATTR_GROUPTYPE "groupType"
+#define IPA_GC_ATTR_PRIMARYGROUPID "primaryGroupID"
 
 #define IPA_GC_ATTR_UID "uid"
 #define IPA_GC_ATTR_KRBPN "krbPrincipalName"
 #define IPA_GC_ATTR_SID "ipaNTSecurityIdentifier"
+
+#define IPA_GC_OC_USER "user"
+#define IPA_GC_OC_GROUP "group"
+
+#define IPA_GC_GROUPTYPE_SECURITY_GLOBAL "-2147483646"
 
 struct ipa_gc_ctx {
     Slapi_ComponentId *plugin_id;
     Slapi_DN *base_sdn;
     char *basedn;
     char *realm;
+    uint32_t fallback_primary_group_rid;
+    bool has_fallback_primary_group_rid;
 };
 
 static int ipa_gc_post_add(Slapi_PBlock *pb);
@@ -219,6 +229,32 @@ static int ipa_gc_sid_string_to_berval(const char *sid_str, struct berval **bv_o
     return LDAP_SUCCESS;
 }
 
+static int ipa_gc_sid_string_get_rid(const char *sid_str, uint32_t *rid)
+{
+    char *end = NULL;
+    const char *last_dash;
+    unsigned long value;
+
+    if (sid_str == NULL || rid == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    last_dash = strrchr(sid_str, '-');
+    if (last_dash == NULL || *(last_dash + 1) == '\0') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    errno = 0;
+    value = strtoul(last_dash + 1, &end, 10);
+    if (errno != 0 || end == last_dash + 1 || *end != '\0' ||
+        value > UINT32_MAX) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    *rid = (uint32_t)value;
+    return LDAP_SUCCESS;
+}
+
 static bool ipa_gc_enqueue_string_value(Slapi_Entry *entry,
                                         Slapi_Mods *mods,
                                         const char *attr,
@@ -244,6 +280,36 @@ static bool ipa_gc_enqueue_string_value(Slapi_Entry *entry,
 
     slapi_ch_free_string(&current);
     return changed;
+}
+
+static bool ipa_gc_enqueue_objectclass_value(Slapi_Entry *entry,
+                                             Slapi_Mods *mods,
+                                             const char *value)
+{
+    char **existing = NULL;
+    bool present = false;
+
+    if (value == NULL || value[0] == '\0') {
+        return false;
+    }
+
+    existing = slapi_entry_attr_get_charray(entry, IPA_GC_ATTR_OBJECTCLASS);
+    if (existing != NULL) {
+        for (size_t i = 0; existing[i] != NULL; i++) {
+            if (strcasecmp(existing[i], value) == 0) {
+                present = true;
+                break;
+            }
+        }
+        slapi_ch_array_free(existing);
+    }
+
+    if (present) {
+        return false;
+    }
+
+    slapi_mods_add_string(mods, LDAP_MOD_ADD, IPA_GC_ATTR_OBJECTCLASS, value);
+    return true;
 }
 
 static bool ipa_gc_enqueue_sid_value(Slapi_Entry *entry,
@@ -297,6 +363,43 @@ done:
     return changed;
 }
 
+static bool ipa_gc_entry_has_objectclass(Slapi_Entry *entry, const char *value)
+{
+    char **classes = NULL;
+    bool found = false;
+
+    if (value == NULL || value[0] == '\0') {
+        return false;
+    }
+
+    classes = slapi_entry_attr_get_charray(entry, IPA_GC_ATTR_OBJECTCLASS);
+    if (classes != NULL) {
+        for (size_t i = 0; classes[i] != NULL; i++) {
+            if (strcasecmp(classes[i], value) == 0) {
+                found = true;
+                break;
+            }
+        }
+        slapi_ch_array_free(classes);
+    }
+
+    return found;
+}
+
+static bool ipa_gc_entry_is_user(Slapi_Entry *entry)
+{
+    return ipa_gc_entry_has_objectclass(entry, "ipaNTUserAttrs") ||
+           ipa_gc_entry_has_objectclass(entry, "posixAccount") ||
+           ipa_gc_entry_has_objectclass(entry, "inetOrgPerson");
+}
+
+static bool ipa_gc_entry_is_group(Slapi_Entry *entry)
+{
+    return ipa_gc_entry_has_objectclass(entry, "ipaNTGroupAttrs") ||
+           ipa_gc_entry_has_objectclass(entry, "posixGroup") ||
+           ipa_gc_entry_has_objectclass(entry, "groupOfNames");
+}
+
 static char *ipa_gc_strip_principal_instance(char *value)
 {
     char *comma;
@@ -345,6 +448,130 @@ static char *ipa_gc_compute_upn(struct ipa_gc_ctx *ctx,
     return upn;
 }
 
+static char *ipa_gc_compute_primary_group_id(struct ipa_gc_ctx *ctx,
+                                             Slapi_Entry *entry)
+{
+    (void)entry;
+
+    if (ctx == NULL || !ctx->has_fallback_primary_group_rid) {
+        return NULL;
+    }
+
+    return slapi_ch_smprintf("%u", ctx->fallback_primary_group_rid);
+}
+
+static int ipa_gc_load_domain_attrs(struct ipa_gc_ctx *ctx)
+{
+    static const char *attrs[] = {
+        "ipaNTFallbackPrimaryGroup",
+        NULL,
+    };
+    Slapi_PBlock *pb = NULL;
+    Slapi_Entry **entries = NULL;
+    Slapi_Entry *fallback_entry = NULL;
+    Slapi_DN *fallback_sdn = NULL;
+    char *fallback_dn = NULL;
+    char *fallback_sid = NULL;
+    uint32_t fallback_rid = 0;
+    int result = LDAP_SUCCESS;
+    int ret = LDAP_SUCCESS;
+
+    if (ctx == NULL || ctx->basedn == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    ctx->has_fallback_primary_group_rid = false;
+
+    pb = slapi_pblock_new();
+    if (pb == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    slapi_search_internal_set_pb(pb, ctx->basedn, LDAP_SCOPE_SUBTREE,
+                                 "(objectClass=ipaNTDomainAttrs)",
+                                 (char **)attrs, 0, NULL, NULL,
+                                 ctx->plugin_id, 0);
+
+    ret = slapi_search_internal_pb(pb);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ret = slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_RESULT, &result);
+    if (ret != 0) {
+        goto done;
+    }
+    if (result != LDAP_SUCCESS) {
+        ret = result;
+        goto done;
+    }
+
+    ret = slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES, &entries);
+    if (ret != 0) {
+        goto done;
+    }
+
+    if (entries == NULL || entries[0] == NULL) {
+        ret = LDAP_NO_SUCH_OBJECT;
+        goto done;
+    }
+
+    fallback_dn = slapi_entry_attr_get_charptr(entries[0],
+                                               "ipaNTFallbackPrimaryGroup");
+    if (fallback_dn == NULL || fallback_dn[0] == '\0') {
+        ret = LDAP_NO_SUCH_ATTRIBUTE;
+        goto done;
+    }
+
+    fallback_sdn = slapi_sdn_new_dn_byval(fallback_dn);
+    if (fallback_sdn == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    ret = slapi_search_internal_get_entry(fallback_sdn, NULL, &fallback_entry,
+                                          ctx->plugin_id);
+    if (ret != LDAP_SUCCESS || fallback_entry == NULL) {
+        goto done;
+    }
+
+    fallback_sid = slapi_entry_attr_get_charptr(fallback_entry,
+                                                IPA_GC_ATTR_SID);
+    if (fallback_sid == NULL) {
+        ret = LDAP_NO_SUCH_ATTRIBUTE;
+        goto done;
+    }
+
+    ret = ipa_gc_sid_string_get_rid(fallback_sid, &fallback_rid);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ctx->fallback_primary_group_rid = fallback_rid;
+    ctx->has_fallback_primary_group_rid = true;
+    ret = LDAP_SUCCESS;
+
+done:
+    slapi_ch_free_string(&fallback_sid);
+    if (fallback_entry != NULL) {
+        slapi_entry_free(fallback_entry);
+    }
+    if (fallback_sdn != NULL) {
+        slapi_sdn_free(&fallback_sdn);
+    }
+    slapi_ch_free_string(&fallback_dn);
+    if (pb != NULL) {
+        slapi_free_search_results_internal(pb);
+        slapi_pblock_destroy(pb);
+    }
+
+    if (ret != LDAP_SUCCESS) {
+        ctx->has_fallback_primary_group_rid = false;
+    }
+
+    return ret;
+}
+
 static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
 {
     Slapi_Entry *entry = NULL;
@@ -353,6 +580,7 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     char *sam_account_name = NULL;
     char *user_principal_name = NULL;
     char *sid = NULL;
+    char *primary_group_id = NULL;
     int result = LDAP_SUCCESS;
     int ret;
     bool changed = false;
@@ -382,6 +610,7 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     sam_account_name = ipa_gc_compute_sam(entry);
     user_principal_name = ipa_gc_compute_upn(ctx, entry, sam_account_name);
     sid = ipa_gc_compute_sid(entry);
+    primary_group_id = ipa_gc_compute_primary_group_id(ctx, entry);
 
     changed |= ipa_gc_enqueue_string_value(entry, mods,
                                            IPA_GC_ATTR_SAMACCOUNTNAME,
@@ -390,6 +619,20 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
                                            user_principal_name);
     changed |= ipa_gc_enqueue_sid_value(entry, mods, IPA_GC_ATTR_OBJECTSID,
                                         sid);
+    if (ipa_gc_entry_is_user(entry)) {
+        changed |= ipa_gc_enqueue_objectclass_value(entry, mods,
+                                                    IPA_GC_OC_USER);
+        changed |= ipa_gc_enqueue_string_value(entry, mods,
+                                               IPA_GC_ATTR_PRIMARYGROUPID,
+                                               primary_group_id);
+    }
+    if (ipa_gc_entry_is_group(entry)) {
+        changed |= ipa_gc_enqueue_objectclass_value(entry, mods,
+                                                    IPA_GC_OC_GROUP);
+        changed |= ipa_gc_enqueue_string_value(entry, mods,
+                                               IPA_GC_ATTR_GROUPTYPE,
+                                               IPA_GC_GROUPTYPE_SECURITY_GLOBAL);
+    }
 
     if (!changed) {
         ret = LDAP_SUCCESS;
@@ -432,6 +675,7 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     slapi_ch_free_string(&sam_account_name);
     slapi_ch_free_string(&user_principal_name);
     slapi_ch_free_string(&sid);
+    slapi_ch_free_string(&primary_group_id);
     return ret;
 }
 
@@ -520,6 +764,15 @@ static int ipa_gc_start(Slapi_PBlock *pb)
     if (ctx->realm == NULL) {
         LOG("Global catalog configuration missing ipaGCRealm; "
             "userPrincipalName fallback will be disabled.\n");
+    }
+
+    ret = ipa_gc_load_domain_attrs(ctx);
+    if (ret != LDAP_SUCCESS) {
+        LOG("Global catalog failed to determine fallback primary group RID; "
+            "primaryGroupID synthesis will be disabled (rc=%d).\n", ret);
+    } else {
+        LOG("Global catalog configured fallback primary group RID %u.\n",
+            ctx->fallback_primary_group_rid);
     }
 
     LOG("Global catalog plugin initialised for base %s.\n",
