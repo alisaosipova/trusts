@@ -254,6 +254,38 @@ class TestTrust(BaseTestTrust):
 
         tasks.kdestroy_all(self.master)
 
+    def test_netlogon_secure_channel_rotation(self):
+        """Validate secure channel verification and password rotation from AD."""
+
+        realm = self.master.domain.name
+        verify_cmd = (
+            'nltest.exe /sc_verify:{realm} | Out-String'
+            .format(realm=realm)
+        )
+        verify_result = self.ad.run_command(['powershell', '-c', verify_cmd])
+        verify_output = (
+            verify_result.stdout_text + verify_result.stderr_text
+        ).lower()
+        assert 'secure channel' in verify_output
+        assert 'working properly' in verify_output
+
+        change_cmd = (
+            'nltest.exe /sc_change_pwd:{realm} | Out-String'
+            .format(realm=realm)
+        )
+        change_result = self.ad.run_command(['powershell', '-c', change_cmd])
+        change_output = (
+            change_result.stdout_text + change_result.stderr_text
+        ).lower()
+        assert 'success' in change_output or 'completed successfully' in change_output
+
+        verify_after = self.ad.run_command(['powershell', '-c', verify_cmd])
+        verify_after_output = (
+            verify_after.stdout_text + verify_after.stderr_text
+        ).lower()
+        assert 'secure channel' in verify_after_output
+        assert 'working properly' in verify_after_output
+
     def test_range_properties_in_nonposix_trust(self):
         self.check_range_properties(self.ad_domain, 'ipa-ad-trust', 200000)
 

@@ -30,6 +30,9 @@
 #include <libcli/util/werror.h>
 #include <libcli/security/security.h>
 #include <libcli/security/dom_sid.h>
+#include <lib/crypto/md4.h>
+#include <libcli/auth/netlogon_creds.h>
+#include <librpc/rpc/dcerpc.h>
 #include <gen_ndr/netlogon.h>
 
 #ifndef _SAMBA_UTIL_H_
@@ -3912,6 +3915,267 @@ WERROR ipasam_netlogon_get_site_coverage(TALLOC_CTX *mem_ctx,
         *ctr_out = ctr;
 
         return WERR_OK;
+}
+
+static NTSTATUS ipasam_normalize_trust_account_name(TALLOC_CTX *mem_ctx,
+                                                    const char *account_name,
+                                                    char **normalized)
+{
+        char *name;
+        size_t len;
+
+        if (normalized == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *normalized = NULL;
+
+        if (account_name == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        name = talloc_strdup(mem_ctx, account_name);
+        if (name == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        len = strlen(name);
+        if (len == 0) {
+                TALLOC_FREE(name);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (name[len - 1] == '.') {
+                name[len - 1] = '\0';
+                len--;
+        }
+
+        if (len == 0) {
+                TALLOC_FREE(name);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (name[len - 1] == '$') {
+                name[len - 1] = '\0';
+                len--;
+        }
+
+        if (len == 0) {
+                TALLOC_FREE(name);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *normalized = name;
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS ipasam_fetch_trusted_domain(TALLOC_CTX *mem_ctx,
+                                            struct netlogon_creds_CredentialState *creds,
+                                            const char *account_name,
+                                            struct pdb_trusted_domain **td)
+{
+        char *normalized = NULL;
+        NTSTATUS status;
+
+        if (td == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *td = NULL;
+
+        if (creds == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if ((creds->secure_channel_type != SEC_CHAN_DNS_DOMAIN) &&
+            (creds->secure_channel_type != SEC_CHAN_DOMAIN)) {
+                return NT_STATUS_NOT_IMPLEMENTED;
+        }
+
+        status = ipasam_normalize_trust_account_name(mem_ctx,
+                                                     account_name,
+                                                     &normalized);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        status = pdb_get_trusted_domain(mem_ctx, normalized, td);
+
+        TALLOC_FREE(normalized);
+
+        return status;
+}
+
+static NTSTATUS ipasam_encrypt_trust_passwords(TALLOC_CTX *mem_ctx,
+                                               const DATA_BLOB *trust_blob,
+                                               struct netlogon_creds_CredentialState *creds,
+                                               struct samr_Password *current_pw,
+                                               struct samr_Password *previous_pw,
+                                               enum dcerpc_AuthType auth_type,
+                                               enum dcerpc_AuthLevel auth_level)
+{
+        struct trustAuthInOutBlob trust_auth;
+        enum ndr_err_code ndr_err;
+        NTSTATUS status;
+
+        if (trust_blob == NULL || current_pw == NULL || creds == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ndr_err = ndr_pull_struct_blob_all(trust_blob,
+                                           mem_ctx,
+                                           &trust_auth,
+                                           (ndr_pull_flags_fn_t)ndr_pull_trustAuthInOutBlob);
+        if (!NDR_ERR_CODE_IS_SUCCESS(ndr_err)) {
+                return NT_STATUS_UNSUCCESSFUL;
+        }
+
+        if (trust_auth.count == 0 ||
+            trust_auth.current.count == 0 ||
+            trust_auth.current.array[0].AuthType != TRUST_AUTH_TYPE_CLEAR) {
+                return NT_STATUS_UNSUCCESSFUL;
+        }
+
+        mdfour(current_pw->hash,
+               trust_auth.current.array[0].AuthInfo.clear.password,
+               trust_auth.current.array[0].AuthInfo.clear.size);
+
+        status = netlogon_creds_encrypt_samr_Password(creds,
+                                                      current_pw,
+                                                      auth_type,
+                                                      auth_level);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (previous_pw != NULL) {
+                if (trust_auth.previous.count != 0 &&
+                    trust_auth.previous.array[0].AuthType == TRUST_AUTH_TYPE_CLEAR) {
+                        mdfour(previous_pw->hash,
+                               trust_auth.previous.array[0].AuthInfo.clear.password,
+                               trust_auth.previous.array[0].AuthInfo.clear.size);
+
+                        status = netlogon_creds_encrypt_samr_Password(creds,
+                                                                      previous_pw,
+                                                                      auth_type,
+                                                                      auth_level);
+                        if (!NT_STATUS_IS_OK(status)) {
+                                return status;
+                        }
+                } else {
+                        ZERO_STRUCTP(previous_pw);
+                }
+        }
+
+        return NT_STATUS_OK;
+}
+
+NTSTATUS ipasam_netlogon_server_password_get(TALLOC_CTX *mem_ctx,
+                                             struct netlogon_creds_CredentialState *creds,
+                                             enum dcerpc_AuthType auth_type,
+                                             enum dcerpc_AuthLevel auth_level,
+                                             struct netr_ServerPasswordGet *r)
+{
+        TALLOC_CTX *tmp_ctx;
+        struct pdb_trusted_domain *td = NULL;
+        NTSTATUS status;
+
+        if (r == NULL || r->out.password == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        status = ipasam_fetch_trusted_domain(tmp_ctx,
+                                             creds,
+                                             r->in.account_name,
+                                             &td);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(tmp_ctx);
+                return status;
+        }
+
+        if (td->trust_auth_outgoing.data == NULL) {
+                TALLOC_FREE(tmp_ctx);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = ipasam_encrypt_trust_passwords(tmp_ctx,
+                                                &td->trust_auth_outgoing,
+                                                creds,
+                                                r->out.password,
+                                                NULL,
+                                                auth_type,
+                                                auth_level);
+
+        TALLOC_FREE(tmp_ctx);
+
+        return status;
+}
+
+NTSTATUS ipasam_netlogon_server_trust_passwords_get(TALLOC_CTX *mem_ctx,
+                                                    struct netlogon_creds_CredentialState *creds,
+                                                    enum dcerpc_AuthType auth_type,
+                                                    enum dcerpc_AuthLevel auth_level,
+                                                    struct netr_ServerTrustPasswordsGet *r)
+{
+        TALLOC_CTX *tmp_ctx;
+        struct pdb_trusted_domain *td = NULL;
+        NTSTATUS status;
+
+        if (r == NULL || r->out.new_owf_password == NULL ||
+            r->out.old_owf_password == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        status = ipasam_fetch_trusted_domain(tmp_ctx,
+                                             creds,
+                                             r->in.account_name,
+                                             &td);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(tmp_ctx);
+                return status;
+        }
+
+        if (td->trust_auth_outgoing.data == NULL) {
+                TALLOC_FREE(tmp_ctx);
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        status = ipasam_encrypt_trust_passwords(tmp_ctx,
+                                                &td->trust_auth_outgoing,
+                                                creds,
+                                                r->out.new_owf_password,
+                                                r->out.old_owf_password,
+                                                auth_type,
+                                                auth_level);
+
+        TALLOC_FREE(tmp_ctx);
+
+        return status;
+}
+
+NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
+                                               struct netlogon_creds_CredentialState *creds,
+                                               struct netr_LogonGetDomainInfo *r,
+                                               enum dcerpc_AuthType auth_type,
+                                               enum dcerpc_AuthLevel auth_level)
+{
+        (void)mem_ctx;
+        (void)creds;
+        (void)r;
+        (void)auth_type;
+        (void)auth_level;
+
+        return NT_STATUS_NOT_IMPLEMENTED;
 }
 
 static NTSTATUS ipasam_enum_trusteddoms(struct pdb_methods *methods,

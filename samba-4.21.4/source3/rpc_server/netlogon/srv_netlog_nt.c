@@ -2491,6 +2491,21 @@ typedef WERROR (*ipasam_address_to_sitenames_fn)(TALLOC_CTX *mem_ctx,
                                                 struct netr_DsRAddressToSitenamesExWCtr **ctr);
 typedef WERROR (*ipasam_site_coverage_fn)(TALLOC_CTX *mem_ctx,
                                           struct DcSitesCtr **ctr);
+typedef NTSTATUS (*ipasam_logon_get_domain_info_fn)(TALLOC_CTX *mem_ctx,
+                                                   struct netlogon_creds_CredentialState *creds,
+                                                   struct netr_LogonGetDomainInfo *r,
+                                                   enum dcerpc_AuthType auth_type,
+                                                   enum dcerpc_AuthLevel auth_level);
+typedef NTSTATUS (*ipasam_server_password_get_fn)(TALLOC_CTX *mem_ctx,
+                                                 struct netlogon_creds_CredentialState *creds,
+                                                 enum dcerpc_AuthType auth_type,
+                                                 enum dcerpc_AuthLevel auth_level,
+                                                 struct netr_ServerPasswordGet *r);
+typedef NTSTATUS (*ipasam_server_trust_passwords_get_fn)(TALLOC_CTX *mem_ctx,
+                                                        struct netlogon_creds_CredentialState *creds,
+                                                        enum dcerpc_AuthType auth_type,
+                                                        enum dcerpc_AuthLevel auth_level,
+                                                        struct netr_ServerTrustPasswordsGet *r);
 #endif
 
 static bool netlogon_backend_is_ipasam(void)
@@ -2724,6 +2739,93 @@ static WERROR netlogon_get_site_coverage_ipasam(struct pipes_struct *p,
         }
 
         return ipa_coverage_fn(p->mem_ctx, ctr_out);
+#endif
+}
+
+static NTSTATUS netlogon_logon_get_domain_info_ipasam(struct pipes_struct *p,
+                                                    struct netlogon_creds_CredentialState *creds,
+                                                    enum dcerpc_AuthType auth_type,
+                                                    enum dcerpc_AuthLevel auth_level,
+                                                    struct netr_LogonGetDomainInfo *r)
+{
+#ifndef HAVE_DLFCN_H
+        return NT_STATUS_NOT_IMPLEMENTED;
+#else
+        static ipasam_logon_get_domain_info_fn ipa_fn = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_fn = (ipasam_logon_get_domain_info_fn)dlsym(RTLD_DEFAULT,
+                        "ipasam_netlogon_logon_get_domain_info");
+                if (ipa_fn == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_logon_get_domain_info not available\n");
+                }
+        }
+
+        if (ipa_fn == NULL) {
+                return NT_STATUS_NOT_IMPLEMENTED;
+        }
+
+        return ipa_fn(p->mem_ctx, creds, r, auth_type, auth_level);
+#endif
+}
+
+static NTSTATUS netlogon_server_password_get_ipasam(struct pipes_struct *p,
+                                                   struct netlogon_creds_CredentialState *creds,
+                                                   enum dcerpc_AuthType auth_type,
+                                                   enum dcerpc_AuthLevel auth_level,
+                                                   struct netr_ServerPasswordGet *r)
+{
+#ifndef HAVE_DLFCN_H
+        return NT_STATUS_NOT_IMPLEMENTED;
+#else
+        static ipasam_server_password_get_fn ipa_fn = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_fn = (ipasam_server_password_get_fn)dlsym(RTLD_DEFAULT,
+                        "ipasam_netlogon_server_password_get");
+                if (ipa_fn == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_server_password_get not available\n");
+                }
+        }
+
+        if (ipa_fn == NULL) {
+                return NT_STATUS_NOT_IMPLEMENTED;
+        }
+
+        return ipa_fn(p->mem_ctx, creds, auth_type, auth_level, r);
+#endif
+}
+
+static NTSTATUS netlogon_server_trust_passwords_get_ipasam(struct pipes_struct *p,
+                                                          struct netlogon_creds_CredentialState *creds,
+                                                          enum dcerpc_AuthType auth_type,
+                                                          enum dcerpc_AuthLevel auth_level,
+                                                          struct netr_ServerTrustPasswordsGet *r)
+{
+#ifndef HAVE_DLFCN_H
+        return NT_STATUS_NOT_IMPLEMENTED;
+#else
+        static ipasam_server_trust_passwords_get_fn ipa_fn = NULL;
+        static bool ipa_checked = false;
+
+        if (!ipa_checked) {
+                ipa_checked = true;
+                ipa_fn = (ipasam_server_trust_passwords_get_fn)dlsym(RTLD_DEFAULT,
+                        "ipasam_netlogon_server_trust_passwords_get");
+                if (ipa_fn == NULL) {
+                        DBG_DEBUG("ipasam_netlogon_server_trust_passwords_get not available\n");
+                }
+        }
+
+        if (ipa_fn == NULL) {
+                return NT_STATUS_NOT_IMPLEMENTED;
+        }
+
+        return ipa_fn(p->mem_ctx, creds, auth_type, auth_level, r);
 #endif
 }
 
@@ -2979,20 +3081,80 @@ WERROR _netr_DsRGetSiteName(struct pipes_struct *p,
 ****************************************************************/
 
 NTSTATUS _netr_LogonGetDomainInfo(struct pipes_struct *p,
-				  struct netr_LogonGetDomainInfo *r)
+                                  struct netr_LogonGetDomainInfo *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_IMPLEMENTED;
+        struct netlogon_creds_CredentialState *creds = NULL;
+        NTSTATUS status;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        if (netlogon_backend_is_ipasam()) {
+                status = netlogon_logon_get_domain_info_ipasam(p,
+                                                               creds,
+                                                               auth_type,
+                                                               auth_level,
+                                                               r);
+                if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_IMPLEMENTED)) {
+                        return status;
+                }
+        }
+
+        p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
+        return NT_STATUS_NOT_IMPLEMENTED;
 }
 
 /****************************************************************
 ****************************************************************/
 
 NTSTATUS _netr_ServerPasswordGet(struct pipes_struct *p,
-				 struct netr_ServerPasswordGet *r)
+                                 struct netr_ServerPasswordGet *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_SUPPORTED;
+        struct netlogon_creds_CredentialState *creds = NULL;
+        NTSTATUS status;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        if (netlogon_backend_is_ipasam()) {
+                status = netlogon_server_password_get_ipasam(p,
+                                                             creds,
+                                                             auth_type,
+                                                             auth_level,
+                                                             r);
+                if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_IMPLEMENTED)) {
+                        return status;
+                }
+        }
+
+        p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
+        return NT_STATUS_NOT_SUPPORTED;
 }
 
 /****************************************************************
@@ -3217,10 +3379,40 @@ WERROR _netr_DsrDeregisterDNSHostRecords(struct pipes_struct *p,
 ****************************************************************/
 
 NTSTATUS _netr_ServerTrustPasswordsGet(struct pipes_struct *p,
-				       struct netr_ServerTrustPasswordsGet *r)
+                                       struct netr_ServerTrustPasswordsGet *r)
 {
-	p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
-	return NT_STATUS_NOT_IMPLEMENTED;
+        struct netlogon_creds_CredentialState *creds = NULL;
+        NTSTATUS status;
+        enum dcerpc_AuthType auth_type = DCERPC_AUTH_TYPE_NONE;
+        enum dcerpc_AuthLevel auth_level = DCERPC_AUTH_LEVEL_NONE;
+
+        become_root();
+        status = dcesrv_netr_creds_server_step_check(p->dce_call,
+                                                p->mem_ctx,
+                                                r->in.computer_name,
+                                                r->in.credential,
+                                                r->out.return_authenticator,
+                                                &creds);
+        unbecome_root();
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        dcesrv_call_auth_info(p->dce_call, &auth_type, &auth_level);
+
+        if (netlogon_backend_is_ipasam()) {
+                status = netlogon_server_trust_passwords_get_ipasam(p,
+                                                                    creds,
+                                                                    auth_type,
+                                                                    auth_level,
+                                                                    r);
+                if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_IMPLEMENTED)) {
+                        return status;
+                }
+        }
+
+        p->fault_state = DCERPC_FAULT_OP_RNG_ERROR;
+        return NT_STATUS_NOT_IMPLEMENTED;
 }
 
 /****************************************************************
