@@ -2297,11 +2297,11 @@ static bool set_cross_realm_princs(struct ipasam_private *ipasam_state,
 }
 
 static bool del_cross_realm_princs(struct ipasam_private *ipasam_state,
-				   const char *domain, const char *flat_name)
+                                   const char *domain, const char *flat_name,
+                                   uint32_t trust_direction)
 {
-	uint32_t trust_direction = LSA_TRUST_DIRECTION_INBOUND | LSA_TRUST_DIRECTION_OUTBOUND;
-	return handle_cross_realm_princs(ipasam_state, domain, flat_name,
-					 NULL, NULL, trust_direction, DEL_PRINC);
+        return handle_cross_realm_princs(ipasam_state, domain, flat_name,
+                                         NULL, NULL, trust_direction, DEL_PRINC);
 }
 
 static bool get_trusted_domain_int(struct ipasam_private *ipasam_state,
@@ -3072,7 +3072,8 @@ static NTSTATUS ipasam_del_trusted_domain(struct pdb_methods *methods,
 		talloc_get_type_abort(methods->private_data, struct ipasam_private);
 	LDAPMessage *entry = NULL;
 	char *dn;
-	const char *domain_name, *flat_name;
+        const char *domain_name, *flat_name;
+        uint32_t trust_direction;
 	TALLOC_CTX *tmp_ctx;
 	NTSTATUS status;
 
@@ -3120,11 +3121,18 @@ static NTSTATUS ipasam_del_trusted_domain(struct pdb_methods *methods,
 	}
 
 
-	if (!del_cross_realm_princs(ipasam_state, domain_name, flat_name)) {
-		DEBUG(1, ("error deleting cross realm principals!\n"));
-		status = NT_STATUS_UNSUCCESSFUL;
-		goto done;
-	}
+        if (!get_uint32_t_from_ldap_msg(ipasam_state, entry,
+                                        LDAP_ATTRIBUTE_TRUST_DIRECTION,
+                                        &trust_direction)) {
+                trust_direction = LSA_TRUST_DIRECTION_INBOUND | LSA_TRUST_DIRECTION_OUTBOUND;
+        }
+
+        if (!del_cross_realm_princs(ipasam_state, domain_name, flat_name,
+                                    trust_direction)) {
+                DEBUG(1, ("error deleting cross realm principals!\n"));
+                status = NT_STATUS_UNSUCCESSFUL;
+                goto done;
+        }
 
 	ret = smbldap_delete(ipasam_state->ldap_state, dn);
 	if (ret == LDAP_NOT_ALLOWED_ON_NONLEAF) {

@@ -855,6 +855,9 @@ class TrustDomainInstance:
         self.ftinfo_records = None
         self.ftinfo_data = None
         self.validation_attempts = 0
+        self.trust_direction = None
+        self.trust_auth_incoming = None
+        self.trust_auth_outgoing = None
 
     def __gen_lsa_connection(self, binding):
         if self.creds is None:
@@ -1462,6 +1465,25 @@ class TrustDomainInstance:
         if self.info['is_pdc'] and not trust_external:
             self.update_ftinfo(another_domain)
 
+        self.trust_direction = info.trust_direction
+        try:
+            trust_auth = self._pipe.QueryTrustedDomainInfo(
+                trustdom_handle,
+                lsa.LSA_TRUSTED_DOMAIN_INFO_AUTH_INFO
+            )
+        except RuntimeError as e:
+            logger.debug('Unable to retrieve trust authentication info: %s', e)
+        else:
+            auth_info = getattr(trust_auth, 'auth_info', None)
+            if auth_info is not None:
+                incoming_blob = _build_trust_auth_blob(auth_info, 'incoming')
+                outgoing_blob = _build_trust_auth_blob(auth_info, 'outgoing')
+
+                if incoming_blob.count:
+                    self.trust_auth_incoming = ndr_pack(incoming_blob)
+                if outgoing_blob.count:
+                    self.trust_auth_outgoing = ndr_pack(outgoing_blob)
+
     def verify_trust(self, another_domain):
         def retrieve_netlogon_info_2(logon_server, domain, function_code, data):
             try:
@@ -1663,6 +1685,71 @@ def enforce_smb_encryption(creds):
         creds.set_smb_encryption(credentials.SMB_ENCRYPTION_REQUIRED)
     except AttributeError:
         pass
+
+
+def _authinfo_array_from_buffers(buffers, count):
+    array = drsblobs.AuthenticationInformationArray()
+    array.count = count or 0
+    array.array = []
+
+    if not buffers or not count:
+        return array
+
+    for idx in range(count):
+        buf = buffers[idx]
+        info = drsblobs.AuthenticationInformation()
+        info.LastUpdateTime = getattr(buf, 'last_update_time', 0)
+        info.AuthType = buf.AuthType
+
+        if buf.AuthType == lsa.TRUST_AUTH_TYPE_CLEAR:
+            clear = drsblobs.AuthInfoClear()
+            size = getattr(buf.data, 'length', None)
+            if size is None:
+                size = getattr(buf.data, 'size', len(buf.data.data))
+            clear.size = size
+            clear.password = list(buf.data.data)
+            info.AuthInfo = clear
+        elif buf.AuthType == lsa.TRUST_AUTH_TYPE_NT4OWF:
+            nt4 = drsblobs.AuthInfoNT4Owf()
+            nt4.size = len(buf.data.data)
+            nt4.password = list(buf.data.data[:16])
+            info.AuthInfo = nt4
+        elif buf.AuthType == lsa.TRUST_AUTH_TYPE_VERSION:
+            version = drsblobs.AuthInfoVersion()
+            version.size = len(buf.data.data)
+            if buf.data.data:
+                version.version = struct.unpack('<I',
+                                                bytes(buf.data.data[:4]).ljust(4, b'\0'))[0]
+            else:
+                version.version = 0
+            info.AuthInfo = version
+        elif buf.AuthType == lsa.TRUST_AUTH_TYPE_NONE:
+            none = drsblobs.AuthInfoNone()
+            none.size = 0
+            info.AuthInfo = none
+        else:
+            logger.warning('Unsupported trust authentication type %s',
+                           buf.AuthType)
+            continue
+
+        array.array.append(info)
+
+    array.count = len(array.array)
+    return array
+
+
+def _build_trust_auth_blob(auth_info, direction):
+    count = getattr(auth_info, f'{direction}_count', 0)
+    current = getattr(auth_info, f'{direction}_current_auth_info', None)
+
+    blob = drsblobs.trustAuthInOutBlob()
+    blob.current = _authinfo_array_from_buffers(current, count)
+    blob.count = blob.current.count
+    blob.previous = drsblobs.AuthenticationInformationArray()
+    blob.previous.count = 0
+    blob.previous.array = []
+
+    return blob
 
 
 def retrieve_remote_domain(hostname, local_flatname,

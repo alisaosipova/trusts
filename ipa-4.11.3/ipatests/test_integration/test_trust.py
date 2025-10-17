@@ -1338,3 +1338,38 @@ class TestPosixAutoPrivateGroup(BaseTestTrust):
                  "https://github.com/SSSD/sssd/issues/7169"):
                 assert "10047(testgroup@{0})".format(
                     self.ad_domain) in result.stdout_text
+
+
+class TestTwoWayTrust(BaseTestTrust):
+
+    def test_two_way_trust_cross_authentication(self):
+        tasks.configure_dns_for_trust(self.master, self.ad)
+        try:
+            tasks.establish_trust_with_ad(
+                self.master,
+                self.ad_domain,
+                extra_args=['--two-way']
+            )
+
+            trust_info = self.master.run_command([
+                'ipa', 'trust-show', self.ad_domain
+            ])
+            assert 'Trust direction: Two-way trust' in trust_info.stdout_text
+
+            tasks.kdestroy_all(self.master)
+            self.master.run_command([
+                'kinit', '-E', f'testuser@{self.ad_domain}'
+            ], stdin_text='Secret123')
+            self.master.run_command([
+                'kvno', f'HTTP/{self.master.hostname}@{self.master.domain.realm}'
+            ])
+            tasks.kdestroy_all(self.master)
+
+            tasks.kinit_admin(self.master)
+            self.master.run_command([
+                'kvno', f'HOST/{self.ad.hostname}@{self.ad.domain.realm}'
+            ])
+        finally:
+            tasks.kdestroy_all(self.master)
+            self.remove_trust(self.ad)
+            tasks.unconfigure_dns_for_trust(self.master, self.ad)

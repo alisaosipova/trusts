@@ -794,6 +794,7 @@ ipa idrange-del before retrying the command with the desired range type.
         full_join = self.validate_options(*keys, **options)
         old_range, range_name, dom_sid = self.validate_range(*keys, **options)
         result = self.execute_ad(full_join, *keys, **options)
+        join_metadata = result.pop('join_metadata', None)
 
         if not old_range:
             # Store the created range type, since for POSIX trusts no
@@ -816,6 +817,9 @@ ipa idrange-del before retrying the command with the desired range type.
         )
 
         result['result'] = entry_to_dict(trusts[0], **options)
+
+        if join_metadata is not None:
+            self._sync_trust_metadata(ldap, trusts[0], join_metadata)
 
         # Fetch topology of the trust forest -- we need always to do it
         # for AD trusts, regardless of the type of idranges associated with it
@@ -855,6 +859,33 @@ ipa idrange-del before retrying the command with the desired range type.
         del result['verified']
 
         return result
+
+    def _sync_trust_metadata(self, ldap, entry, join_metadata):
+        local = join_metadata.get('local') if join_metadata else None
+        if local is None:
+            return
+
+        modified = False
+        direction = getattr(local, 'trust_direction', None)
+        if direction is not None:
+            entry['ipanttrustdirection'] = [str(direction)]
+            modified = True
+
+        incoming = getattr(local, 'trust_auth_incoming', None)
+        if incoming is not None:
+            entry['ipanttrustauthincoming'] = [incoming]
+            modified = True
+
+        outgoing = getattr(local, 'trust_auth_outgoing', None)
+        if outgoing is not None:
+            entry['ipanttrustauthoutgoing'] = [outgoing]
+            modified = True
+
+        if modified:
+            try:
+                ldap.update_entry(entry)
+            except errors.EmptyModlist:
+                pass
 
     def validate_options(self, *keys, **options):
         trusted_realm_domain = keys[-1]
@@ -1120,6 +1151,7 @@ ipa idrange-del before retrying the command with the desired range type.
             )
             if dn:
                 ret['summary'] = self.msg_summary_existing % ret
+            ret['join_metadata'] = result
             return ret
 
         # 2. We don't have access to the remote domain and trustdom password
@@ -1140,6 +1172,7 @@ ipa idrange-del before retrying the command with the desired range type.
             )
             if dn:
                 ret['summary'] = self.msg_summary_existing % ret
+            ret['join_metadata'] = result
             return ret
         else:
             raise errors.ValidationError(
