@@ -20,6 +20,13 @@
 
 #pragma once
 
+#include <talloc.h>
+#include <libcli/util/werror.h>
+#include <gen_ndr/netlogon.h>
+
 /* The following definitions come from passdb/pdb_ipa.c  */
 
 NTSTATUS pdb_ipa_init(void);
+WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
+                                   uint32_t trust_flags,
+                                   struct netr_DomainTrustList *trusts);

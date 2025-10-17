@@ -217,7 +217,18 @@ class TestTrust(BaseTestTrust):
         ]
         enum_result = self.master.run_command(enum_cmd)
         trust_output = enum_result.stdout_text.lower()
+        assert enum_result.returncode == 0
         assert self.ad_domain.lower() in trust_output
+
+        trusted_cmd = [
+            nltest_path,
+            '--kerberos',
+            '--server', self.master.hostname,
+            '--trusted-domains',
+        ]
+        trusted_result = self.master.run_command(trusted_cmd)
+        assert trusted_result.returncode == 0
+        assert self.ad_domain.upper() in trusted_result.stdout_text.upper()
 
         tasks.kdestroy_all(self.master)
 
