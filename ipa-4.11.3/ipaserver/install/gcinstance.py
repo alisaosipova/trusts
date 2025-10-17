@@ -21,6 +21,7 @@ for replica deployments.
 from __future__ import annotations
 
 import logging
+import textwrap
 from pathlib import Path
 from typing import Iterable
 
@@ -51,12 +52,23 @@ class GlobalCatalogInstance:
         instance_name: str | None,
         update_dir: Path | str,
         data_dir: Path | str | None = None,
+        *,
+        suffix: str | None = None,
+        realm: str | None = None,
     ) -> None:
         self.instance_name = instance_name
         self.update_dir = Path(update_dir)
         if data_dir is None:
             data_dir = paths.IPA_DATA_DIR
         self.data_dir = Path(data_dir)
+        self.suffix = suffix
+        self.realm = realm
+
+    @property
+    def config_dn(self) -> str:
+        if not self.suffix:
+            raise ValueError("Global catalog suffix is not available")
+        return f"cn=global catalog,cn=ipa,cn=etc,{self.suffix}"
 
     @property
     def update_files(self) -> Iterable[Path]:
@@ -103,8 +115,31 @@ class GlobalCatalogInstance:
         self._run_updater(self.update_files)
 
     def enable(self) -> None:
-        """Enable the listener in case it is delivered in a disabled state."""
-        logger.info("Global catalog listener is managed by the LDAP template; no-op")
+        """Ensure the configuration container enables the listener metadata."""
+
+        if not self.suffix:
+            logger.debug(
+                "Global catalog suffix is not known; listener metadata cannot be updated"
+            )
+            return
+
+        logger.info("Enabling global catalog listener metadata")
+
+        ldif = textwrap.dedent(
+            f"""
+            dn: {self.config_dn}
+            changetype: modify
+            replace: ipaConfigString
+            ipaConfigString: listener=enabled
+            ipaConfigString: port=3268
+            """
+        ).strip()
+
+        with ipautil.write_tmp_file(ldif + "\n") as tmp:
+            cmd = ["ipa-ldap-updater", "--validate", tmp.name]
+            if self.instance_name:
+                cmd.extend(["--service", self.instance_name])
+            ipautil.run(cmd)
 
     def replicate(self) -> None:
         """Trigger replica-specific configuration steps."""

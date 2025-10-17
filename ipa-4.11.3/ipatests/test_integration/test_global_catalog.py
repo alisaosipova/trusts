@@ -1,7 +1,8 @@
 """Integration tests for the IPA global catalog listener."""
 
 from __future__ import annotations
-implement-and-test-389-ds-global-catalog-plugin
+import base64
+from typing import Dict, List
 
 import pytest
 
@@ -16,7 +17,26 @@ class TestGlobalCatalog(IntegrationTest):
 
     topology = "line"
 
-    def _ldapsearch_gc(self, search_filter: str, *attrs: str) -> dict[str, list[str]]:
+    @staticmethod
+    def _sid_bytes_to_string(data: bytes) -> str:
+        if len(data) < 8:
+            raise ValueError("SID payload is too small")
+
+        revision = data[0]
+        subauth_count = data[1]
+        identifier_authority = int.from_bytes(data[2:8], "big")
+        offset = 8
+        subauths: List[int] = []
+        for _ in range(subauth_count):
+            if offset + 4 > len(data):
+                raise ValueError("SID payload truncated")
+            subauths.append(int.from_bytes(data[offset:offset + 4], "little"))
+            offset += 4
+
+        trailer = "".join(f"-{value}" for value in subauths)
+        return f"S-{revision}-{identifier_authority}{trailer}"
+
+    def _ldapsearch_gc(self, search_filter: str, *attrs: str) -> Dict[str, List[str]]:
         cmd = [
             "ldapsearch",
             "-x",
@@ -37,7 +57,7 @@ class TestGlobalCatalog(IntegrationTest):
 
         result = self.master.run_command(cmd)
 
-        entry: dict[str, list[str]] = {}
+        entry: Dict[str, List[str]] = {}
         for raw_line in result.stdout_text.splitlines():
             line = raw_line.strip()
             if not line or line.startswith("#"):
@@ -49,6 +69,9 @@ class TestGlobalCatalog(IntegrationTest):
             if "::" in line:
                 key, value = line.split("::", 1)
                 value = value.strip()
+                if key == "objectSid":
+                    decoded = base64.b64decode(value)
+                    value = self._sid_bytes_to_string(decoded)
             else:
                 key, value = line.split(":", 1)
                 value = value.strip()

@@ -39,7 +39,10 @@
  * END COPYRIGHT BLOCK **/
 
 #include <errno.h>
+#include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <strings.h>
 #include <string.h>
 
 #include <dirsrv/slapi-plugin.h>
@@ -124,10 +127,102 @@ static bool ipa_gc_value_equal(const char *existing, const char *wanted)
     return strcasecmp(existing, wanted) == 0;
 }
 
-static bool ipa_gc_enqueue_value(Slapi_Entry *entry,
-                                 Slapi_Mods *mods,
-                                 const char *attr,
-                                 const char *value)
+static int ipa_gc_sid_string_to_berval(const char *sid_str, struct berval **bv_out)
+{
+    const char *pos;
+    char *end = NULL;
+    unsigned long revision;
+    unsigned long long identifier_authority;
+    uint32_t sub_authorities[15];
+    size_t subauth_count = 0;
+    unsigned char *buffer = NULL;
+    struct berval *bv = NULL;
+    size_t offset;
+
+    if (sid_str == NULL || bv_out == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    if (strncasecmp(sid_str, "S-", 2) != 0) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    pos = sid_str + 2;
+    errno = 0;
+    revision = strtoul(pos, &end, 10);
+    if (errno != 0 || pos == end || *end != '-') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    pos = end + 1;
+    errno = 0;
+    identifier_authority = strtoull(pos, &end, 10);
+    if (errno != 0 || pos == end) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    while (*end == '-') {
+        uint32_t subauth;
+
+        if (subauth_count >= sizeof(sub_authorities) / sizeof(sub_authorities[0])) {
+            return LDAP_INVALID_SYNTAX;
+        }
+
+        pos = end + 1;
+        errno = 0;
+        subauth = strtoul(pos, &end, 10);
+        if (errno != 0 || pos == end) {
+            return LDAP_INVALID_SYNTAX;
+        }
+
+        sub_authorities[subauth_count++] = subauth;
+    }
+
+    if (*end != '\0') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    buffer = (unsigned char *)slapi_ch_malloc(8 + subauth_count * 4);
+    if (buffer == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    buffer[0] = (unsigned char)revision;
+    buffer[1] = (unsigned char)subauth_count;
+
+    buffer[2] = (identifier_authority >> 40) & 0xff;
+    buffer[3] = (identifier_authority >> 32) & 0xff;
+    buffer[4] = (identifier_authority >> 24) & 0xff;
+    buffer[5] = (identifier_authority >> 16) & 0xff;
+    buffer[6] = (identifier_authority >> 8) & 0xff;
+    buffer[7] = identifier_authority & 0xff;
+
+    offset = 8;
+    for (size_t i = 0; i < subauth_count; i++) {
+        buffer[offset] = sub_authorities[i] & 0xff;
+        buffer[offset + 1] = (sub_authorities[i] >> 8) & 0xff;
+        buffer[offset + 2] = (sub_authorities[i] >> 16) & 0xff;
+        buffer[offset + 3] = (sub_authorities[i] >> 24) & 0xff;
+        offset += 4;
+    }
+
+    bv = (struct berval *)slapi_ch_malloc(sizeof(struct berval));
+    if (bv == NULL) {
+        slapi_ch_free((void **)&buffer);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    bv->bv_val = (char *)buffer;
+    bv->bv_len = 8 + subauth_count * 4;
+    *bv_out = bv;
+
+    return LDAP_SUCCESS;
+}
+
+static bool ipa_gc_enqueue_string_value(Slapi_Entry *entry,
+                                        Slapi_Mods *mods,
+                                        const char *attr,
+                                        const char *value)
 {
     bool changed = false;
     char *current = NULL;
@@ -148,6 +243,57 @@ static bool ipa_gc_enqueue_value(Slapi_Entry *entry,
     }
 
     slapi_ch_free_string(&current);
+    return changed;
+}
+
+static bool ipa_gc_enqueue_sid_value(Slapi_Entry *entry,
+                                     Slapi_Mods *mods,
+                                     const char *attr,
+                                     const char *sid_value)
+{
+    struct berval *sid_bv = NULL;
+    struct berval *vals[2] = {NULL, NULL};
+    Slapi_Attr *existing = NULL;
+    Slapi_Value *existing_value = NULL;
+    const struct berval *existing_bv = NULL;
+    int mod_op = LDAP_MOD_ADD | LDAP_MOD_BVALUES;
+    bool changed = false;
+    int ret;
+
+    if (sid_value == NULL || sid_value[0] == '\0') {
+        return false;
+    }
+
+    ret = ipa_gc_sid_string_to_berval(sid_value, &sid_bv);
+    if (ret != LDAP_SUCCESS) {
+        LOG_FATAL("Unable to encode SID '%s' for GC entry (rc=%d).\n",
+                  sid_value, ret);
+        return false;
+    }
+
+    vals[0] = sid_bv;
+
+    if (slapi_entry_attr_find(entry, attr, &existing) == 0 && existing != NULL) {
+        if (slapi_attr_first_value(existing, &existing_value) != -1) {
+            existing_bv = slapi_value_get_berval(existing_value);
+        }
+        if (existing_bv != NULL &&
+            existing_bv->bv_len == sid_bv->bv_len &&
+            memcmp(existing_bv->bv_val, sid_bv->bv_val, sid_bv->bv_len) == 0) {
+            goto done;
+        }
+        mod_op = LDAP_MOD_REPLACE | LDAP_MOD_BVALUES;
+    }
+
+    slapi_mods_add_modbvps(mods, mod_op, attr, vals);
+    changed = true;
+
+done:
+    if (sid_bv != NULL) {
+        slapi_ch_free((void **)&sid_bv->bv_val);
+        slapi_ch_free((void **)&sid_bv);
+    }
+
     return changed;
 }
 
@@ -237,11 +383,13 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     user_principal_name = ipa_gc_compute_upn(ctx, entry, sam_account_name);
     sid = ipa_gc_compute_sid(entry);
 
-    changed |= ipa_gc_enqueue_value(entry, mods, IPA_GC_ATTR_SAMACCOUNTNAME,
-                                    sam_account_name);
-    changed |= ipa_gc_enqueue_value(entry, mods, IPA_GC_ATTR_UPN,
-                                    user_principal_name);
-    changed |= ipa_gc_enqueue_value(entry, mods, IPA_GC_ATTR_OBJECTSID, sid);
+    changed |= ipa_gc_enqueue_string_value(entry, mods,
+                                           IPA_GC_ATTR_SAMACCOUNTNAME,
+                                           sam_account_name);
+    changed |= ipa_gc_enqueue_string_value(entry, mods, IPA_GC_ATTR_UPN,
+                                           user_principal_name);
+    changed |= ipa_gc_enqueue_sid_value(entry, mods, IPA_GC_ATTR_OBJECTSID,
+                                        sid);
 
     if (!changed) {
         ret = LDAP_SUCCESS;
