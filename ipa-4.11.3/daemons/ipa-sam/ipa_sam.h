@@ -21,6 +21,8 @@
 #pragma once
 
 #include <talloc.h>
+#include <libcli/auth/netlogon_creds.h>
+#include <librpc/rpc/dcerpc.h>
 #include <libcli/util/werror.h>
 #include <gen_ndr/netlogon.h>
 
@@ -30,3 +32,18 @@ NTSTATUS pdb_ipa_init(void);
 WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
                                    uint32_t trust_flags,
                                    struct netr_DomainTrustList *trusts);
+NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
+                                               struct netlogon_creds_CredentialState *creds,
+                                               struct netr_LogonGetDomainInfo *r,
+                                               enum dcerpc_AuthType auth_type,
+                                               enum dcerpc_AuthLevel auth_level);
+NTSTATUS ipasam_netlogon_server_password_get(TALLOC_CTX *mem_ctx,
+                                             struct netlogon_creds_CredentialState *creds,
+                                             enum dcerpc_AuthType auth_type,
+                                             enum dcerpc_AuthLevel auth_level,
+                                             struct netr_ServerPasswordGet *r);
+NTSTATUS ipasam_netlogon_server_trust_passwords_get(TALLOC_CTX *mem_ctx,
+                                                    struct netlogon_creds_CredentialState *creds,
+                                                    enum dcerpc_AuthType auth_type,
+                                                    enum dcerpc_AuthLevel auth_level,
+                                                    struct netr_ServerTrustPasswordsGet *r);
