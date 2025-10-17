@@ -1,0 +1,14 @@
+#
+# This template seeds a configuration container that is consumed by the
+# global catalog plugin.  The actual plugin registers a dedicated read-only
+# listener and expects the container to exist so that installer tooling can
+# stash auxiliary metadata.
+#
+# The entry is deliberately small and safe to re-apply multiple times.
+#
+
+dn: cn=global catalog,cn=ipa,cn=etc,$SUFFIX
+default: objectClass: top
+default: objectClass: nsContainer
+default: cn: global catalog
+default: description: IPA Global Catalog configuration anchor

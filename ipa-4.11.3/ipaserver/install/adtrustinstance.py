@@ -33,6 +33,7 @@ import six
 
 from ipaserver.install import service
 from ipaserver.install import installutils
+from ipaserver.install.gcinstance import GlobalCatalogInstance
 from ipaserver.install.replication import wait_for_task
 from ipalib import errors, api
 from ipalib.constants import SUBID_RANGE_START, ALLOWED_NETBIOS_CHARS
@@ -165,6 +166,7 @@ class ADTRUSTInstance(service.Service):
         self.fqdn = None
         self.host_netbios_name = None
         self.fulltrust = fulltrust
+        self.gc_instance = None
 
         if self.fulltrust:
             super(ADTRUSTInstance, self).__init__(
@@ -196,6 +198,11 @@ class ADTRUSTInstance(service.Service):
         self.suffix = ipautil.realm_to_suffix(self.realm)
         self.ldapi_socket = "%%2fvar%%2frun%%2fslapd-%s.socket" % \
                             ipaldap.realm_to_serverid(self.realm)
+
+        self.gc_instance = GlobalCatalogInstance(
+            ipaldap.realm_to_serverid(self.realm),
+            paths.UPDATES_DIR,
+        )
 
         # DN definitions
         self.trust_dn = DN(api.env.container_trusts, self.suffix)
@@ -730,6 +737,17 @@ class ADTRUSTInstance(service.Service):
             logger.critical("Enabling nsswitch support in slapi-nis failed "
                             "with error '%s'", e)
 
+    def __configure_global_catalog(self):
+        if not self.gc_instance:
+            logger.debug("Global catalog helper is not initialised; skipping")
+            return
+
+        try:
+            self.gc_instance.configure()
+        except ipautil.CalledProcessError as e:
+            logger.error("Global catalog configuration failed: %s", e)
+            raise
+
     def __validate_server_hostname(self):
         hostname = socket.gethostname()
         if hostname != self.fqdn:
@@ -782,6 +800,13 @@ class ADTRUSTInstance(service.Service):
             self.ldap_configure('EXTID', self.fqdn, None, self.suffix)
         except (ldap.ALREADY_EXISTS, errors.DuplicateEntry):
             logger.info("EXTID Service startup entry already exists.")
+
+        if self.gc_instance:
+            try:
+                self.gc_instance.enable()
+            except ipautil.CalledProcessError as e:
+                logger.error("Failed to enable global catalog listener: %s", e)
+                raise
 
     def __setup_sub_dict(self):
         self.sub_dict = dict(
@@ -894,6 +919,10 @@ class ADTRUSTInstance(service.Service):
             self.step("map BUILTIN\\Guests to nobody group",
                       self.__map_Guests_to_nobody)
             self.step("configuring smbd to start on boot", self.__enable)
+            self.step(
+                "configuring global catalog service",
+                self.__configure_global_catalog,
+            )
 
         if self.enable_compat:
             self.step("enabling trusted domains support for older clients via "

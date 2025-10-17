@@ -12,6 +12,7 @@ SUBDIRS =			\
 	ipa-otp-lasttoken	\
 	ipa-pwd-extop		\
 	ipa-extdom-extop	\
+	ipa-globalcatalog	\
 	ipa-uuid		\
 	ipa-version		\
 	ipa-winsync		\
