@@ -13,4 +13,5 @@ default: objectClass: nsContainer
 default: objectClass: ipaConfigObject
 default: cn: global catalog
 default: description: IPA Global Catalog configuration anchor
-default: ipaConfigString: listener=disabled
+default: ipaConfigString: listener=enabled
+default: ipaConfigString: port=3268

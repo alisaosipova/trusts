@@ -202,6 +202,8 @@ class ADTRUSTInstance(service.Service):
         self.gc_instance = GlobalCatalogInstance(
             ipaldap.realm_to_serverid(self.realm),
             paths.UPDATES_DIR,
+            suffix=self.suffix,
+            realm=self.realm,
         )
 
         # DN definitions
