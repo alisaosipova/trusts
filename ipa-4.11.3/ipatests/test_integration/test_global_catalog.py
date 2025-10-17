@@ -78,6 +78,70 @@ class TestGlobalCatalog(IntegrationTest):
             entry.setdefault(key, []).append(value)
         return entry
 
+    def _ldapsearch(self, base_dn: str, search_filter: str, *attrs: str) -> Dict[str, List[str]]:
+        cmd = [
+            "ldapsearch",
+            "-x",
+            "-LLL",
+            "-o",
+            "ldif-wrap=no",
+            "-H",
+            f"ldap://{self.master.hostname}",
+            "-D",
+            str(self.master.config.dirman_dn),
+            "-w",
+            self.master.config.dirman_password,
+            "-b",
+            base_dn,
+            search_filter,
+        ]
+        cmd.extend(attrs)
+
+        result = self.master.run_command(cmd)
+
+        entry: Dict[str, List[str]] = {}
+        for raw_line in result.stdout_text.splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                if entry:
+                    break
+                continue
+            if ":" not in line:
+                continue
+            if "::" in line:
+                key, value = line.split("::", 1)
+                value = base64.b64decode(value.strip()).decode()
+            else:
+                key, value = line.split(":", 1)
+                value = value.strip()
+            entry.setdefault(key, []).append(value)
+        return entry
+
+    def _fallback_primary_group(self) -> str:
+        domain_entry = self._ldapsearch(
+            str(self.master.domain.basedn),
+            "(objectClass=ipaNTDomainAttrs)",
+            "ipaNTFallbackPrimaryGroup",
+        )
+        fallback_dn = domain_entry.get("ipaNTFallbackPrimaryGroup")
+        if not fallback_dn:
+            raise RuntimeError("Fallback primary group is not configured")
+
+        group_entry = self._ldapsearch(
+            fallback_dn[0],
+            "(objectClass=*)",
+            "ipaNTSecurityIdentifier",
+        )
+        sid_values = group_entry.get("ipaNTSecurityIdentifier")
+        if not sid_values:
+            raise RuntimeError("Fallback primary group SID is not available")
+
+        sid = sid_values[0]
+        try:
+            return sid.rsplit("-", 1)[1]
+        except (IndexError, ValueError) as exc:
+            raise RuntimeError("Malformed SID for fallback primary group") from exc
+
     def test_admin_entry_in_global_catalog(self):
         """Ensure the administrator record exposes Windows attributes."""
 
@@ -87,17 +151,23 @@ class TestGlobalCatalog(IntegrationTest):
             "sAMAccountName",
             "userPrincipalName",
             "objectSid",
+            "objectClass",
+            "primaryGroupID",
         )
 
         assert admin_entry.get("sAMAccountName") == ["admin"], admin_entry
         assert admin_entry.get("userPrincipalName") == [f"admin@{realm}"], admin_entry
         sid_values = admin_entry.get("objectSid", [])
         assert sid_values and sid_values[0].startswith("S-"), admin_entry
+        object_classes = {value.lower() for value in admin_entry.get("objectClass", [])}
+        assert "user" in object_classes, admin_entry
+        assert admin_entry.get("primaryGroupID") == [self._fallback_primary_group()], admin_entry
 
     def test_new_user_is_visible_in_global_catalog(self):
         """Create a fresh user and verify the GC provides the projected data."""
 
         username = "gcuser"
+        groupname = "gcgroup"
         password = "Secret.123"
 
         try:
@@ -109,11 +179,17 @@ class TestGlobalCatalog(IntegrationTest):
                 password=password,
             )
 
+            tasks.group_add(self.master, groupname)
+            tasks.group_add_member(self.master, groupname, username)
+
             entry = self._ldapsearch_gc(
                 f"(uid={username})",
                 "sAMAccountName",
                 "userPrincipalName",
                 "objectSid",
+                "objectClass",
+                "primaryGroupID",
+                "memberOf",
             )
 
             assert entry.get("sAMAccountName") == [username], entry
@@ -121,7 +197,34 @@ class TestGlobalCatalog(IntegrationTest):
                 f"{username}@{self.master.domain.realm}"
             ], entry
             assert entry.get("objectSid"), entry
+
+            object_classes = {value.lower() for value in entry.get("objectClass", [])}
+            assert "user" in object_classes, entry
+            assert entry.get("primaryGroupID") == [self._fallback_primary_group()], entry
+
+            user_dn = f"uid={username},cn=users,cn=accounts,{self.master.domain.basedn}"
+            group_dn = f"cn={groupname},cn=groups,cn=accounts,{self.master.domain.basedn}"
+            member_of = {value.lower() for value in entry.get("memberOf", [])}
+            assert group_dn.lower() in member_of, entry
+
+            group_entry = self._ldapsearch_gc(
+                f"(cn={groupname})",
+                "objectClass",
+                "groupType",
+                "member",
+                "memberOf",
+            )
+
+            group_classes = {value.lower() for value in group_entry.get("objectClass", [])}
+            assert "group" in group_classes, group_entry
+            assert group_entry.get("groupType") == ["-2147483646"], group_entry
+            members = {value.lower() for value in group_entry.get("member", [])}
+            assert user_dn.lower() in members, group_entry
         finally:
+            try:
+                tasks.group_del(self.master, groupname)
+            except Exception:
+                pass
             tasks.user_del(self.master, username)
 
     def test_global_catalog_service_help(self):

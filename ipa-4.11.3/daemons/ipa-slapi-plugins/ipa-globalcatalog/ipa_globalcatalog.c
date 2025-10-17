@@ -41,6 +41,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <string.h>
@@ -65,6 +66,10 @@ struct ipa_gc_ctx {
     Slapi_DN *base_sdn;
     char *basedn;
     char *realm;
+    bool fallback_group_checked;
+    bool fallback_group_available;
+    char *fallback_group_dn;
+    char *fallback_group_rid_str;
 };
 
 static int ipa_gc_post_add(Slapi_PBlock *pb);
@@ -88,6 +93,8 @@ static void ipa_gc_ctx_free(struct ipa_gc_ctx *ctx)
     }
     slapi_ch_free_string(&ctx->basedn);
     slapi_ch_free_string(&ctx->realm);
+    slapi_ch_free_string(&ctx->fallback_group_dn);
+    slapi_ch_free_string(&ctx->fallback_group_rid_str);
     slapi_ch_free((void **)&ctx);
 }
 
@@ -219,6 +226,32 @@ static int ipa_gc_sid_string_to_berval(const char *sid_str, struct berval **bv_o
     return LDAP_SUCCESS;
 }
 
+static int ipa_gc_sid_string_to_rid(const char *sid_str, uint32_t *rid_out)
+{
+    const char *last_dash;
+    char *end = NULL;
+    unsigned long value;
+
+    if (sid_str == NULL || rid_out == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    last_dash = strrchr(sid_str, '-');
+    if (last_dash == NULL || last_dash[1] == '\0') {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    errno = 0;
+    value = strtoul(last_dash + 1, &end, 10);
+    if (errno != 0 || end == NULL || *end != '\0' || value > UINT32_MAX) {
+        return LDAP_INVALID_SYNTAX;
+    }
+
+    *rid_out = (uint32_t)value;
+
+    return LDAP_SUCCESS;
+}
+
 static bool ipa_gc_enqueue_string_value(Slapi_Entry *entry,
                                         Slapi_Mods *mods,
                                         const char *attr,
@@ -297,6 +330,157 @@ done:
     return changed;
 }
 
+static size_t ipa_gc_count_values(char **values)
+{
+    size_t count = 0;
+
+    if (values == NULL) {
+        return 0;
+    }
+
+    while (values[count] != NULL) {
+        count++;
+    }
+
+    return count;
+}
+
+static char **ipa_gc_dup_array(char **values)
+{
+    size_t count;
+    char **copy = NULL;
+
+    if (values == NULL) {
+        return NULL;
+    }
+
+    count = ipa_gc_count_values(values);
+    if (count == 0) {
+        return slapi_ch_calloc(1, sizeof(char *));
+    }
+
+    copy = slapi_ch_calloc(count + 1, sizeof(char *));
+    if (copy == NULL) {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        copy[i] = slapi_ch_strdup(values[i]);
+        if (copy[i] == NULL) {
+            for (size_t j = 0; j < i; j++) {
+                slapi_ch_free_string(&copy[j]);
+            }
+            slapi_ch_free((void **)&copy);
+            return NULL;
+        }
+    }
+
+    copy[count] = NULL;
+    return copy;
+}
+
+static void ipa_gc_free_string_array(char **values)
+{
+    if (values == NULL) {
+        return;
+    }
+
+    for (size_t i = 0; values[i] != NULL; i++) {
+        slapi_ch_free_string(&values[i]);
+    }
+
+    slapi_ch_free((void **)&values);
+}
+
+static int ipa_gc_compare_string_ptrs(const void *a, const void *b)
+{
+    const char *const *sa = (const char *const *)a;
+    const char *const *sb = (const char *const *)b;
+
+    return strcasecmp(*sa, *sb);
+}
+
+static bool ipa_gc_arrays_equal_case(char **a, char **b)
+{
+    char **copy_a = NULL;
+    char **copy_b = NULL;
+    size_t count_a;
+    size_t count_b;
+    bool equal = true;
+
+    count_a = ipa_gc_count_values(a);
+    count_b = ipa_gc_count_values(b);
+    if (count_a != count_b) {
+        return false;
+    }
+
+    if (count_a == 0) {
+        return true;
+    }
+
+    copy_a = ipa_gc_dup_array(a);
+    copy_b = ipa_gc_dup_array(b);
+    if (copy_a == NULL || copy_b == NULL) {
+        ipa_gc_free_string_array(copy_a);
+        ipa_gc_free_string_array(copy_b);
+        return false;
+    }
+
+    qsort(copy_a, count_a, sizeof(char *), ipa_gc_compare_string_ptrs);
+    qsort(copy_b, count_b, sizeof(char *), ipa_gc_compare_string_ptrs);
+
+    for (size_t i = 0; i < count_a; i++) {
+        if (strcasecmp(copy_a[i], copy_b[i]) != 0) {
+            equal = false;
+            break;
+        }
+    }
+
+    ipa_gc_free_string_array(copy_a);
+    ipa_gc_free_string_array(copy_b);
+
+    return equal;
+}
+
+static bool ipa_gc_enqueue_string_array(Slapi_Entry *entry,
+                                        Slapi_Mods *mods,
+                                        const char *attr,
+                                        char **values)
+{
+    char **existing = NULL;
+    bool changed = false;
+    bool new_empty;
+    bool existing_empty;
+
+    existing = slapi_entry_attr_get_charray(entry, attr);
+    new_empty = (values == NULL || values[0] == NULL);
+    existing_empty = (existing == NULL || existing[0] == NULL);
+
+    if (new_empty) {
+        if (!existing_empty) {
+            slapi_mods_add_string(mods, LDAP_MOD_DELETE, attr, NULL);
+            changed = true;
+        }
+        goto done;
+    }
+
+    if (!existing_empty && ipa_gc_arrays_equal_case(existing, values)) {
+        goto done;
+    }
+
+    slapi_mods_add_string(mods, LDAP_MOD_REPLACE, attr, values[0]);
+    for (size_t i = 1; values[i] != NULL; i++) {
+        slapi_mods_add_string(mods, LDAP_MOD_ADD, attr, values[i]);
+    }
+    changed = true;
+
+done:
+    if (existing != NULL) {
+        slapi_ch_array_free(existing);
+    }
+    return changed;
+}
+
 static char *ipa_gc_strip_principal_instance(char *value)
 {
     char *comma;
@@ -321,6 +505,335 @@ static char *ipa_gc_compute_sam(Slapi_Entry *entry)
 static char *ipa_gc_compute_sid(Slapi_Entry *entry)
 {
     return slapi_entry_attr_get_charptr(entry, IPA_GC_ATTR_SID);
+}
+
+static char *ipa_gc_escape_filter_value(const char *value)
+{
+    size_t len;
+    size_t size;
+    char *escaped;
+    size_t pos = 0;
+
+    if (value == NULL) {
+        return NULL;
+    }
+
+    len = strlen(value);
+    size = len * 3 + 1;
+    escaped = slapi_ch_malloc(size);
+    if (escaped == NULL) {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < len; i++) {
+        unsigned char ch = (unsigned char)value[i];
+
+        if (ch == '*' || ch == '(' || ch == ')' || ch == '\\' || ch < 0x20 || ch >= 0x7f) {
+            int written = snprintf(escaped + pos, size - pos, "\\%02X", ch);
+            if (written < 0) {
+                slapi_ch_free((void **)&escaped);
+                return NULL;
+            }
+            pos += (size_t)written;
+        } else {
+            escaped[pos++] = (char)ch;
+        }
+    }
+
+    escaped[pos] = '\0';
+    return escaped;
+}
+
+static bool ipa_gc_entry_has_objectclass(Slapi_Entry *entry, const char *object_class)
+{
+    char **values = NULL;
+    bool found = false;
+
+    values = slapi_entry_attr_get_charray(entry, "objectClass");
+    if (values == NULL) {
+        return false;
+    }
+
+    for (size_t i = 0; values[i] != NULL; i++) {
+        if (strcasecmp(values[i], object_class) == 0) {
+            found = true;
+            break;
+        }
+    }
+
+    slapi_ch_array_free(values);
+    return found;
+}
+
+static bool ipa_gc_is_user_entry(Slapi_Entry *entry)
+{
+    if (entry == NULL) {
+        return false;
+    }
+
+    if (ipa_gc_entry_has_objectclass(entry, "ipaNTUserAttrs")) {
+        return true;
+    }
+
+    if (ipa_gc_entry_has_objectclass(entry, "posixAccount")) {
+        return true;
+    }
+
+    return false;
+}
+
+static bool ipa_gc_is_group_entry(Slapi_Entry *entry)
+{
+    if (entry == NULL) {
+        return false;
+    }
+
+    if (ipa_gc_entry_has_objectclass(entry, "ipaNTGroupAttrs")) {
+        return true;
+    }
+
+    if (ipa_gc_entry_has_objectclass(entry, "groupOfNames")) {
+        return true;
+    }
+
+    return false;
+}
+
+static bool ipa_gc_enqueue_objectclass(Slapi_Entry *entry,
+                                       Slapi_Mods *mods,
+                                       const char *object_class)
+{
+    if (object_class == NULL) {
+        return false;
+    }
+
+    if (ipa_gc_entry_has_objectclass(entry, object_class)) {
+        return false;
+    }
+
+    slapi_mods_add_string(mods, LDAP_MOD_ADD, "objectClass", object_class);
+    return true;
+}
+
+static int ipa_gc_lookup_memberof(struct ipa_gc_ctx *ctx,
+                                  const Slapi_DN *target,
+                                  char ***values_out)
+{
+    Slapi_PBlock *search_pb = NULL;
+    Slapi_Entry **entries = NULL;
+    char *escaped = NULL;
+    char *filter = NULL;
+    int ret = LDAP_SUCCESS;
+    size_t count = 0;
+    char **values = NULL;
+
+    if (ctx == NULL || target == NULL || values_out == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    *values_out = NULL;
+
+    escaped = ipa_gc_escape_filter_value(slapi_sdn_get_dn(target));
+    if (escaped == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    filter = slapi_ch_smprintf("(&(objectClass=ipaNTGroupAttrs)(member=%s))",
+                               escaped);
+    if (filter == NULL) {
+        slapi_ch_free((void **)&escaped);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    search_pb = slapi_pblock_new();
+    if (search_pb == NULL) {
+        slapi_ch_free((void **)&escaped);
+        slapi_ch_free((void **)&filter);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    slapi_search_internal_set_pb(search_pb, ctx->basedn, LDAP_SCOPE_SUBTREE,
+                                 filter, NULL, 1, NULL, NULL,
+                                 ctx->plugin_id, 0);
+
+    ret = slapi_search_internal_pb(search_pb);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ret = slapi_pblock_get(search_pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES,
+                           &entries);
+    if (ret != 0) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    if (entries == NULL) {
+        ret = LDAP_SUCCESS;
+        goto done;
+    }
+
+    while (entries[count] != NULL) {
+        count++;
+    }
+
+    if (count == 0) {
+        ret = LDAP_SUCCESS;
+        goto done;
+    }
+
+    values = slapi_ch_calloc(count + 1, sizeof(char *));
+    if (values == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        const char *dn = slapi_entry_get_dn_const(entries[i]);
+        values[i] = slapi_ch_strdup(dn);
+        if (values[i] == NULL) {
+            ret = LDAP_OPERATIONS_ERROR;
+            goto done;
+        }
+    }
+
+    values[count] = NULL;
+    *values_out = values;
+    values = NULL;
+
+done:
+    if (values != NULL) {
+        ipa_gc_free_string_array(values);
+    }
+
+    slapi_ch_free((void **)&escaped);
+    slapi_ch_free((void **)&filter);
+    slapi_free_search_results_internal(search_pb);
+    slapi_pblock_destroy(search_pb);
+
+    return ret;
+}
+
+static int ipa_gc_resolve_fallback_group(struct ipa_gc_ctx *ctx)
+{
+    Slapi_PBlock *search_pb = NULL;
+    Slapi_Entry **entries = NULL;
+    Slapi_Entry *group_entry = NULL;
+    Slapi_DN *group_sdn = NULL;
+    char *attrs[] = {"ipaNTFallbackPrimaryGroup", NULL};
+    char *fallback_dn = NULL;
+    char *group_sid = NULL;
+    uint32_t rid;
+    int ret;
+
+    if (ctx->fallback_group_checked) {
+        return ctx->fallback_group_available ? LDAP_SUCCESS : LDAP_NO_SUCH_OBJECT;
+    }
+
+    search_pb = slapi_pblock_new();
+    if (search_pb == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    slapi_search_internal_set_pb(search_pb, ctx->basedn, LDAP_SCOPE_SUBTREE,
+                                 "(objectClass=ipaNTDomainAttrs)", attrs, 0,
+                                 NULL, NULL, ctx->plugin_id, 0);
+
+    ret = slapi_search_internal_pb(search_pb);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ret = slapi_pblock_get(search_pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES,
+                           &entries);
+    if (ret != 0) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    if (entries == NULL || entries[0] == NULL || entries[1] != NULL) {
+        ret = LDAP_NO_SUCH_OBJECT;
+        goto done;
+    }
+
+    fallback_dn = slapi_entry_attr_get_charptr(entries[0],
+                                               "ipaNTFallbackPrimaryGroup");
+    if (fallback_dn == NULL || fallback_dn[0] == '\0') {
+        ret = LDAP_NO_SUCH_ATTRIBUTE;
+        goto done;
+    }
+
+    group_sdn = slapi_sdn_new_dn_byval(fallback_dn);
+    if (group_sdn == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    ret = slapi_search_internal_get_entry(group_sdn, NULL, &group_entry,
+                                          ctx->plugin_id);
+    if (ret != LDAP_SUCCESS || group_entry == NULL) {
+        ret = (ret != LDAP_SUCCESS) ? ret : LDAP_NO_SUCH_OBJECT;
+        goto done;
+    }
+
+    group_sid = slapi_entry_attr_get_charptr(group_entry,
+                                             IPA_GC_ATTR_SID);
+    if (group_sid == NULL) {
+        ret = LDAP_NO_SUCH_ATTRIBUTE;
+        goto done;
+    }
+
+    ret = ipa_gc_sid_string_to_rid(group_sid, &rid);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ctx->fallback_group_dn = fallback_dn;
+    fallback_dn = NULL;
+
+    ctx->fallback_group_rid_str = slapi_ch_smprintf("%u", (unsigned int)rid);
+    if (ctx->fallback_group_rid_str == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    ctx->fallback_group_available = true;
+    ret = LDAP_SUCCESS;
+
+done:
+    if (fallback_dn != NULL) {
+        slapi_ch_free_string(&fallback_dn);
+    }
+    slapi_ch_free_string(&group_sid);
+    slapi_entry_free(group_entry);
+    slapi_sdn_free(&group_sdn);
+    slapi_free_search_results_internal(search_pb);
+    slapi_pblock_destroy(search_pb);
+
+    if (!ctx->fallback_group_available) {
+        slapi_ch_free_string(&ctx->fallback_group_dn);
+        slapi_ch_free_string(&ctx->fallback_group_rid_str);
+    }
+
+    ctx->fallback_group_checked = true;
+    return ret;
+}
+
+static const char *ipa_gc_primary_group_id(struct ipa_gc_ctx *ctx)
+{
+    int ret;
+
+    if (ctx == NULL) {
+        return NULL;
+    }
+
+    ret = ipa_gc_resolve_fallback_group(ctx);
+    if (ret != LDAP_SUCCESS || !ctx->fallback_group_available) {
+        return NULL;
+    }
+
+    return ctx->fallback_group_rid_str;
 }
 
 static char *ipa_gc_compute_upn(struct ipa_gc_ctx *ctx,
@@ -353,9 +866,14 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     char *sam_account_name = NULL;
     char *user_principal_name = NULL;
     char *sid = NULL;
+    char **group_members = NULL;
+    char **member_of = NULL;
     int result = LDAP_SUCCESS;
     int ret;
     bool changed = false;
+    bool is_user;
+    bool is_group;
+    const char *primary_group_id = NULL;
 
     if (ctx->base_sdn != NULL &&
         !slapi_sdn_isparent(ctx->base_sdn, target) &&
@@ -382,6 +900,8 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     sam_account_name = ipa_gc_compute_sam(entry);
     user_principal_name = ipa_gc_compute_upn(ctx, entry, sam_account_name);
     sid = ipa_gc_compute_sid(entry);
+    is_user = ipa_gc_is_user_entry(entry);
+    is_group = ipa_gc_is_group_entry(entry);
 
     changed |= ipa_gc_enqueue_string_value(entry, mods,
                                            IPA_GC_ATTR_SAMACCOUNTNAME,
@@ -390,6 +910,64 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
                                            user_principal_name);
     changed |= ipa_gc_enqueue_sid_value(entry, mods, IPA_GC_ATTR_OBJECTSID,
                                         sid);
+
+    if (is_user) {
+        primary_group_id = ipa_gc_primary_group_id(ctx);
+        if (primary_group_id != NULL) {
+            changed |= ipa_gc_enqueue_string_value(entry, mods,
+                                                   "primaryGroupID",
+                                                   primary_group_id);
+        }
+
+        ret = ipa_gc_lookup_memberof(ctx, target, &member_of);
+        if (ret != LDAP_SUCCESS) {
+            LOG_FATAL("Unable to compute memberOf for %s (rc=%d).\n",
+                      slapi_sdn_get_dn(target), ret);
+            goto done;
+        }
+
+        if (member_of != NULL) {
+            changed |= ipa_gc_enqueue_string_array(entry, mods,
+                                                   "memberOf",
+                                                   member_of);
+        } else {
+            changed |= ipa_gc_enqueue_string_array(entry, mods,
+                                                   "memberOf",
+                                                   NULL);
+        }
+
+        ipa_gc_free_string_array(member_of);
+        member_of = NULL;
+    }
+
+    if (is_group) {
+        changed |= ipa_gc_enqueue_objectclass(entry, mods, "group");
+        changed |= ipa_gc_enqueue_string_value(entry, mods, "groupType",
+                                               "-2147483646");
+
+        group_members = slapi_entry_attr_get_charray(entry, "member");
+        changed |= ipa_gc_enqueue_string_array(entry, mods, "member",
+                                               group_members);
+
+        ret = ipa_gc_lookup_memberof(ctx, target, &member_of);
+        if (ret != LDAP_SUCCESS) {
+            LOG_FATAL("Unable to compute memberOf for group %s (rc=%d).\n",
+                      slapi_sdn_get_dn(target), ret);
+            goto done;
+        }
+
+        if (member_of != NULL) {
+            changed |= ipa_gc_enqueue_string_array(entry, mods,
+                                                   "memberOf",
+                                                   member_of);
+        } else {
+            changed |= ipa_gc_enqueue_string_array(entry, mods,
+                                                   "memberOf",
+                                                   NULL);
+        }
+    } else if (is_user) {
+        changed |= ipa_gc_enqueue_objectclass(entry, mods, "user");
+    }
 
     if (!changed) {
         ret = LDAP_SUCCESS;
@@ -432,6 +1010,10 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     slapi_ch_free_string(&sam_account_name);
     slapi_ch_free_string(&user_principal_name);
     slapi_ch_free_string(&sid);
+    if (group_members != NULL) {
+        slapi_ch_array_free(group_members);
+    }
+    ipa_gc_free_string_array(member_of);
     return ret;
 }
 
