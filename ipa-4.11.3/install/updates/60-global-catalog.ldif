@@ -10,5 +10,7 @@
 dn: cn=global catalog,cn=ipa,cn=etc,$SUFFIX
 default: objectClass: top
 default: objectClass: nsContainer
+default: objectClass: ipaConfigObject
 default: cn: global catalog
 default: description: IPA Global Catalog configuration anchor
+default: ipaConfigString: listener=disabled
