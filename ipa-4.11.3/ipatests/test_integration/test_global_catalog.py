@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 import base64
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 
 import pytest
 
 from ipatests.test_integration.base import IntegrationTest
 from ipatests.pytest_ipa.integration import tasks
+
+GC_SECURITY_GLOBAL_GROUPTYPE = "-2147483646"
 
 pytestmark = pytest.mark.tier1
 
@@ -35,6 +37,80 @@ class TestGlobalCatalog(IntegrationTest):
 
         trailer = "".join(f"-{value}" for value in subauths)
         return f"S-{revision}-{identifier_authority}{trailer}"
+
+    @staticmethod
+    def _sid_string_to_rid(value: str) -> int:
+        parts = value.strip().split("-")
+        if len(parts) < 2:
+            raise ValueError("Malformed SID string")
+        return int(parts[-1])
+
+    def _fallback_primary_group(self) -> Tuple[str, int]:
+        cached: Optional[Tuple[str, int]] = getattr(
+            self, "_fallback_group_cache", None
+        )
+        if cached is not None:
+            return cached
+
+        base = f"cn=ad,cn=etc,{self.master.domain.basedn}"
+        cmd = [
+            "ldapsearch",
+            "-x",
+            "-LLL",
+            "-o",
+            "ldif-wrap=no",
+            "-H",
+            f"ldap://{self.master.hostname}",
+            "-D",
+            str(self.master.config.dirman_dn),
+            "-w",
+            self.master.config.dirman_password,
+            "-b",
+            base,
+            "(objectClass=ipaNTDomainAttrs)",
+            "ipaNTFallbackPrimaryGroup",
+        ]
+        result = self.master.run_command(cmd)
+
+        fallback_dn: str | None = None
+        for raw_line in result.stdout_text.splitlines():
+            line = raw_line.strip()
+            if line.lower().startswith("ipantfallbackprimarygroup:"):
+                fallback_dn = line.split(":", 1)[1].strip()
+                break
+        assert fallback_dn, "Unable to resolve fallback primary group DN"
+
+        cmd = [
+            "ldapsearch",
+            "-x",
+            "-LLL",
+            "-o",
+            "ldif-wrap=no",
+            "-H",
+            f"ldap://{self.master.hostname}",
+            "-D",
+            str(self.master.config.dirman_dn),
+            "-w",
+            self.master.config.dirman_password,
+            "-b",
+            fallback_dn,
+            "(objectClass=*)",
+            "ipaNTSecurityIdentifier",
+        ]
+        result = self.master.run_command(cmd)
+
+        fallback_sid: str | None = None
+        for raw_line in result.stdout_text.splitlines():
+            line = raw_line.strip()
+            if line.lower().startswith("ipantsecurityidentifier:"):
+                fallback_sid = line.split(":", 1)[1].strip()
+                break
+        assert fallback_sid, "Unable to resolve fallback primary group SID"
+
+        rid = self._sid_string_to_rid(fallback_sid)
+        cached = (fallback_dn, rid)
+        setattr(self, "_fallback_group_cache", cached)
+        return cached
 
     def _ldapsearch_gc(self, search_filter: str, *attrs: str) -> Dict[str, List[str]]:
         cmd = [
@@ -87,6 +163,9 @@ class TestGlobalCatalog(IntegrationTest):
             "sAMAccountName",
             "userPrincipalName",
             "objectSid",
+            "objectClass",
+            "primaryGroupID",
+            "memberOf",
         )
 
         assert admin_entry.get("sAMAccountName") == ["admin"], admin_entry
@@ -94,11 +173,21 @@ class TestGlobalCatalog(IntegrationTest):
         sid_values = admin_entry.get("objectSid", [])
         assert sid_values and sid_values[0].startswith("S-"), admin_entry
 
+        object_classes = [value.lower() for value in admin_entry.get("objectClass", [])]
+        assert "user" in object_classes, admin_entry
+
+        _, fallback_rid = self._fallback_primary_group()
+        assert admin_entry.get("primaryGroupID") == [str(fallback_rid)], admin_entry
+        assert admin_entry.get("memberOf"), admin_entry
+
     def test_new_user_is_visible_in_global_catalog(self):
         """Create a fresh user and verify the GC provides the projected data."""
 
         username = "gcuser"
         password = "Secret.123"
+        groupname = "gcuser-group"
+        group_dn = f"cn={groupname},cn=groups,cn=accounts,{self.master.domain.basedn}"
+        group_created = False
 
         try:
             tasks.user_add(
@@ -109,11 +198,18 @@ class TestGlobalCatalog(IntegrationTest):
                 password=password,
             )
 
+            tasks.group_add(self.master, groupname)
+            group_created = True
+            tasks.group_add_member(self.master, groupname, users=username)
+
             entry = self._ldapsearch_gc(
                 f"(uid={username})",
                 "sAMAccountName",
                 "userPrincipalName",
                 "objectSid",
+                "objectClass",
+                "primaryGroupID",
+                "memberOf",
             )
 
             assert entry.get("sAMAccountName") == [username], entry
@@ -121,8 +217,50 @@ class TestGlobalCatalog(IntegrationTest):
                 f"{username}@{self.master.domain.realm}"
             ], entry
             assert entry.get("objectSid"), entry
+
+            object_classes = [value.lower() for value in entry.get("objectClass", [])]
+            assert "user" in object_classes, entry
+
+            _, fallback_rid = self._fallback_primary_group()
+            assert entry.get("primaryGroupID") == [str(fallback_rid)], entry
+
+            member_of = [value.lower() for value in entry.get("memberOf", [])]
+            assert group_dn.lower() in member_of, entry
         finally:
+            if group_created:
+                tasks.group_del(self.master, groupname)
             tasks.user_del(self.master, username)
+
+    def test_group_entry_in_global_catalog(self):
+        """Create a group and validate AD-facing attributes."""
+
+        groupname = "gcgroup"
+        group_dn = f"cn={groupname},cn=groups,cn=accounts,{self.master.domain.basedn}"
+        admin_dn = f"uid=admin,cn=users,cn=accounts,{self.master.domain.basedn}"
+
+        group_created = False
+
+        try:
+            tasks.group_add(self.master, groupname)
+            group_created = True
+            tasks.group_add_member(self.master, groupname, users="admin")
+
+            entry = self._ldapsearch_gc(
+                f"(cn={groupname})",
+                "objectClass",
+                "groupType",
+                "member",
+            )
+
+            object_classes = [value.lower() for value in entry.get("objectClass", [])]
+            assert "group" in object_classes, entry
+            assert entry.get("groupType") == [GC_SECURITY_GLOBAL_GROUPTYPE], entry
+
+            members = [value.lower() for value in entry.get("member", [])]
+            assert admin_dn.lower() in members, entry
+        finally:
+            if group_created:
+                tasks.group_del(self.master, groupname)
 
     def test_global_catalog_service_help(self):
         """Ensure administrative tooling advertises the global catalog service."""
