@@ -50,6 +50,8 @@
 
 #include "util.h"
 
+#define IPA_PLUGIN_NAME "ipa-globalcatalog"
+
 #define IPA_GC_PLUGIN_DESC "IPA global catalog attribute synthesiser"
 #define IPA_GC_PLUGIN_FEATURE "ipa-globalcatalog"
 
@@ -74,6 +76,7 @@ struct ipa_gc_ctx {
 
 static int ipa_gc_post_add(Slapi_PBlock *pb);
 static int ipa_gc_post_modify(Slapi_PBlock *pb);
+int ipa_globalcatalog_plugin_init(Slapi_PBlock *pb);
 
 Slapi_PluginDesc ipa_globalcatalog_plugin_desc = {
     IPA_GC_PLUGIN_FEATURE,
@@ -100,8 +103,10 @@ static void ipa_gc_ctx_free(struct ipa_gc_ctx *ctx)
 
 static bool ipa_gc_skip_operation(Slapi_PBlock *pb)
 {
-    int is_internal = 0;
     int is_replicated = 0;
+
+#ifdef SLAPI_IS_INTERNAL_OPERATION
+    int is_internal = 0;
 
     if (slapi_pblock_get(pb, SLAPI_IS_INTERNAL_OPERATION, &is_internal) != 0) {
         LOG_FATAL("Unable to determine whether operation is internal.\n");
@@ -110,6 +115,18 @@ static bool ipa_gc_skip_operation(Slapi_PBlock *pb)
     if (is_internal != 0) {
         return true;
     }
+#else
+    Slapi_Operation *operation = NULL;
+
+    if (slapi_pblock_get(pb, SLAPI_OPERATION, &operation) != 0) {
+        LOG_FATAL("Unable to determine whether operation is internal.\n");
+        return true;
+    }
+    if (operation != NULL &&
+        slapi_operation_is_flag_set(operation, SLAPI_OP_FLAG_INTERNAL)) {
+        return true;
+    }
+#endif
 
     if (slapi_pblock_get(pb, SLAPI_IS_REPLICATED_OPERATION, &is_replicated) != 0) {
         LOG_FATAL("Unable to determine whether operation is replicated.\n");
@@ -356,10 +373,10 @@ static char **ipa_gc_dup_array(char **values)
 
     count = ipa_gc_count_values(values);
     if (count == 0) {
-        return slapi_ch_calloc(1, sizeof(char *));
+        return (char **)slapi_ch_calloc(1, sizeof(char *));
     }
 
-    copy = slapi_ch_calloc(count + 1, sizeof(char *));
+    copy = (char **)slapi_ch_calloc(count + 1, sizeof(char *));
     if (copy == NULL) {
         return NULL;
     }
@@ -684,7 +701,7 @@ static int ipa_gc_lookup_memberof(struct ipa_gc_ctx *ctx,
         goto done;
     }
 
-    values = slapi_ch_calloc(count + 1, sizeof(char *));
+    values = (char **)slapi_ch_calloc(count + 1, sizeof(char *));
     if (values == NULL) {
         ret = LDAP_OPERATIONS_ERROR;
         goto done;
@@ -787,7 +804,7 @@ static int ipa_gc_lookup_members(struct ipa_gc_ctx *ctx,
         goto done;
     }
 
-    values = slapi_ch_calloc(count + 1, sizeof(char *));
+    values = (char **)slapi_ch_calloc(count + 1, sizeof(char *));
     if (values == NULL) {
         ret = LDAP_OPERATIONS_ERROR;
         goto done;
@@ -1223,7 +1240,7 @@ int ipa_globalcatalog_plugin_init(Slapi_PBlock *pb)
 {
     struct ipa_gc_ctx *ctx = NULL;
 
-    ctx = slapi_ch_calloc(1, sizeof(*ctx));
+    ctx = (struct ipa_gc_ctx *)slapi_ch_calloc(1, sizeof(*ctx));
     if (ctx == NULL) {
         return LDAP_OPERATIONS_ERROR;
     }
