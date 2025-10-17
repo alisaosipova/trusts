@@ -4,7 +4,11 @@
 # listener and expects the container to exist so that installer tooling can
 # stash auxiliary metadata.
 #
-# The entry is deliberately small and safe to re-apply multiple times.
+# The entry is deliberately small and safe to re-apply multiple times while
+# documenting the attributes produced for consumers.  The synthesiser populates
+# sAMAccountName, userPrincipalName, objectSid, objectClass=user/group,
+# primaryGroupID, groupType, member, and memberOf by consulting membership data
+# available under $SUFFIX.
 #
 
 dn: cn=global catalog,cn=ipa,cn=etc,$SUFFIX
