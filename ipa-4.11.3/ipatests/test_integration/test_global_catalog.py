@@ -1,6 +1,7 @@
 """Integration tests for the IPA global catalog listener."""
 
 from __future__ import annotations
+implement-and-test-389-ds-global-catalog-plugin
 
 import pytest
 

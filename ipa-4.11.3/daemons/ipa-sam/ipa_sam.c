@@ -19,6 +19,10 @@
 #include <util/data_blob.h>
 #include <util/time.h>
 #include <util/debug.h>
+#include <libcli/util/werror.h>
+#include <libcli/security/security.h>
+#include <libcli/security/dom_sid.h>
+#include <gen_ndr/netlogon.h>
 
 #ifndef _SAMBA_UTIL_H_
 bool trim_string(char *s, const char *front, const char *back);
@@ -216,6 +220,8 @@ struct ipasam_private {
 	uint32_t supported_enctypes;
 	bool fips_enabled;
 };
+
+static struct pdb_methods *ipasam_global_methods;
 
 
 static NTSTATUS ipasam_get_domain_name(struct ipasam_private *ipasam_state,
@@ -3152,9 +3158,9 @@ done:
 }
 
 static NTSTATUS ipasam_enum_trusted_domains(struct pdb_methods *methods,
-					    TALLOC_CTX *mem_ctx,
-					    uint32_t *num_domains,
-					    struct pdb_trusted_domain ***domains)
+                                            TALLOC_CTX *mem_ctx,
+                                            uint32_t *num_domains,
+                                            struct pdb_trusted_domain ***domains)
 {
 	int rc;
 	struct ipasam_private *ipasam_state =
@@ -3220,14 +3226,306 @@ static NTSTATUS ipasam_enum_trusted_domains(struct pdb_methods *methods,
 		(*(num_domains)) += 1;
 	}
 
-	DEBUG(5, ("ipasam_enum_trusted_domains: got %d domains\n", *num_domains));
-	return NT_STATUS_OK;
+        DEBUG(5, ("ipasam_enum_trusted_domains: got %d domains\n", *num_domains));
+        return NT_STATUS_OK;
+}
+
+static uint32_t ipasam_calculate_trust_flags(const struct pdb_trusted_domain *td)
+{
+        uint32_t flags = 0;
+
+        if (td == NULL) {
+                return 0;
+        }
+
+        if (td->trust_direction & LSA_TRUST_DIRECTION_INBOUND) {
+                flags |= NETR_TRUST_FLAG_INBOUND;
+        }
+        if (td->trust_direction & LSA_TRUST_DIRECTION_OUTBOUND) {
+                flags |= NETR_TRUST_FLAG_OUTBOUND;
+        }
+        if ((td->trust_direction == 0) &&
+            (td->trust_attributes & LSA_TRUST_ATTRIBUTE_WITHIN_FOREST)) {
+                flags |= NETR_TRUST_FLAG_INBOUND | NETR_TRUST_FLAG_OUTBOUND;
+        }
+
+        if (td->trust_attributes & LSA_TRUST_ATTRIBUTE_WITHIN_FOREST) {
+                flags |= NETR_TRUST_FLAG_IN_FOREST;
+        }
+        if (td->trust_attributes & LSA_TRUST_ATTRIBUTE_FOREST_TRANSITIVE) {
+                flags |= NETR_TRUST_FLAG_TREEROOT;
+        }
+
+        if (td->trust_type != LSA_TRUST_TYPE_DOWNLEVEL) {
+                flags |= NETR_TRUST_FLAG_NATIVE;
+        }
+        if (td->trust_type == LSA_TRUST_TYPE_MIT) {
+                flags |= NETR_TRUST_FLAG_MIT_KRB5;
+        }
+
+        if (td->supported_enc_type != NULL) {
+                uint32_t enc = *td->supported_enc_type;
+
+                if (enc & (KERB_ENCTYPE_AES128_CTS_HMAC_SHA1_96 |
+                           KERB_ENCTYPE_AES256_CTS_HMAC_SHA1_96 |
+                           KERB_ENCTYPE_AES256_CTS_HMAC_SHA1_96_SK)) {
+                        flags |= NETR_TRUST_FLAG_AES;
+                }
+        }
+
+        return flags;
+}
+
+static WERROR ipasam_append_trust(TALLOC_CTX *mem_ctx,
+                                  struct netr_DomainTrustList *trusts,
+                                  const struct pdb_trusted_domain *td,
+                                  uint32_t request_flags)
+{
+        struct netr_DomainTrust *entry;
+        struct netr_DomainTrust *new_array;
+        size_t idx;
+        uint32_t flags;
+
+        if (trusts == NULL || td == NULL) {
+                return WERR_OK;
+        }
+
+        flags = ipasam_calculate_trust_flags(td);
+        if ((flags & request_flags) == 0) {
+                return WERR_OK;
+        }
+
+        idx = trusts->count;
+
+        new_array = talloc_realloc(mem_ctx, trusts->array,
+                                   struct netr_DomainTrust,
+                                   idx + 1);
+        if (new_array == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        trusts->array = new_array;
+
+        entry = &trusts->array[idx];
+        memset(entry, 0, sizeof(*entry));
+
+        if (td->netbios_name != NULL) {
+                entry->netbios_name = talloc_strdup(trusts->array,
+                                                    td->netbios_name);
+                if (entry->netbios_name == NULL) {
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        if (td->trust_type != LSA_TRUST_TYPE_DOWNLEVEL &&
+            td->domain_name != NULL) {
+                entry->dns_name = talloc_strdup(trusts->array,
+                                                td->domain_name);
+                if (entry->dns_name == NULL) {
+                        TALLOC_FREE(entry->netbios_name);
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        entry->trust_flags = flags;
+        entry->parent_index = 0;
+        entry->trust_type = td->trust_type;
+        entry->trust_attributes = td->trust_attributes;
+
+        if (!is_null_sid(&td->security_identifier)) {
+                entry->sid = talloc(trusts->array, struct dom_sid);
+                if (entry->sid == NULL) {
+                        TALLOC_FREE(entry->dns_name);
+                        TALLOC_FREE(entry->netbios_name);
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+                sid_copy(entry->sid, &td->security_identifier);
+        }
+
+        memset(&entry->guid, 0, sizeof(entry->guid));
+
+        trusts->count = idx + 1;
+
+        return WERR_OK;
+}
+
+static WERROR ipasam_append_local_domain(struct ipasam_private *state,
+                                         TALLOC_CTX *mem_ctx,
+                                         struct netr_DomainTrustList *trusts)
+{
+        struct netr_DomainTrust *entry;
+        struct netr_DomainTrust *new_array;
+        struct pdb_domain_info *dom_info;
+        size_t idx;
+        TALLOC_CTX *tmp_ctx;
+
+        if (state == NULL || trusts == NULL) {
+                return WERR_OK;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        dom_info = pdb_ipasam_get_domain_info(ipasam_global_methods, tmp_ctx);
+        if (dom_info == NULL) {
+                talloc_free(tmp_ctx);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        idx = trusts->count;
+        new_array = talloc_realloc(mem_ctx, trusts->array,
+                                   struct netr_DomainTrust,
+                                   idx + 1);
+        if (new_array == NULL) {
+                talloc_free(tmp_ctx);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+        trusts->array = new_array;
+
+        entry = &trusts->array[idx];
+        memset(entry, 0, sizeof(*entry));
+
+        if (dom_info->name != NULL) {
+                entry->netbios_name = talloc_strdup(trusts->array,
+                                                    dom_info->name);
+                if (entry->netbios_name == NULL) {
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        talloc_free(tmp_ctx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        if (dom_info->dns_domain != NULL) {
+                entry->dns_name = talloc_strdup(trusts->array,
+                                                dom_info->dns_domain);
+                if (entry->dns_name == NULL) {
+                        TALLOC_FREE(entry->netbios_name);
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        talloc_free(tmp_ctx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+        }
+
+        entry->trust_flags = NETR_TRUST_FLAG_NATIVE |
+                              NETR_TRUST_FLAG_TREEROOT |
+                              NETR_TRUST_FLAG_IN_FOREST |
+                              NETR_TRUST_FLAG_PRIMARY |
+                              NETR_TRUST_FLAG_INBOUND |
+                              NETR_TRUST_FLAG_OUTBOUND;
+        entry->parent_index = 0;
+        entry->trust_type = LSA_TRUST_TYPE_UPLEVEL;
+        entry->trust_attributes = 0;
+
+        if (!is_null_sid(&dom_info->sid)) {
+                entry->sid = talloc(trusts->array, struct dom_sid);
+                if (entry->sid == NULL) {
+                        TALLOC_FREE(entry->dns_name);
+                        TALLOC_FREE(entry->netbios_name);
+                        trusts->array = talloc_realloc(mem_ctx, trusts->array,
+                                                       struct netr_DomainTrust,
+                                                       idx);
+                        talloc_free(tmp_ctx);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+                sid_copy(entry->sid, &dom_info->sid);
+        }
+
+        entry->guid = dom_info->guid;
+
+        trusts->count = idx + 1;
+
+        talloc_free(tmp_ctx);
+
+        return WERR_OK;
+}
+
+WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
+                                   uint32_t trust_flags,
+                                   struct netr_DomainTrustList *trusts)
+{
+        struct ipasam_private *state;
+        struct pdb_trusted_domain **domains = NULL;
+        uint32_t num_domains = 0;
+        TALLOC_CTX *tmp_ctx;
+        NTSTATUS status;
+        uint32_t i;
+        WERROR werr;
+
+        if (trusts == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        trusts->count = 0;
+        trusts->array = NULL;
+
+        if (ipasam_global_methods == NULL ||
+            ipasam_global_methods->private_data == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        state = talloc_get_type_abort(ipasam_global_methods->private_data,
+                                      struct ipasam_private);
+
+        if (trust_flags & 0xFFFFFE00) {
+                return WERR_INVALID_FLAGS;
+        }
+
+        if (!(trust_flags & (NETR_TRUST_FLAG_INBOUND | NETR_TRUST_FLAG_OUTBOUND))) {
+                return WERR_INVALID_FLAGS;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        status = ipasam_enum_trusted_domains(ipasam_global_methods, tmp_ctx,
+                                             &num_domains, &domains);
+        if (!NT_STATUS_IS_OK(status)) {
+                talloc_free(tmp_ctx);
+                return ntstatus_to_werror(status);
+        }
+
+        for (i = 0; i < num_domains; i++) {
+                werr = ipasam_append_trust(mem_ctx, trusts,
+                                           domains[i], trust_flags);
+                if (!W_ERROR_IS_OK(werr)) {
+                        talloc_free(tmp_ctx);
+                        return werr;
+                }
+        }
+
+        if (trust_flags & NETR_TRUST_FLAG_IN_FOREST) {
+                werr = ipasam_append_local_domain(state, mem_ctx, trusts);
+                if (!W_ERROR_IS_OK(werr)) {
+                        talloc_free(tmp_ctx);
+                        return werr;
+                }
+        }
+
+        talloc_free(tmp_ctx);
+
+        return WERR_OK;
 }
 
 static NTSTATUS ipasam_enum_trusteddoms(struct pdb_methods *methods,
-					 TALLOC_CTX *mem_ctx,
-					 uint32_t *num_domains,
-					 struct trustdom_info ***domains)
+                                         TALLOC_CTX *mem_ctx,
+                                         uint32_t *num_domains,
+                                         struct trustdom_info ***domains)
 {
 	NTSTATUS status;
 	struct pdb_trusted_domain **td;
@@ -4232,9 +4530,9 @@ fail:
 
 static void ipasam_free_private_data(void **vp)
 {
-	struct ipasam_private **ipasam_state = (struct ipasam_private **)vp;
+        struct ipasam_private **ipasam_state = (struct ipasam_private **)vp;
 
-	smbldap_free_struct(&(*ipasam_state)->ldap_state);
+        smbldap_free_struct(&(*ipasam_state)->ldap_state);
 
 	if ((*ipasam_state)->result != NULL) {
 		ldap_msgfree((*ipasam_state)->result);
@@ -4245,9 +4543,10 @@ static void ipasam_free_private_data(void **vp)
 		(*ipasam_state)->domain_dn = NULL;
 	}
 
-	*ipasam_state = NULL;
+        *ipasam_state = NULL;
+        ipasam_global_methods = NULL;
 
-	/* No need to free any further, as it is talloc()ed */
+        /* No need to free any further, as it is talloc()ed */
 }
 
 static struct dom_sid *get_fallback_group_sid(TALLOC_CTX *mem_ctx,
@@ -5179,8 +5478,9 @@ static NTSTATUS pdb_init_ipasam(struct pdb_methods **pdb_method,
 		return status;
 	}
 
-	(*pdb_method)->private_data = ipasam_state;
-	(*pdb_method)->free_private_data = ipasam_free_private_data;
+        (*pdb_method)->private_data = ipasam_state;
+        (*pdb_method)->free_private_data = ipasam_free_private_data;
+        ipasam_global_methods = *pdb_method;
 
 	status = ipasam_get_base_dn(ipasam_state->ldap_state,
 				    ipasam_state,
