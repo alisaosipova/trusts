@@ -45,6 +45,120 @@
 #include "gen_ndr/ndr_nbt.h"
 #include "gen_ndr/netlogon.h"
 
+#define IPA_GC_PLUGIN_DN "cn=ipa-globalcatalog,cn=plugins,cn=config"
+#define IPA_GC_CONFIG_DN_FMT "cn=global catalog,cn=ipa,cn=etc,%s"
+#define IPA_GC_MARKER_ATTR "ipaConfigString"
+#define IPA_GC_MARKER_ENABLED "listener=enabled"
+#define IPA_GC_MARKER_DISABLED "listener=disabled"
+
+static bool ipa_cldap_gc_marker_enabled(struct ipa_cldap_ctx *ctx, bool *enabled)
+{
+    Slapi_PBlock *pb = NULL;
+    Slapi_Entry **entries = NULL;
+    char *config_dn = NULL;
+    bool found = false;
+    int ret;
+
+    config_dn = slapi_ch_smprintf(IPA_GC_CONFIG_DN_FMT, ctx->base_dn);
+    if (!config_dn) {
+        return false;
+    }
+
+    pb = slapi_pblock_new();
+    if (!pb) {
+        slapi_ch_free_string(&config_dn);
+        return false;
+    }
+
+    slapi_search_internal_set_pb(pb, config_dn, LDAP_SCOPE_BASE,
+                                 "(objectClass=*)",
+                                 NULL, 0, NULL, NULL, ctx->plugin_id, 0);
+
+    slapi_search_internal_pb(pb);
+    slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_RESULT, &ret);
+    if (ret == LDAP_SUCCESS) {
+        slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES, &entries);
+        if (entries && entries[0]) {
+            char **values = slapi_entry_attr_get_charray(entries[0],
+                                                         IPA_GC_MARKER_ATTR);
+            if (values) {
+                size_t i;
+
+                for (i = 0; values[i]; i++) {
+                    if (strcasecmp(values[i], IPA_GC_MARKER_ENABLED) == 0) {
+                        *enabled = true;
+                        found = true;
+                        break;
+                    }
+                    if (strcasecmp(values[i], IPA_GC_MARKER_DISABLED) == 0) {
+                        *enabled = false;
+                        found = true;
+                    }
+                }
+                slapi_ch_array_free(values);
+            }
+        }
+    }
+
+    slapi_free_search_results_internal(pb);
+    slapi_pblock_destroy(pb);
+    slapi_ch_free_string(&config_dn);
+
+    return found;
+}
+
+static bool ipa_cldap_gc_plugin_enabled(struct ipa_cldap_ctx *ctx, bool *enabled)
+{
+    Slapi_PBlock *pb;
+    Slapi_Entry **entries = NULL;
+    bool found = false;
+    int ret;
+
+    pb = slapi_pblock_new();
+    if (!pb) {
+        return false;
+    }
+
+    slapi_search_internal_set_pb(pb, IPA_GC_PLUGIN_DN, LDAP_SCOPE_BASE,
+                                 "(objectClass=nsSlapdPlugin)",
+                                 NULL, 0, NULL, NULL, ctx->plugin_id, 0);
+
+    slapi_search_internal_pb(pb);
+    slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_RESULT, &ret);
+    if (ret == LDAP_SUCCESS) {
+        slapi_pblock_get(pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES, &entries);
+        if (entries && entries[0]) {
+            char *value = slapi_entry_attr_get_charptr(entries[0],
+                                                       "nsslapd-pluginEnabled");
+            if (value) {
+                *enabled = (strcasecmp(value, "on") == 0);
+                found = true;
+                slapi_ch_free_string(&value);
+            }
+        }
+    }
+
+    slapi_free_search_results_internal(pb);
+    slapi_pblock_destroy(pb);
+
+    return found;
+}
+
+static bool ipa_cldap_gc_listener_enabled(struct ipa_cldap_ctx *ctx)
+{
+    bool enabled;
+
+    if (ipa_cldap_gc_marker_enabled(ctx, &enabled)) {
+        return enabled;
+    }
+
+    if (ipa_cldap_gc_plugin_enabled(ctx, &enabled)) {
+        return enabled;
+    }
+
+    return false;
+}
+
 static int string_to_guid(char *str, struct GUID *guid)
 {
     unsigned int time_low;
@@ -159,12 +273,14 @@ char *make_netbios_name(TALLOC_CTX *mem_ctx, const char *s)
 
 static int ipa_cldap_encode_netlogon(const char *fq_hostname, char *domain,
                                      char *guid, char *sid, char *name,
-                                     uint32_t ntver, struct berval *reply)
+                                     uint32_t ntver, bool gc_enabled,
+                                     struct berval *reply)
 {
     struct NETLOGON_SAM_LOGON_RESPONSE_EX *nlr;
     enum ndr_err_code ndr_err;
     DATA_BLOB blob;
     int ret;
+    uint32_t server_type;
 
     nlr = talloc_zero(NULL, struct NETLOGON_SAM_LOGON_RESPONSE_EX);
     if (!nlr) {
@@ -178,15 +294,18 @@ static int ipa_cldap_encode_netlogon(const char *fq_hostname, char *domain,
 
     nlr->command = LOGON_SAM_LOGON_RESPONSE_EX;
     /* nlr->sbz */
-    nlr->server_type = DS_SERVER_PDC |
-                        DS_SERVER_GC |
-                        DS_SERVER_LDAP |
-                        DS_SERVER_DS |
-                        DS_SERVER_KDC |
-                        DS_SERVER_TIMESERV |
-                        DS_SERVER_CLOSEST |
-                        DS_SERVER_WRITABLE |
-                        DS_SERVER_GOOD_TIMESERV;
+    server_type = DS_SERVER_PDC |
+                  DS_SERVER_LDAP |
+                  DS_SERVER_DS |
+                  DS_SERVER_KDC |
+                  DS_SERVER_TIMESERV |
+                  DS_SERVER_CLOSEST |
+                  DS_SERVER_WRITABLE |
+                  DS_SERVER_GOOD_TIMESERV;
+    if (gc_enabled) {
+        server_type |= DS_SERVER_GC;
+    }
+    nlr->server_type = server_type;
     string_to_guid(guid, &nlr->domain_uuid);
     nlr->forest = domain;
     nlr->dns_domain = domain;
@@ -246,6 +365,7 @@ int ipa_cldap_netlogon(struct ipa_cldap_ctx *ctx,
     uint32_t ntver = 0;
     uint32_t t;
     char *dot;
+    bool gc_enabled;
     int ret;
     int len;
     int i;
@@ -355,9 +475,11 @@ int ipa_cldap_netlogon(struct ipa_cldap_ctx *ctx,
         }
     }
 
+    gc_enabled = ipa_cldap_gc_listener_enabled(ctx);
+
     ret = ipa_cldap_encode_netlogon(hostname, our_domain,
                                     guid, sid, name,
-                                    ntver, reply);
+                                    ntver, gc_enabled, reply);
 
 done:
     free(domain);
