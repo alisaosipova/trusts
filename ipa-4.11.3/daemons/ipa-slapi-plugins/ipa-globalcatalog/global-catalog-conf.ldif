@@ -1,17 +1,24 @@
-# Placeholder configuration for the IPA Global Catalog plugin.
+# IPA Global Catalog plugin configuration
 #
-# The entry is installed so that ldapupdate templates can depend on a known
-# DN.  It does not reference a shared object yet which keeps the Directory
-# Server happy even before the binary plugin lands.
+# The shared object is loaded by 389-DS to synthesise Active Directory
+# compatible attributes for IPA principals whenever a client connects via
+# the dedicated global catalog listener.  The listener itself is created by
+# the installer while the plugin focuses on rewriting entries.
 
 dn: cn=ipa-globalcatalog,cn=plugins,cn=config
-objectClass: top
-objectClass: nsSlapdPlugin
-cn: ipa-globalcatalog
-nsslapd-pluginEnabled: off
-nsslapd-pluginPath: libipa-globalcatalog-plugin.so
-nsslapd-pluginType: object
-nsslapd-pluginId: ipa-globalcatalog
-nsslapd-pluginVersion: 1.0
-nsslapd-pluginVendor: FreeIPA
-nsslapd-pluginDescription: IPA Global Catalog listener
+default: changetype: add
+default: objectClass: top
+default: objectClass: nsSlapdPlugin
+default: objectClass: extensibleObject
+default: cn: ipa-globalcatalog
+default: nsslapd-pluginPath: libipa-globalcatalog-plugin
+default: nsslapd-pluginInitfunc: ipa_globalcatalog_plugin_init
+default: nsslapd-pluginType: postoperation
+default: nsslapd-pluginEnabled: on
+default: nsslapd-pluginId: ipa-globalcatalog
+default: nsslapd-pluginVersion: 1.0
+default: nsslapd-pluginVendor: FreeIPA
+default: nsslapd-pluginDescription: IPA Global Catalog synthesiser
+default: nsslapd-plugin-depends-on-type: database
+default: nsslapd-basedn: $SUFFIX
+default: ipaGCRealm: $REALM
