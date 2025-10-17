@@ -4278,6 +4278,219 @@ static NTSTATUS ipasam_fill_trusted_domain_info(TALLOC_CTX *mem_ctx,
         return NT_STATUS_OK;
 }
 
+static NTSTATUS ipasam_set_lsa_string(TALLOC_CTX *mem_ctx,
+                                     struct lsa_String *dst,
+                                     const char *value)
+{
+        size_t len;
+        size_t i;
+
+        if (dst == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCT(*dst);
+
+        if (value == NULL || value[0] == '\0') {
+                return NT_STATUS_OK;
+        }
+
+        len = strlen(value);
+        if (len == 0) {
+                return NT_STATUS_OK;
+        }
+
+        dst->string = talloc_zero_array(mem_ctx, uint16_t, len + 1);
+        if (dst->string == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        for (i = 0; i < len; i++) {
+                dst->string[i] = (uint16_t)(unsigned char)value[i];
+        }
+
+        dst->length = len * 2;
+        dst->size = len * 2;
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS ipasam_set_lsa_string_large(TALLOC_CTX *mem_ctx,
+                                            struct lsa_StringLarge *dst,
+                                            const char *value)
+{
+        size_t len;
+        size_t i;
+
+        if (dst == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCT(*dst);
+
+        if (value == NULL || value[0] == '\0') {
+                return NT_STATUS_OK;
+        }
+
+        len = strlen(value);
+        if (len == 0) {
+                return NT_STATUS_OK;
+        }
+
+        dst->string = talloc_zero_array(mem_ctx, uint16_t, len + 1);
+        if (dst->string == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        for (i = 0; i < len; i++) {
+                dst->string[i] = (uint16_t)(unsigned char)value[i];
+        }
+
+        dst->length = len * 2;
+        dst->size = len * 2;
+
+        return NT_STATUS_OK;
+}
+
+static char *ipasam_trim_account_name(TALLOC_CTX *mem_ctx, const char *account_name)
+{
+        size_t len;
+
+        if (account_name == NULL) {
+                return NULL;
+        }
+
+        len = strlen(account_name);
+        while (len > 0 && account_name[len - 1] == '$') {
+                len--;
+        }
+
+        if (len == 0) {
+                return NULL;
+        }
+
+        return talloc_strndup(mem_ctx, account_name, len);
+}
+
+static NTSTATUS ipasam_build_validation_sam_info6(TALLOC_CTX *mem_ctx,
+                                                  const struct pdb_domain_info *domain,
+                                                  const struct netlogon_creds_CredentialState *creds,
+                                                  const union netr_WorkstationInfo *query,
+                                                  struct netr_SamInfo6 **info_out)
+{
+        struct netr_SamInfo6 *info = NULL;
+        NTSTATUS status = NT_STATUS_OK;
+        const char *account_name = NULL;
+        const char *domain_name = NULL;
+        char *principal = NULL;
+        char *account_without_suffix = NULL;
+
+        (void)query;
+
+        if (info_out == NULL || domain == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *info_out = NULL;
+
+        info = talloc_zero(mem_ctx, struct netr_SamInfo6);
+        if (info == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        if (creds != NULL && creds->account_name != NULL) {
+                account_name = (const char *)creds->account_name;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.account_name, account_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.full_name, account_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.logon_script, NULL);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.profile_path, NULL);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.home_directory, NULL);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string(info, &info->base.home_drive, NULL);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        info->base.groups.count = 0;
+        info->base.groups.rids = NULL;
+        info->base.user_flags = 0;
+        info->base.acct_flags = ACB_WSTRUST;
+
+        domain_name = (domain->dns_domain != NULL && domain->dns_domain[0] != '\0') ?
+                      domain->dns_domain : domain->name;
+
+        status = ipasam_set_lsa_string_large(info, &info->base.logon_domain, domain_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        status = ipasam_set_lsa_string_large(info, &info->base.logon_server, domain->name);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        if (!is_null_sid(&domain->sid)) {
+                info->base.domain_sid = talloc_zero(info, struct dom_sid2);
+                if (info->base.domain_sid == NULL) {
+                        status = NT_STATUS_NO_MEMORY;
+                        goto done;
+                }
+                sid_copy(&info->base.domain_sid->sid, &domain->sid);
+        }
+
+        status = ipasam_set_lsa_string(info, &info->dns_domainname, domain_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+
+        account_without_suffix = ipasam_trim_account_name(info, account_name);
+        if (account_without_suffix != NULL && domain_name != NULL) {
+                principal = talloc_asprintf(info, "%s@%s",
+                                            account_without_suffix,
+                                            domain_name);
+        } else if (account_name != NULL) {
+                principal = talloc_strdup(info, account_name);
+        }
+
+        status = ipasam_set_lsa_string(info, &info->principal_name, principal);
+        if (!NT_STATUS_IS_OK(status)) {
+                goto done;
+        }
+        TALLOC_FREE(principal);
+
+        info->sidcount = 0;
+        info->sids = NULL;
+
+        *info_out = info;
+
+done:
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(info);
+        }
+        return status;
+}
+
 NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
                                                struct netlogon_creds_CredentialState *creds,
                                                enum dcerpc_AuthType auth_type,
@@ -4293,8 +4506,10 @@ NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
         TALLOC_CTX *tmp_ctx = NULL;
         NTSTATUS status;
         uint32_t i;
+        struct netr_SamInfo6 *validation = NULL;
+        struct pdb_trusted_domain *trusted_domain = NULL;
+        bool pac_verified = false;
 
-        (void)creds;
         (void)auth_type;
         (void)auth_level;
         (void)level;
@@ -4374,6 +4589,34 @@ NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
         info->trusted_domain_count = num_domains;
 
         TALLOC_FREE(tmp_ctx);
+
+        status = ipasam_build_validation_sam_info6(info,
+                                                   domain,
+                                                   creds,
+                                                   query,
+                                                   &validation);
+        if (NT_STATUS_IS_OK(status)) {
+                info->validation_info = validation;
+        }
+
+        if (creds != NULL && creds->account_name != NULL) {
+                status = ipasam_fetch_trusted_domain(info,
+                                                     creds,
+                                                     (const char *)creds->account_name,
+                                                     &trusted_domain);
+                if (NT_STATUS_IS_OK(status) && trusted_domain != NULL) {
+                        if (trusted_domain->trust_auth_incoming.length > 0) {
+                                info->pac_blob = data_blob_dup_talloc(info,
+                                                                     &trusted_domain->trust_auth_incoming);
+                                if (info->pac_blob.data != NULL &&
+                                    info->pac_blob.length > 0) {
+                                        pac_verified = true;
+                                }
+                        }
+                }
+        }
+
+        info->pac_was_validated = pac_verified;
 
         *info_out = info;
 
