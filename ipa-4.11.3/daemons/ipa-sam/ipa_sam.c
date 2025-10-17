@@ -7,12 +7,20 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <pwd.h>
 #include <errno.h>
 #include <ldap.h>
 #include <krb5/krb5.h>
+#include <strings.h>
 
 #include <talloc.h>
+
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN 46
+#endif
 
 #include <param.h>
 #include <ndr.h>
@@ -153,6 +161,7 @@ bool E_md4hash(const char *passwd, uint8_t p16[16]); /* available in libcliauth-
 #define LDAP_ATTRIBUTE_ASSOCIATED_DOMAIN "associatedDomain"
 #define LDAP_ATTRIBUTE_DISPLAYNAME "displayName"
 #define LDAP_ATTRIBUTE_DESCRIPTION "description"
+#define IPA_DEFAULT_SITE_NAME "Default-First-Site-Name"
 
 #define LDAP_OBJ_KRB_PRINCIPAL "krbPrincipal"
 #define LDAP_OBJ_KRB_PRINCIPAL_AUX "krbPrincipalAux"
@@ -3518,6 +3527,389 @@ WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
         }
 
         talloc_free(tmp_ctx);
+
+        return WERR_OK;
+}
+
+static char *ipasam_sockaddr_to_string(TALLOC_CTX *mem_ctx,
+                                       const struct netr_DsRAddress *address)
+{
+        struct sockaddr *sa;
+        char tmp[INET6_ADDRSTRLEN];
+        const char *res = NULL;
+
+        if (address == NULL || address->buffer == NULL ||
+            address->size < sizeof(sa_family_t)) {
+                return NULL;
+        }
+
+        sa = (struct sockaddr *)address->buffer;
+
+        switch (sa->sa_family) {
+        case AF_INET:
+                if (address->size < sizeof(struct sockaddr_in)) {
+                        return NULL;
+                }
+                res = inet_ntop(AF_INET,
+                                &((struct sockaddr_in *)sa)->sin_addr,
+                                tmp,
+                                sizeof(tmp));
+                break;
+#ifdef HAVE_IPV6
+        case AF_INET6:
+                if (address->size < sizeof(struct sockaddr_in6)) {
+                        return NULL;
+                }
+                res = inet_ntop(AF_INET6,
+                                &((struct sockaddr_in6 *)sa)->sin6_addr,
+                                tmp,
+                                sizeof(tmp));
+                break;
+#endif
+        default:
+                return NULL;
+        }
+
+        if (res == NULL) {
+                return NULL;
+        }
+
+        return talloc_strdup(mem_ctx, res);
+}
+
+static char *ipasam_extract_rdn_value(TALLOC_CTX *mem_ctx, const char *dn)
+{
+        struct berval bv;
+        LDAPDN ldap_dn = NULL;
+        char *value = NULL;
+        int ret;
+
+        if (dn == NULL) {
+                return NULL;
+        }
+
+        bv.bv_val = (char *)dn;
+        bv.bv_len = strlen(dn);
+
+        ret = ldap_bv2dn(&bv, &ldap_dn, LDAP_DN_FORMAT_LDAPV3);
+        if (ret != LDAP_SUCCESS) {
+                return NULL;
+        }
+
+        if (ldap_dn != NULL && ldap_dn[0] != NULL &&
+            ldap_dn[0][0].la_value.bv_val != NULL) {
+                value = talloc_strndup(mem_ctx,
+                                       ldap_dn[0][0].la_value.bv_val,
+                                       ldap_dn[0][0].la_value.bv_len);
+        }
+
+        ldap_dnfree(ldap_dn);
+
+        return value;
+}
+
+static char *ipasam_location_name_from_dn(struct ipasam_private *state,
+                                          TALLOC_CTX *mem_ctx,
+                                          const char *location_dn)
+{
+        LDAPMessage *result = NULL;
+        LDAPMessage *entry;
+        char *site = NULL;
+        char *attrs[] = { "idnsName", NULL };
+        int ret;
+
+        if (location_dn == NULL) {
+                return NULL;
+        }
+
+        ret = ldap_search_ext_s(priv2ld(state), location_dn, LDAP_SCOPE_BASE,
+                                 "(objectClass=ipaLocationObject)", attrs, 0,
+                                 NULL, NULL, NULL, 0, &result);
+        if (ret == LDAP_SUCCESS) {
+                entry = ldap_first_entry(priv2ld(state), result);
+                if (entry != NULL) {
+                        site = get_single_attribute(mem_ctx, priv2ld(state),
+                                                     entry, "idnsName");
+                }
+        }
+
+        if (result != NULL) {
+                ldap_msgfree(result);
+        }
+
+        if (site != NULL) {
+                return site;
+        }
+
+        return ipasam_extract_rdn_value(mem_ctx, location_dn);
+}
+
+static char *ipasam_lookup_site_by_ip(struct ipasam_private *state,
+                                      TALLOC_CTX *mem_ctx,
+                                      const char *addr_str)
+{
+        LDAPMessage *result = NULL;
+        LDAPMessage *entry;
+        char *filter = NULL;
+        char *location_dn = NULL;
+        char *site = NULL;
+        char *attrs[] = { "ipaLocation", NULL };
+        int ret;
+
+        if (addr_str == NULL) {
+                return NULL;
+        }
+
+        filter = talloc_asprintf(mem_ctx,
+                                 "(&(objectClass=ipaHost)(ipHostNumber=%s))",
+                                 addr_str);
+        if (filter == NULL) {
+                return NULL;
+        }
+
+        ret = ldap_search_ext_s(priv2ld(state), state->base_dn,
+                                 LDAP_SCOPE_SUBTREE, filter, attrs, 0,
+                                 NULL, NULL, NULL, 0, &result);
+        if (ret != LDAP_SUCCESS) {
+                goto done;
+        }
+
+        entry = ldap_first_entry(priv2ld(state), result);
+        if (entry == NULL) {
+                goto done;
+        }
+
+        location_dn = get_single_attribute(mem_ctx, priv2ld(state), entry,
+                                           "ipaLocation");
+        if (location_dn == NULL) {
+                goto done;
+        }
+
+        site = ipasam_location_name_from_dn(state, mem_ctx, location_dn);
+
+done:
+        if (result != NULL) {
+                ldap_msgfree(result);
+        }
+        TALLOC_FREE(filter);
+        TALLOC_FREE(location_dn);
+
+        return site;
+}
+
+static char *ipasam_default_site(TALLOC_CTX *mem_ctx)
+{
+        return talloc_strdup(mem_ctx, IPA_DEFAULT_SITE_NAME);
+}
+
+WERROR ipasam_netlogon_address_to_sitenames(TALLOC_CTX *mem_ctx,
+                                            uint32_t count,
+                                            struct netr_DsRAddress *addresses,
+                                            struct netr_DsRAddressToSitenamesExWCtr **ctr_out)
+{
+        struct ipasam_private *state;
+        struct netr_DsRAddressToSitenamesExWCtr *ctr;
+        TALLOC_CTX *tmp_ctx = NULL;
+        uint32_t i;
+
+        if (ctr_out == NULL) {
+                return WERR_INVALID_PARAMETER;
+        }
+
+        if (ipasam_global_methods == NULL ||
+            ipasam_global_methods->private_data == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        state = talloc_get_type_abort(ipasam_global_methods->private_data,
+                                      struct ipasam_private);
+
+        ctr = talloc_zero(mem_ctx, struct netr_DsRAddressToSitenamesExWCtr);
+        if (ctr == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->count = count;
+        ctr->sitename = talloc_zero_array(ctr, struct lsa_String, count);
+        if (ctr->sitename == NULL && count > 0) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ctr->subnetname = talloc_zero_array(ctr, struct lsa_String, count);
+        if (ctr->subnetname == NULL && count > 0) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        for (i = 0; i < count; i++) {
+                char *addr_str = ipasam_sockaddr_to_string(tmp_ctx,
+                                                           &addresses[i]);
+                char *site = NULL;
+
+                if (addr_str != NULL) {
+                        site = ipasam_lookup_site_by_ip(state,
+                                                         ctr->sitename,
+                                                         addr_str);
+                }
+
+                if (site == NULL) {
+                        site = ipasam_default_site(ctr->sitename);
+                        if (site == NULL) {
+                                TALLOC_FREE(tmp_ctx);
+                                TALLOC_FREE(ctr);
+                                return WERR_NOT_ENOUGH_MEMORY;
+                        }
+                }
+
+                ctr->sitename[i].string = site;
+
+                TALLOC_FREE(addr_str);
+        }
+
+        TALLOC_FREE(tmp_ctx);
+
+        *ctr_out = ctr;
+
+        return WERR_OK;
+}
+
+WERROR ipasam_netlogon_get_site_coverage(TALLOC_CTX *mem_ctx,
+                                         struct DcSitesCtr **ctr_out)
+{
+        struct ipasam_private *state;
+        struct DcSitesCtr *ctr;
+        LDAPMessage *result = NULL;
+        LDAPMessage *entry;
+        char *attrs[] = { "idnsName", NULL };
+        TALLOC_CTX *tmp_ctx = NULL;
+        char *locations_base = NULL;
+        uint32_t count = 0;
+        int ret;
+
+        if (ctr_out == NULL) {
+            return WERR_INVALID_PARAMETER;
+        }
+
+        if (ipasam_global_methods == NULL ||
+            ipasam_global_methods->private_data == NULL) {
+                return WERR_NOT_SUPPORTED;
+        }
+
+        state = talloc_get_type_abort(ipasam_global_methods->private_data,
+                                      struct ipasam_private);
+
+        ctr = talloc_zero(mem_ctx, struct DcSitesCtr);
+        if (ctr == NULL) {
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        tmp_ctx = talloc_new(mem_ctx);
+        if (tmp_ctx == NULL) {
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        locations_base = talloc_asprintf(tmp_ctx,
+                                         "cn=locations,cn=etc,%s",
+                                         state->base_dn);
+        if (locations_base == NULL) {
+                TALLOC_FREE(tmp_ctx);
+                TALLOC_FREE(ctr);
+                return WERR_NOT_ENOUGH_MEMORY;
+        }
+
+        ret = ldap_search_ext_s(priv2ld(state), locations_base,
+                                 LDAP_SCOPE_SUBTREE,
+                                 "(objectClass=ipaLocationObject)", attrs, 0,
+                                 NULL, NULL, NULL, 0, &result);
+        if (ret == LDAP_SUCCESS) {
+                for (entry = ldap_first_entry(priv2ld(state), result);
+                     entry != NULL;
+                     entry = ldap_next_entry(priv2ld(state), entry)) {
+                        char *name = get_single_attribute(tmp_ctx,
+                                                          priv2ld(state),
+                                                          entry,
+                                                          "idnsName");
+                        bool duplicate = false;
+                        uint32_t j;
+
+                        if (name == NULL) {
+                                continue;
+                        }
+
+                        for (j = 0; j < count; j++) {
+                                if (ctr->sites[j].string != NULL &&
+                                    strcasecmp(ctr->sites[j].string, name) == 0) {
+                                        duplicate = true;
+                                        break;
+                                }
+                        }
+
+                        if (duplicate) {
+                                TALLOC_FREE(name);
+                                continue;
+                        }
+
+                        ctr->sites = talloc_realloc(ctr, ctr->sites,
+                                                    struct lsa_String,
+                                                    count + 1);
+                        if (ctr->sites == NULL) {
+                                TALLOC_FREE(name);
+                                TALLOC_FREE(tmp_ctx);
+                                TALLOC_FREE(ctr);
+                                if (result != NULL) {
+                                        ldap_msgfree(result);
+                                }
+                                return WERR_NOT_ENOUGH_MEMORY;
+                        }
+
+                        ZERO_STRUCT(ctr->sites[count]);
+                        ctr->sites[count].string = talloc_strdup(ctr->sites,
+                                                                 name);
+                        TALLOC_FREE(name);
+                        if (ctr->sites[count].string == NULL) {
+                                TALLOC_FREE(tmp_ctx);
+                                TALLOC_FREE(ctr);
+                                if (result != NULL) {
+                                        ldap_msgfree(result);
+                                }
+                                return WERR_NOT_ENOUGH_MEMORY;
+                        }
+
+                        count++;
+                }
+        }
+
+        if (result != NULL) {
+                ldap_msgfree(result);
+        }
+
+        TALLOC_FREE(tmp_ctx);
+
+        if (count == 0) {
+                ctr->sites = talloc_zero_array(ctr, struct lsa_String, 1);
+                if (ctr->sites == NULL) {
+                        TALLOC_FREE(ctr);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+                ctr->sites[0].string = ipasam_default_site(ctr->sites);
+                if (ctr->sites[0].string == NULL) {
+                        TALLOC_FREE(ctr);
+                        return WERR_NOT_ENOUGH_MEMORY;
+                }
+                ctr->num_sites = 1;
+        } else {
+                ctr->num_sites = count;
+        }
+
+        *ctr_out = ctr;
 
         return WERR_OK;
 }
