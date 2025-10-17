@@ -103,13 +103,13 @@ static int do_work(struct worker_ctx *worker_ctx)
 
     pthread_cleanup_push(free_pblock, (void *) pb);
 
-    filter = slapi_ch_smprintf("(&(%s=%s)(!(%s=%s))(|(%s=%s)(%s=%s)(%s=%s))(!(%s=*)))",
-                               OBJECTCLASS, IPA_OBJECT,
-                               OBJECTCLASS, MEP_MANAGED_ENTRY,
-                               OBJECTCLASS, POSIX_ACCOUNT,
-                               OBJECTCLASS, POSIX_GROUP,
+    filter = slapi_ch_smprintf("(&(%s=%s)(!(%s=%s))(|(%s=%s)(%s=%s)(%s=%s))(|(!(%s=*))(!(%s=*))))",
+                                OBJECTCLASS, IPA_OBJECT,
+                                OBJECTCLASS, MEP_MANAGED_ENTRY,
+                                OBJECTCLASS, POSIX_ACCOUNT,
+                                OBJECTCLASS, POSIX_GROUP,
                                OBJECTCLASS, IPA_ID_OBJECT,
-                               IPA_SID);
+                               IPA_SID, IPA_OBJECT_SID);
     if (filter == NULL) {
         LOG_FATAL("Cannot generate search filter for objects without a SID.\n");
         ret = ENOMEM;

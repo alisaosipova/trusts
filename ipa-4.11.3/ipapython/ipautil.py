@@ -75,6 +75,46 @@ InterfaceDetails = collections.namedtuple(
     ])
 
 
+def sid_bytes_to_str(value):
+    """Convert a binary SID value into its canonical string form."""
+
+    if value is None:
+        raise ValueError('SID value is empty')
+
+    if isinstance(value, memoryview):
+        sid = value.tobytes()
+    elif isinstance(value, (bytes, bytearray)):
+        sid = bytes(value)
+    elif isinstance(value, str):
+        sid = value.encode('latin1')
+    else:
+        raise TypeError('Unsupported SID value type: {}'.format(type(value)))
+
+    if len(sid) < 8:
+        raise ValueError('SID buffer too short')
+
+    revision = sid[0]
+    subauth_count = sid[1]
+    identifier_authority = int.from_bytes(sid[2:8], byteorder='big')
+
+    subs = []
+    offset = 8
+    for _index in range(subauth_count):
+        if offset + 4 > len(sid):
+            raise ValueError('SID buffer too short for sub-authorities')
+        subs.append(int.from_bytes(sid[offset:offset + 4], byteorder='little'))
+        offset += 4
+
+    if offset != len(sid):
+        raise ValueError('Unexpected SID length')
+
+    if subs:
+        return 'S-{}-{}-{}'.format(
+            revision, identifier_authority, '-'.join(str(s) for s in subs)
+        )
+    return 'S-{}-{}'.format(revision, identifier_authority)
+
+
 class UnsafeIPAddress(netaddr.IPAddress):
     """Any valid IP address with or without netmask."""
 

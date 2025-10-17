@@ -1716,10 +1716,11 @@ class TestIPACommandWithoutReplica(IntegrationTest):
                 self.master,
                 'uid={user},cn=users,cn=accounts,{base_dn}'.format(
                     user=user, base_dn=base_dn),
-                ['ipantsecurityidentifier'],
+                ['ipantsecurityidentifier', 'objectSid'],
                 scope='base'
             )
             assert 'ipantsecurityidentifier' in result.stdout_text
+            assert 'objectSid::' in result.stdout_text
 
             # Defaults: host/... principal for service
             # keytab in /etc/krb5.keytab

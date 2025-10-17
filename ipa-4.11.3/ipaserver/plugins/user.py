@@ -133,7 +133,12 @@ logger = logging.getLogger(__name__)
 register = Registry()
 
 
-user_output_params = baseuser_output_params
+user_output_params = baseuser_output_params + (
+    Str('objectsid?',
+        label=_('Object SID'),
+        flags=['no_create', 'no_update', 'no_search'],
+    ),
+)
 
 MEMBEROF_ADMINS = "(memberOf={})".format(
     DN('cn=admins', api.env.container_group, api.env.basedn)
@@ -195,7 +200,7 @@ class user(baseuser):
                 'objectclass', 'cn', 'sn', 'description', 'title', 'uid',
                 'displayname', 'givenname', 'initials', 'manager', 'gecos',
                 'gidnumber', 'homedirectory', 'loginshell', 'uidnumber',
-                'ipantsecurityidentifier'
+                'ipantsecurityidentifier', 'objectsid'
             },
         },
         'System: Read User Addressbook Attributes': {
@@ -1067,6 +1072,7 @@ class user_stage(LDAPMultiQuery):
                     u'sshpubkeyfp', u'krbextradata',
                     u'ipacertmapdata',
                     'ipantsecurityidentifier',
+                    'objectsid',
                     u'nsaccountlock',
                     u'ipapasskey']
 

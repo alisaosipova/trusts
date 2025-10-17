@@ -42,7 +42,7 @@ from .baseldap import (
 from .dns import dns_container_exists
 from ipaplatform.paths import paths
 from ipapython.dn import DN
-from ipapython.ipautil import realm_to_suffix
+from ipapython.ipautil import realm_to_suffix, sid_bytes_to_str
 from ipalib import api, Str, StrEnum, Password, Bool, _, ngettext, Int, Flag
 from ipalib import Command
 from ipalib import errors
@@ -170,6 +170,22 @@ particular type.
 """)
 
 logger = logging.getLogger(__name__)
+
+
+def convert_objectsid(entry_attrs):
+    values = entry_attrs.get('objectsid')
+    if not values:
+        return
+
+    converted = []
+    try:
+        for value in values:
+            converted.append(sid_bytes_to_str(value))
+    except (TypeError, ValueError):
+        logger.debug('Unable to convert objectSid value', exc_info=True)
+        return
+
+    entry_attrs['objectsid'] = converted
 
 register = Registry()
 
@@ -500,11 +516,11 @@ class trust(LDAPObject):
                           'ipanttrustforesttrustinfo',
                           'ipanttrustposixoffset',
                           'ipantsupportedencryptiontypes',
-                          'ipantadditionalsuffixes']
+                          'ipantadditionalsuffixes', 'objectsid']
     search_display_attributes = ['cn', 'ipantflatname',
                                  'ipanttrusteddomainsid', 'ipanttrusttype',
                                  'ipanttrustattributes',
-                                 'ipantadditionalsuffixes']
+                                 'ipantadditionalsuffixes', 'objectsid']
     managed_permissions = {
         'System: Read Trust Information': {
             # Allow reading of attributes needed for SSSD subdomains support
@@ -515,7 +531,7 @@ class trust(LDAPObject):
             'ipapermright': {'read', 'search', 'compare'},
             'ipapermdefaultattr': {
                 'cn', 'objectclass',
-                'ipantflatname', 'ipantsecurityidentifier',
+                'ipantflatname', 'ipantsecurityidentifier', 'objectsid',
                 'ipanttrusteddomainsid', 'ipanttrustpartner',
                 'ipantsidblacklistincoming', 'ipantsidblacklistoutgoing',
                 'ipanttrustdirection', 'ipantadditionalsuffixes',
@@ -551,6 +567,9 @@ class trust(LDAPObject):
             cli_name='sid',
             label=_('Domain Security Identifier'),
             flags=['no_create', 'no_update']),
+        Str('objectsid?',
+            label=_('Object SID'),
+            flags=['no_create', 'no_update', 'no_search']),
         Str('ipantsidblacklistincoming*',
             cli_name='sid_blacklist_incoming',
             label=_('SID blocklist incoming'),
@@ -577,6 +596,14 @@ class trust(LDAPObject):
             flags={'no_create', 'no_search'},
         ),
     )
+
+    def convert_attribute_members(self, entry_attrs, *keys, **options):
+        super(trust, self).convert_attribute_members(
+            entry_attrs, *keys, **options
+        )
+        if options.get('raw', False):
+            return
+        convert_objectsid(entry_attrs)
 
     def validate_sid_blocklists(self, entry_attrs):
         if not _bindings_installed:
@@ -1247,7 +1274,7 @@ class trustconfig(LDAPObject):
     object_name = _('trust configuration')
     default_attributes = [
         'cn', 'ipantsecurityidentifier', 'ipantflatname', 'ipantdomainguid',
-        'ipantfallbackprimarygroup',
+        'ipantfallbackprimarygroup', 'objectsid',
     ]
 
     label = _('Global Trust Configuration')
@@ -1260,6 +1287,10 @@ class trustconfig(LDAPObject):
         ),
         Str('ipantsecurityidentifier',
             label=_('Security Identifier'),
+            flags=['no_update'],
+        ),
+        Str('objectsid',
+            label=_('Object SID'),
             flags=['no_update'],
         ),
         Str('ipantflatname',
@@ -1287,6 +1318,14 @@ class trustconfig(LDAPObject):
             flags={'virtual_attribute', 'no_create', 'no_update'}
         ),
     )
+
+    def convert_attribute_members(self, entry_attrs, *keys, **options):
+        super(trustconfig, self).convert_attribute_members(
+            entry_attrs, *keys, **options
+        )
+        if options.get('raw', False):
+            return
+        convert_objectsid(entry_attrs)
 
     def get_dn(self, *keys, **kwargs):
         trust_type = kwargs.get('trust_type')
@@ -1580,10 +1619,11 @@ class trustdomain(LDAPObject):
     object_name_plural = _('trust domains')
     object_class = ['ipaNTTrustedDomain']
     default_attributes = ['cn', 'ipantflatname', 'ipanttrusteddomainsid',
-                          'ipanttrustpartner', 'ipantadditionalsuffixes']
+                          'ipanttrustpartner', 'ipantadditionalsuffixes',
+                          'objectsid']
     search_display_attributes = ['cn', 'ipantflatname',
                                  'ipanttrusteddomainsid',
-                                 'ipantadditionalsuffixes']
+                                 'ipantadditionalsuffixes', 'objectsid']
 
     label = _('Trusted domains')
     label_singular = _('Trusted domain')
@@ -1599,11 +1639,22 @@ class trustdomain(LDAPObject):
         Str('ipanttrusteddomainsid?',
             cli_name='sid',
             label=_('Domain Security Identifier')),
+        Str('objectsid?',
+            label=_('Object SID'),
+            flags=['no_create', 'no_update', 'no_search']),
         Flag('domain_enabled',
              label=_('Domain enabled'),
              flags={'virtual_attribute',
                     'no_create', 'no_update', 'no_search'}),
     )
+
+    def convert_attribute_members(self, entry_attrs, *keys, **options):
+        super(trustdomain, self).convert_attribute_members(
+            entry_attrs, *keys, **options
+        )
+        if options.get('raw', False):
+            return
+        convert_objectsid(entry_attrs)
 
     # LDAPObject.get_dn() only passes all but last element of keys and no
     # kwargs to the parent object's get_dn() no matter what you pass to it.

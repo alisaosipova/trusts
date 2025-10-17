@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import base64
+import logging
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 import re
@@ -39,7 +40,11 @@ from ipaserver.plugins.service import (validate_realm, normalize_principal)
 from ipalib.request import context
 from ipalib import _
 from ipapython import kerberos
-from ipapython.ipautil import ipa_generate_password, TMP_PWD_ENTROPY_BITS
+from ipapython.ipautil import (
+    ipa_generate_password,
+    TMP_PWD_ENTROPY_BITS,
+    sid_bytes_to_str,
+)
 from ipapython.ipavalidate import Email
 from ipalib.util import (
     normalize_sshpubkey,
@@ -65,6 +70,8 @@ This contains common definitions for user/stageuser
 """)
 
 register = Registry()
+
+logger = logging.getLogger(__name__)
 
 NO_UPG_MAGIC = '__no_upg__'
 
@@ -104,6 +111,22 @@ def idp_dn2pk(api, entry_attrs):
     if cl:
         pk = api.Object['idp'].get_primary_key_from_dn(cl[0])
         entry_attrs['ipaidpconfiglink'] = [pk]
+
+
+def convert_objectsid(entry_attrs):
+    values = entry_attrs.get('objectsid')
+    if not values:
+        return
+
+    converted = []
+    try:
+        for value in values:
+            converted.append(sid_bytes_to_str(value))
+    except (TypeError, ValueError):
+        logger.debug('Unable to convert objectSid value', exc_info=True)
+        return
+
+    entry_attrs['objectsid'] = converted
 
 
 def convert_nsaccountlock(entry_attrs):
@@ -628,6 +651,7 @@ class baseuser_add(LDAPCreate):
             convert_nsaccountlock(entry_attrs)
         radius_dn2pk(self.api, entry_attrs)
         idp_dn2pk(self.api, entry_attrs)
+        convert_objectsid(entry_attrs)
 
 
 class baseuser_del(LDAPDelete):
@@ -813,6 +837,7 @@ class baseuser_mod(LDAPUpdate):
         remove_sshpubkey_from_output_post(self.context, entry_attrs)
         radius_dn2pk(self.api, entry_attrs)
         idp_dn2pk(self.api, entry_attrs)
+        convert_objectsid(entry_attrs)
 
 class baseuser_find(LDAPSearch):
     """
@@ -854,6 +879,7 @@ class baseuser_find(LDAPSearch):
             else:
                 convert_nsaccountlock(attrs)
             convert_sshpubkey_post(attrs)
+            convert_objectsid(attrs)
         remove_sshpubkey_from_output_list_post(self.context, entries)
 
 class baseuser_show(LDAPRetrieve):
@@ -872,6 +898,7 @@ class baseuser_show(LDAPRetrieve):
         remove_sshpubkey_from_output_post(self.context, entry_attrs)
         radius_dn2pk(self.api, entry_attrs)
         idp_dn2pk(self.api, entry_attrs)
+        convert_objectsid(entry_attrs)
 
 
 class baseuser_add_manager(LDAPAddMember):

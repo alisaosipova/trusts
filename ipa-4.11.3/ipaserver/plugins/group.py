@@ -47,6 +47,7 @@ from ipalib import _, ngettext
 from ipalib import errors
 from ipalib import output
 from ipapython.dn import DN
+from ipapython.ipautil import sid_bytes_to_str
 
 if six.PY3:
     unicode = str
@@ -189,6 +190,11 @@ group_output_params = (
         'membermanager',
         label=_('Failed member manager'),
     ),
+    Str(
+        'objectsid?',
+        label=_('Object SID'),
+        flags=['no_create', 'no_update', 'no_search'],
+    ),
 )
 
 
@@ -220,9 +226,17 @@ class group(LDAPObject):
         'memberof': ['group', 'netgroup', 'role', 'hbacrule', 'sudorule'],
         'memberindirect': ['user', 'group', 'service', 'idoverrideuser'],
         'memberofindirect': ['group', 'netgroup', 'role', 'hbacrule',
-        'sudorule'],
+                             'sudorule'],
     }
     allow_rename = True
+
+    def convert_attribute_members(self, entry_attrs, *keys, **options):
+        super(group, self).convert_attribute_members(
+            entry_attrs, *keys, **options
+        )
+        if options.get('raw', False):
+            return
+        convert_objectsid(entry_attrs)
     managed_permissions = {
         'System: Read Groups': {
             'replaces_global_anonymous_aci': True,
@@ -232,7 +246,7 @@ class group(LDAPObject):
                 'businesscategory', 'cn', 'description', 'gidnumber',
                 'ipaexternalmember', 'ipauniqueid', 'mepmanagedby', 'o',
                 'objectclass', 'ou', 'owner', 'seealso',
-                'ipantsecurityidentifier', 'membermanager',
+                'ipantsecurityidentifier', 'objectsid', 'membermanager',
             },
         },
         'System: Read Group Membership': {
@@ -836,3 +850,19 @@ class group_remove_member_manager(LDAPRemoveMember):
         LDAPRemoveMember.has_output_params + group_output_params
     )
     member_attributes = ['membermanager']
+def convert_objectsid(entry_attrs):
+    values = entry_attrs.get('objectsid')
+    if not values:
+        return
+
+    converted = []
+    try:
+        for value in values:
+            converted.append(sid_bytes_to_str(value))
+    except (TypeError, ValueError):
+        logger.debug('Unable to convert objectSid value', exc_info=True)
+        return
+
+    entry_attrs['objectsid'] = converted
+
+

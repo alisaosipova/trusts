@@ -126,22 +126,22 @@ object will not pass through constraint checks.
 
 The SMB service object needs to have:
  - POSIX attributes
- - NT attributes, including `ipaNTSecurityIdentifier`
+ - NT attributes, including `ipaNTSecurityIdentifier` and `objectSid`
 
-`ipaNTSecurityIdentifier` is filled in by the SID generation plugin at the
-object creation time for SMB service.
+Both `ipaNTSecurityIdentifier` and `objectSid` are filled in by the SID
+generation plugin at the object creation time for SMB service.
 
 `ipaNTSecurityIdentifier` attribute is a part of `ipaNTUserAttrs` object class
 for users and SMB services. IPA groups also can contain the attribute via
 `ipaNTGroupAttrs` object class.
 
-With the help of the `sidgen` plugin, ipaNTSecurityIdentifier attribute is only
-added when:
+With the help of the `sidgen` plugin, ipaNTSecurityIdentifier and objectSid
+attributes are only added when:
  - the object has POSIX attributes `uidNumber` and `gidNumber`
  - the values of those attributes are within 32-bit unsigned integer
  - the object has any of the following object classes: `ipaIDObject`,
    `posixAccount`, or `posixGroup`
- - the object has no `ipaNTSecurityIdentifier` attribute already.
+ - the object lacks one or both of the SID attributes.
 
 `sidgen` plugin will add `ipaNTUserAttrs` object class for non-group objects and
 `ipaNTGroupAttr` for the group object type. A plugin is triggered at an object
