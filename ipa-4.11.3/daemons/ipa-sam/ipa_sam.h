@@ -32,11 +32,35 @@ NTSTATUS pdb_ipa_init(void);
 WERROR ipasam_netlogon_enum_trusts(TALLOC_CTX *mem_ctx,
                                    uint32_t trust_flags,
                                    struct netr_DomainTrustList *trusts);
+
+struct ipasam_netlogon_domain_info_entry {
+        const char *netbios_name;
+        const char *dns_domain_name;
+        const char *dns_forest_name;
+        struct GUID domain_guid;
+        struct dom_sid domain_sid;
+        uint32_t trust_flags;
+        uint32_t parent_index;
+        uint32_t trust_type;
+        uint32_t trust_attributes;
+};
+
+struct ipasam_netlogon_domain_info {
+        struct ipasam_netlogon_domain_info_entry primary_domain;
+        uint32_t trusted_domain_count;
+        struct ipasam_netlogon_domain_info_entry *trusted_domains;
+        const char *dns_hostname;
+        uint32_t workstation_flags;
+        uint32_t supported_enc_types;
+};
+
 NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
                                                struct netlogon_creds_CredentialState *creds,
-                                               struct netr_LogonGetDomainInfo *r,
                                                enum dcerpc_AuthType auth_type,
-                                               enum dcerpc_AuthLevel auth_level);
+                                               enum dcerpc_AuthLevel auth_level,
+                                               uint32_t level,
+                                               const union netr_WorkstationInfo *query,
+                                               struct ipasam_netlogon_domain_info **info_out);
 NTSTATUS ipasam_netlogon_server_password_get(TALLOC_CTX *mem_ctx,
                                              struct netlogon_creds_CredentialState *creds,
                                              enum dcerpc_AuthType auth_type,

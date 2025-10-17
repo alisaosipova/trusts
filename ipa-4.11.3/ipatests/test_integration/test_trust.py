@@ -258,6 +258,25 @@ class TestTrust(BaseTestTrust):
         """Validate secure channel verification and password rotation from AD."""
 
         realm = self.master.domain.name
+        trust_cmd = textwrap.dedent(
+            """
+            try {
+                if (Test-ADTrustRelationship -Target '{realm}' -ErrorAction Stop) {{
+                    'True'
+                }} else {
+                    'False'
+                }}
+            } catch {
+                Write-Error $_.Exception.Message
+                exit 1
+            }
+            """
+        ).format(realm=realm)
+        trust_result = self.ad.run_command(['powershell', '-c', trust_cmd])
+        trust_output = (
+            trust_result.stdout_text + trust_result.stderr_text
+        ).lower()
+        assert 'true' in trust_output
         verify_cmd = (
             'nltest.exe /sc_verify:{realm} | Out-String'
             .format(realm=realm)

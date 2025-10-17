@@ -34,6 +34,8 @@
 #include <libcli/auth/netlogon_creds.h>
 #include <librpc/rpc/dcerpc.h>
 #include <gen_ndr/netlogon.h>
+#include <gen_ndr/lsa.h>
+#include <lib/util/uuid.h>
 
 #ifndef _SAMBA_UTIL_H_
 bool trim_string(char *s, const char *front, const char *back);
@@ -4163,19 +4165,219 @@ NTSTATUS ipasam_netlogon_server_trust_passwords_get(TALLOC_CTX *mem_ctx,
         return status;
 }
 
+static NTSTATUS ipasam_dup_string(TALLOC_CTX *mem_ctx,
+                                  const char **dst,
+                                  const char *src)
+{
+        if (dst == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        if (src == NULL) {
+                *dst = NULL;
+                return NT_STATUS_OK;
+        }
+
+        *dst = talloc_strdup(mem_ctx, src);
+        if (*dst == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS ipasam_fill_primary_domain_info(TALLOC_CTX *mem_ctx,
+                                                struct ipasam_netlogon_domain_info_entry *entry,
+                                                const struct pdb_domain_info *domain)
+{
+        NTSTATUS status;
+
+        if (entry == NULL || domain == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCTP(entry);
+
+        status = ipasam_dup_string(mem_ctx, &entry->netbios_name, domain->name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        status = ipasam_dup_string(mem_ctx, &entry->dns_domain_name, domain->dns_domain);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (domain->dns_forest != NULL) {
+                status = ipasam_dup_string(mem_ctx, &entry->dns_forest_name,
+                                           domain->dns_forest);
+        } else {
+                status = ipasam_dup_string(mem_ctx, &entry->dns_forest_name,
+                                           domain->dns_domain);
+        }
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        sid_copy(&entry->domain_sid, &domain->sid);
+        entry->domain_guid = domain->guid;
+
+        entry->trust_flags = NETR_TRUST_FLAG_INBOUND |
+                             NETR_TRUST_FLAG_OUTBOUND |
+                             NETR_TRUST_FLAG_PRIMARY |
+                             NETR_TRUST_FLAG_IN_FOREST |
+                             NETR_TRUST_FLAG_NATIVE;
+        entry->parent_index = 0;
+        entry->trust_type = LSA_TRUST_TYPE_UPLEVEL;
+        entry->trust_attributes = LSA_TRUST_ATTRIBUTE_WITHIN_FOREST |
+                                  LSA_TRUST_ATTRIBUTE_FOREST_TRANSITIVE;
+
+        return NT_STATUS_OK;
+}
+
+static NTSTATUS ipasam_fill_trusted_domain_info(TALLOC_CTX *mem_ctx,
+                                                struct ipasam_netlogon_domain_info_entry *entry,
+                                                const struct pdb_trusted_domain *td)
+{
+        NTSTATUS status;
+
+        if (entry == NULL || td == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        ZERO_STRUCTP(entry);
+
+        status = ipasam_dup_string(mem_ctx, &entry->netbios_name,
+                                   td->netbios_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        status = ipasam_dup_string(mem_ctx, &entry->dns_domain_name,
+                                   td->domain_name);
+        if (!NT_STATUS_IS_OK(status)) {
+                return status;
+        }
+
+        if (td->domain_name != NULL) {
+                status = ipasam_dup_string(mem_ctx, &entry->dns_forest_name,
+                                           td->domain_name);
+                if (!NT_STATUS_IS_OK(status)) {
+                        return status;
+                }
+        }
+
+        sid_copy(&entry->domain_sid, &td->security_identifier);
+        entry->domain_guid = GUID_zero();
+
+        entry->trust_flags = ipasam_calculate_trust_flags(td);
+        entry->parent_index = 0;
+        entry->trust_type = td->trust_type;
+        entry->trust_attributes = td->trust_attributes;
+
+        return NT_STATUS_OK;
+}
+
 NTSTATUS ipasam_netlogon_logon_get_domain_info(TALLOC_CTX *mem_ctx,
                                                struct netlogon_creds_CredentialState *creds,
-                                               struct netr_LogonGetDomainInfo *r,
                                                enum dcerpc_AuthType auth_type,
-                                               enum dcerpc_AuthLevel auth_level)
+                                               enum dcerpc_AuthLevel auth_level,
+                                               uint32_t level,
+                                               const union netr_WorkstationInfo *query,
+                                               struct ipasam_netlogon_domain_info **info_out)
 {
-        (void)mem_ctx;
+        struct ipasam_netlogon_domain_info *info = NULL;
+        struct pdb_domain_info *domain = NULL;
+        struct pdb_trusted_domain **domains = NULL;
+        uint32_t num_domains = 0;
+        TALLOC_CTX *tmp_ctx = NULL;
+        NTSTATUS status;
+        uint32_t i;
+
         (void)creds;
-        (void)r;
         (void)auth_type;
         (void)auth_level;
+        (void)level;
+        (void)query;
 
-        return NT_STATUS_NOT_IMPLEMENTED;
+        if (info_out == NULL) {
+                return NT_STATUS_INVALID_PARAMETER;
+        }
+
+        *info_out = NULL;
+
+        if (ipasam_global_methods == NULL ||
+            ipasam_global_methods->private_data == NULL) {
+                return NT_STATUS_NOT_IMPLEMENTED;
+        }
+
+        info = talloc_zero(mem_ctx, struct ipasam_netlogon_domain_info);
+        if (info == NULL) {
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        domain = pdb_get_domain_info(info);
+        if (domain == NULL) {
+                TALLOC_FREE(info);
+                return NT_STATUS_INTERNAL_DB_CORRUPTION;
+        }
+
+        status = ipasam_fill_primary_domain_info(info, &info->primary_domain, domain);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(info);
+                return status;
+        }
+
+        info->dns_hostname = NULL;
+        info->workstation_flags = NETR_WS_FLAG_HANDLES_SPN_UPDATE |
+                                  NETR_WS_FLAG_HANDLES_INBOUND_TRUSTS;
+        info->supported_enc_types = KERB_ENCTYPE_RC4_HMAC_MD5 |
+                                    KERB_ENCTYPE_AES128_CTS_HMAC_SHA1_96 |
+                                    KERB_ENCTYPE_AES256_CTS_HMAC_SHA1_96;
+
+        tmp_ctx = talloc_new(info);
+        if (tmp_ctx == NULL) {
+                TALLOC_FREE(info);
+                return NT_STATUS_NO_MEMORY;
+        }
+
+        status = ipasam_enum_trusted_domains(ipasam_global_methods, tmp_ctx,
+                                             &num_domains, &domains);
+        if (!NT_STATUS_IS_OK(status)) {
+                TALLOC_FREE(tmp_ctx);
+                TALLOC_FREE(info);
+                return status;
+        }
+
+        if (num_domains > 0) {
+                info->trusted_domains = talloc_zero_array(info,
+                        struct ipasam_netlogon_domain_info_entry,
+                        num_domains);
+                if (info->trusted_domains == NULL) {
+                        TALLOC_FREE(tmp_ctx);
+                        TALLOC_FREE(info);
+                        return NT_STATUS_NO_MEMORY;
+                }
+
+                for (i = 0; i < num_domains; i++) {
+                        status = ipasam_fill_trusted_domain_info(info->trusted_domains,
+                                                                 &info->trusted_domains[i],
+                                                                 domains[i]);
+                        if (!NT_STATUS_IS_OK(status)) {
+                                TALLOC_FREE(tmp_ctx);
+                                TALLOC_FREE(info);
+                                return status;
+                        }
+                }
+        }
+
+        info->trusted_domain_count = num_domains;
+
+        TALLOC_FREE(tmp_ctx);
+
+        *info_out = info;
+
+        return NT_STATUS_OK;
 }
 
 static NTSTATUS ipasam_enum_trusteddoms(struct pdb_methods *methods,
