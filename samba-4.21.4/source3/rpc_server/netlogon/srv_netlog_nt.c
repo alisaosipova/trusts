@@ -3353,8 +3353,8 @@ NTSTATUS _netr_ServerTrustPasswordsGet(struct pipes_struct *p,
                 return status;
         }
         if (!NT_STATUS_EQUAL(status, NT_STATUS_NOT_SUPPORTED)) {
-            data_blob_free(&trust_secret);
-            return status;
+                data_blob_free(&trust_secret);
+                return status;
         }
 
         status = pdb_get_trusted_domain(p->mem_ctx, account_name, &td);

@@ -22,6 +22,7 @@
 
 #include <talloc.h>
 #include <libcli/util/werror.h>
+#include <util/data_blob.h>
 #include <gen_ndr/netlogon.h>
 
 /* The following definitions come from passdb/pdb_ipa.c  */

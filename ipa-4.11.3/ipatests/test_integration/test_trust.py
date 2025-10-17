@@ -170,16 +170,29 @@ class BaseTestTrust(IntegrationTest):
                                    ad.domain.name, ad.hostname)
         tasks.clear_sssd_cache(self.master)
 
+    def _get_nltest_path(self):
+        if hasattr(self, '_nltest_path_cache'):
+            return self._nltest_path_cache
+
+        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
+            if self.master.transport.file_exists(candidate):
+                self._nltest_path_cache = candidate
+                return candidate
+
+        self._nltest_path_cache = None
+        return None
+
+    def require_nltest(self):
+        nltest_path = self._get_nltest_path()
+        if nltest_path is None:
+            pytest.skip('nltest command not available on %s' %
+                        self.master.hostname)
+        return nltest_path
+
 
 class TestTrust(BaseTestTrust):
 
     # Tests for non-posix AD trust
-
-    def _get_nltest_path(self):
-        for candidate in ('/usr/bin/nltest', '/usr/sbin/nltest'):
-            if self.master.transport.file_exists(candidate):
-                return candidate
-        pytest.skip('nltest command not available on %s' % self.master.hostname)
 
     def test_establish_nonposix_trust(self):
         tasks.configure_dns_for_trust(self.master, self.ad)
@@ -192,7 +205,7 @@ class TestTrust(BaseTestTrust):
             self.ad_domain, [self.ad_domain, self.ad_subdomain])
 
     def test_netlogon_rpc_trust_enumeration(self):
-        nltest_path = self._get_nltest_path()
+        nltest_path = self.require_nltest()
 
         tasks.kinit_admin(self.master)
         dsgetdc_cmd = [
@@ -232,21 +245,42 @@ class TestTrust(BaseTestTrust):
 
         tasks.kdestroy_all(self.master)
 
-    def test_netlogon_secure_channel_management(self):
-        nltest_path = self._get_nltest_path()
+    def test_netlogon_secure_channel_verify(self):
+        nltest_path = self.require_nltest()
 
         tasks.kinit_admin(self.master)
+        verify_cmd = [
+            nltest_path,
+            '--kerberos',
+            '--server', self.master.hostname,
+            '--sc_verify=%s' % self.ad_domain,
+        ]
+        result = self.master.run_command(verify_cmd)
+        assert result.returncode == 0
 
-        verify_cmd = [nltest_path, '--sc-verify=%s' % self.ad.netbios]
-        verify_result = self.master.run_command(verify_cmd)
-        assert '0x0' in verify_result.stdout_text
+        tasks.kdestroy_all(self.master)
 
-        change_cmd = [nltest_path, '--sc-change-pwd=%s' % self.ad.netbios]
+    def test_netlogon_secure_channel_change_password(self):
+        nltest_path = self.require_nltest()
+
+        tasks.kinit_admin(self.master)
+        change_cmd = [
+            nltest_path,
+            '--kerberos',
+            '--server', self.master.hostname,
+            '--sc_change_pwd=%s' % self.ad_domain,
+        ]
         change_result = self.master.run_command(change_cmd)
-        assert '0x0' in change_result.stdout_text
+        assert change_result.returncode == 0
 
+        verify_cmd = [
+            nltest_path,
+            '--kerberos',
+            '--server', self.master.hostname,
+            '--sc_verify=%s' % self.ad_domain,
+        ]
         verify_result = self.master.run_command(verify_cmd)
-        assert '0x0' in verify_result.stdout_text
+        assert verify_result.returncode == 0
 
         tasks.kdestroy_all(self.master)
 
