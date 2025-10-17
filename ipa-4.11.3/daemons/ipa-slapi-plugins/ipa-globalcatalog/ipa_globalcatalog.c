@@ -638,8 +638,113 @@ static int ipa_gc_lookup_memberof(struct ipa_gc_ctx *ctx,
         return LDAP_OPERATIONS_ERROR;
     }
 
-    filter = slapi_ch_smprintf("(&(objectClass=ipaNTGroupAttrs)(member=%s))",
-                               escaped);
+    filter = slapi_ch_smprintf(
+        "(&(|(objectClass=ipaNTGroupAttrs)(objectClass=groupOfNames))"
+        "(member=%s))",
+        escaped);
+    if (filter == NULL) {
+        slapi_ch_free((void **)&escaped);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    search_pb = slapi_pblock_new();
+    if (search_pb == NULL) {
+        slapi_ch_free((void **)&escaped);
+        slapi_ch_free((void **)&filter);
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    slapi_search_internal_set_pb(search_pb, ctx->basedn, LDAP_SCOPE_SUBTREE,
+                                 filter, NULL, 1, NULL, NULL,
+                                 ctx->plugin_id, 0);
+
+    ret = slapi_search_internal_pb(search_pb);
+    if (ret != LDAP_SUCCESS) {
+        goto done;
+    }
+
+    ret = slapi_pblock_get(search_pb, SLAPI_PLUGIN_INTOP_SEARCH_ENTRIES,
+                           &entries);
+    if (ret != 0) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    if (entries == NULL) {
+        ret = LDAP_SUCCESS;
+        goto done;
+    }
+
+    while (entries[count] != NULL) {
+        count++;
+    }
+
+    if (count == 0) {
+        ret = LDAP_SUCCESS;
+        goto done;
+    }
+
+    values = slapi_ch_calloc(count + 1, sizeof(char *));
+    if (values == NULL) {
+        ret = LDAP_OPERATIONS_ERROR;
+        goto done;
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        const char *dn = slapi_entry_get_dn_const(entries[i]);
+        values[i] = slapi_ch_strdup(dn);
+        if (values[i] == NULL) {
+            ret = LDAP_OPERATIONS_ERROR;
+            goto done;
+        }
+    }
+
+    values[count] = NULL;
+    *values_out = values;
+    values = NULL;
+
+done:
+    if (values != NULL) {
+        ipa_gc_free_string_array(values);
+    }
+
+    slapi_ch_free((void **)&escaped);
+    slapi_ch_free((void **)&filter);
+    slapi_free_search_results_internal(search_pb);
+    slapi_pblock_destroy(search_pb);
+
+    return ret;
+}
+
+static int ipa_gc_lookup_members(struct ipa_gc_ctx *ctx,
+                                 const Slapi_DN *group_sdn,
+                                 char ***values_out)
+{
+    Slapi_PBlock *search_pb = NULL;
+    Slapi_Entry **entries = NULL;
+    char *escaped = NULL;
+    char *filter = NULL;
+    int ret = LDAP_SUCCESS;
+    size_t count = 0;
+    char **values = NULL;
+
+    if (ctx == NULL || group_sdn == NULL || values_out == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    *values_out = NULL;
+
+    escaped = ipa_gc_escape_filter_value(slapi_sdn_get_dn(group_sdn));
+    if (escaped == NULL) {
+        return LDAP_OPERATIONS_ERROR;
+    }
+
+    filter = slapi_ch_smprintf(
+        "(&(|(objectClass=ipaNTUserAttrs)"
+        "(objectClass=posixAccount)"
+        "(objectClass=ipaNTGroupAttrs)"
+        "(objectClass=groupOfNames))(memberOf=%s))",
+        escaped);
     if (filter == NULL) {
         slapi_ch_free((void **)&escaped);
         return LDAP_OPERATIONS_ERROR;
@@ -945,7 +1050,13 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
         changed |= ipa_gc_enqueue_string_value(entry, mods, "groupType",
                                                "-2147483646");
 
-        group_members = slapi_entry_attr_get_charray(entry, "member");
+        ret = ipa_gc_lookup_members(ctx, target, &group_members);
+        if (ret != LDAP_SUCCESS) {
+            LOG_FATAL("Unable to compute members for group %s (rc=%d).\n",
+                      slapi_sdn_get_dn(target), ret);
+            goto done;
+        }
+
         changed |= ipa_gc_enqueue_string_array(entry, mods, "member",
                                                group_members);
 
@@ -1010,9 +1121,7 @@ static int ipa_gc_refresh_entry(struct ipa_gc_ctx *ctx, const Slapi_DN *target)
     slapi_ch_free_string(&sam_account_name);
     slapi_ch_free_string(&user_principal_name);
     slapi_ch_free_string(&sid);
-    if (group_members != NULL) {
-        slapi_ch_array_free(group_members);
-    }
+    ipa_gc_free_string_array(group_members);
     ipa_gc_free_string_array(member_of);
     return ret;
 }

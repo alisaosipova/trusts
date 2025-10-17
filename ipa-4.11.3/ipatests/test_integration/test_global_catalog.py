@@ -168,6 +168,7 @@ class TestGlobalCatalog(IntegrationTest):
 
         username = "gcuser"
         groupname = "gcgroup"
+        parent_groupname = "gcparent"
         password = "Secret.123"
 
         try:
@@ -181,6 +182,13 @@ class TestGlobalCatalog(IntegrationTest):
 
             tasks.group_add(self.master, groupname)
             tasks.group_add_member(self.master, groupname, username)
+
+            tasks.group_add(self.master, parent_groupname)
+            tasks.group_add_member(
+                self.master,
+                parent_groupname,
+                extra_args=("--groups", groupname),
+            )
 
             entry = self._ldapsearch_gc(
                 f"(uid={username})",
@@ -209,18 +217,55 @@ class TestGlobalCatalog(IntegrationTest):
 
             group_entry = self._ldapsearch_gc(
                 f"(cn={groupname})",
+                "sAMAccountName",
+                "objectSid",
                 "objectClass",
                 "groupType",
                 "member",
                 "memberOf",
             )
 
+            assert group_entry.get("sAMAccountName") == [groupname], group_entry
+            assert group_entry.get("objectSid"), group_entry
             group_classes = {value.lower() for value in group_entry.get("objectClass", [])}
             assert "group" in group_classes, group_entry
             assert group_entry.get("groupType") == ["-2147483646"], group_entry
             members = {value.lower() for value in group_entry.get("member", [])}
             assert user_dn.lower() in members, group_entry
+
+            parent_dn = (
+                f"cn={parent_groupname},cn=groups,cn=accounts," f"{self.master.domain.basedn}"
+            )
+            member_of_groups = {value.lower() for value in group_entry.get("memberOf", [])}
+            assert parent_dn.lower() in member_of_groups, group_entry
+
+            parent_entry = self._ldapsearch_gc(
+                f"(cn={parent_groupname})",
+                "groupType",
+                "member",
+            )
+
+            assert parent_entry.get("groupType") == ["-2147483646"], parent_entry
+            parent_members = {value.lower() for value in parent_entry.get("member", [])}
+            assert group_dn.lower() in parent_members, parent_entry
         finally:
+            try:
+                self.master.run_command(
+                    [
+                        "ipa",
+                        "group-remove-member",
+                        parent_groupname,
+                        "--groups",
+                        groupname,
+                    ],
+                    raiseonerr=False,
+                )
+            except Exception:
+                pass
+            try:
+                tasks.group_del(self.master, parent_groupname)
+            except Exception:
+                pass
             try:
                 tasks.group_del(self.master, groupname)
             except Exception:
